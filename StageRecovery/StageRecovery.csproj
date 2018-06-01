@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\SteamLibrary\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -53,33 +53,34 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>D:\SteamLibrary\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SteamLibrary\SteamApps\common\Kerbal Space Program\KSP_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="APIManager.cs" />
-    <Compile Include="CrewWithSeat.cs" />
-    <Compile Include="EditorGUI.cs" />
-    <Compile Include="FlightGUI.cs" />
-    <Compile Include="RecoveryControllerWrapper.cs" />
-    <Compile Include="RecoveryItem.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="SettingsGUI.cs" />
-    <Compile Include="StageRecovery.cs" />
+    <Compile Include="source\APIManager.cs" />
+    <Compile Include="source\CrewWithSeat.cs" />
+    <Compile Include="source\EditorGUI.cs" />
+    <Compile Include="source\FlightGUI.cs" />
+    <Compile Include="source\RecoveryControllerWrapper.cs" />
+    <Compile Include="source\RecoveryItem.cs" />
+    <Compile Include="source\Settings.cs" />
+    <Compile Include="source\SettingsGUI.cs" />
+    <Compile Include="source\StageRecovery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StageRecoveryWrapper.cs" />
-    <Compile Include="ToolbarWrapper.cs" />
+    <Compile Include="source\StageRecoveryWrapper.cs" />
+    <Compile Include="source\ToolbarWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"C:\Users\magico13\Desktop\KSP_Modding\Tools\pdb2mdb\pdb2mdb.exe" "$(TargetFileName)"
-xcopy /Y "$(TargetPath)" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"
-xcopy /Y "$(TargetDir)$(TargetName).pdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"
-xcopy /Y "$(TargetDir)$(TargetName).dll.mdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"</PostBuildEvent>
+    <PostBuildEvent>rem "C:\Users\magico13\Desktop\KSP_Modding\Tools\pdb2mdb\pdb2mdb.exe" "$(TargetFileName)"
+xcopy /Y "$(TargetPath)" "E:\Workshop\Coding\RnD\Kerbal Space Program\GameData\$(TargetName)\"
+xcopy "$(ProjectDir)source" "E:\Workshop\Coding\Shared\RnD\Stage Recovery Fork\source" /Y /S
+rem xcopy /Y "$(TargetDir)$(TargetName).pdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"
+rem xcopy /Y "$(TargetDir)$(TargetName).dll.mdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
