@@ -14,7 +14,7 @@ namespace StageRecovery
         {
             get
             {
-                if (burnedUp)
+                if (BurnedUp)
                 {
                     return false;
                 }
@@ -29,7 +29,8 @@ namespace StageRecovery
                 }
             }
         }
-        public bool burnedUp, poweredRecovery, noControl;
+        public bool BurnedUp, poweredRecovery, noControl;
+        public float TrialedRecoveryValue;
         public string StageName, ParachuteModule;
         public double Vt = 0;
         public List<string> ScienceExperiments = new List<string>();
@@ -38,10 +39,11 @@ namespace StageRecovery
         public List<CrewWithSeat> KerbalsOnboard = new List<CrewWithSeat>();
         public Dictionary<string, int> PartsRecovered = new Dictionary<string, int>();
         public Dictionary<string, double> Costs = new Dictionary<string, double>();
-        public float FundsOriginal = 0, FundsReturned = 0, DryReturns = 0, FuelReturns = 0;
+        public float FundsOriginal = 0, DryOriginal = 0, FuelOriginal = 0;
+        public float FundsReturned = 0, DryReturned = 0, FuelReturned = 0;
         public float KSCDistance = 0;
         public float RecoveryPercent = 0, DistancePercent = 0, SpeedPercent = 0;
-        public string ReasonForFailure { get { if (Recovered) { return "SUCCESS"; } if (burnedUp) { return "BURNUP"; } return "SPEED"; } }
+        public string ReasonForFailure { get { if (Recovered) { return "SUCCESS"; } if (BurnedUp) { return "BURNUP"; } return "SPEED"; } }
         public Dictionary<string, double> fuelUsed = new Dictionary<string, double>();
 
         public double RecoveredTime { get; private set; }
@@ -124,9 +126,11 @@ namespace StageRecovery
             //Debug.Log("[SR] Altitude: " + vessel.altitude);
 
             PreRecovered = preRecover;
-            
+
+            TrialedRecoveryValue = DetermineTrialedRecoveryValue();
+
             //Determine if the stage should be burned up
-            burnedUp = DetermineIfBurnedUp();
+            BurnedUp = TrialedRecoveryValue == 0 && DetermineIfBurnedUp();
 
             //Determine what the terminal velocity should be
             Vt = DetermineTerminalVelocity();
@@ -140,7 +144,8 @@ namespace StageRecovery
 
             poweredRecovery = (Vt < vt_old);
 
-            //Set the Recovery Percentages
+            ComputeVesselValue();
+            
             SetRecoveryPercentages();
             //Set the parts, costs, and refunds
             SetPartsAndFunds();
@@ -202,6 +207,11 @@ namespace StageRecovery
         //This function/method/thing calculates the terminal velocity of the Stage
         private double DetermineTerminalVelocity()
         {
+            if ( TrialedRecoveryValue > 0 )
+            {
+                return 0;
+            }
+
             double v = StageRecovery.ProcessPartList(vessel.protoVessel.protoPartSnapshots);
             ParachuteModule = (vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(ppms => ppms.moduleName == "RealChuteModule")) ? "RealChute" : "Stock");
             Debug.Log("[SR] Vt: " + v);
@@ -625,9 +635,55 @@ namespace StageRecovery
             }
         }
 
+        private void ComputeVesselValue()
+        {
+            foreach (ProtoPartSnapshot pps in vessel.protoVessel.protoPartSnapshots)
+            {
+                //Holders for the "out" below
+                float dryCost, fuelCost;
+                //Stock function for taking a ProtoPartSnapshot and the corresponding AvailablePart (aka, partInfo) and determining the value 
+                //of the fuel contained and base part. Whole thing returns the combined total, but we'll do that manually
+                ShipConstruction.GetPartCosts(pps, pps.partInfo, out dryCost, out fuelCost);
+                //Set the dryCost to 0 if it's less than 0 (also could be done with dryCost = Math.Max(0, dryCost);)
+                dryCost = dryCost < 0 ? 0 : dryCost;
+                //Same for the fuelCost
+                fuelCost = fuelCost < 0 ? 0 : fuelCost;           
+
+                //Now we add the parts to the Dictionaries for display later
+                //If the part title (the nice common name, like "Command Pod Mk1" as opposed to the name which is "mk1pod") isn't in the dictionary, add a new element
+                if (!PartsRecovered.ContainsKey(pps.partInfo.title))
+                {
+                    //Add the title and qty=1 to the PartsRecovered
+                    PartsRecovered.Add(pps.partInfo.title, 1);
+                    //And the title and modified dryCost to the Costs
+                    Costs.Add(pps.partInfo.title, dryCost);
+                }
+                else
+                {
+                    //If it is in the dictionary already, just increment the qty. We already know the cost.
+                    ++PartsRecovered[pps.partInfo.title];
+                }
+
+                //The unmodified returns are just the costs for the part added to the others
+                FundsOriginal += dryCost + fuelCost;
+                DryOriginal += dryCost;
+                FuelOriginal += fuelCost;
+            }
+        }
         //This calculates and sets the three recovery percentages (Recovery, Distance, and Speed Percents) along with the distance from KSC
         private void SetRecoveryPercentages()
         {
+            //Calculate the distance from KSC in meters
+            KSCDistance = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
+
+            if (TrialedRecoveryValue > 0)
+            {
+                SpeedPercent = 1.0f;
+                DistancePercent = 1.0f;
+                RecoveryPercent = Math.Min(TrialedRecoveryValue / FundsOriginal, 1.0f) * Settings.Instance.GlobalModifier;
+                return;
+            }
+
             //If we're using the Flat Rate model then we need to check for control
             if (Settings.Instance.FlatRateModel)
             {
@@ -669,8 +725,6 @@ namespace StageRecovery
                 SpeedPercent = (float)GetVariableRecoveryValue(Vt);
             }
 
-            //Calculate the distance from KSC in meters
-            KSCDistance = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
             //Calculate the max distance from KSC (half way around a circle the size of Kerbin)
             double maxDist = SpaceCenter.Instance.cb.Radius * Math.PI;
 
@@ -700,46 +754,11 @@ namespace StageRecovery
         //This populates the dictionary of Recovered Parts and the dictionary of Costs, along with total funds returns (original, modified, fuel, and dry)
         private void SetPartsAndFunds()
         {
-            foreach (ProtoPartSnapshot pps in vessel.protoVessel.protoPartSnapshots)
-            {
-                //Holders for the "out" below
-                float dryCost, fuelCost;
-                //Stock function for taking a ProtoPartSnapshot and the corresponding AvailablePart (aka, partInfo) and determining the value 
-                //of the fuel contained and base part. Whole thing returns the combined total, but we'll do that manually
-                ShipConstruction.GetPartCosts(pps, pps.partInfo, out dryCost, out fuelCost);
-                //Set the dryCost to 0 if it's less than 0 (also could be done with dryCost = Math.Max(0, dryCost);)
-                dryCost = dryCost < 0 ? 0 : dryCost;
-                //Same for the fuelCost
-                fuelCost = fuelCost < 0 ? 0 : fuelCost;
+            //Multiply by the RecoveryPercent
+            FundsReturned = FundsOriginal * RecoveryPercent;
+            DryReturned = DryOriginal * RecoveryPercent;
+            FuelReturned = FuelOriginal * RecoveryPercent;
 
-                //The unmodified returns are just the costs for the part added to the others
-                FundsOriginal += dryCost + fuelCost;
-
-                //Now we add the parts to the Dictionaries for display later
-                //If the part title (the nice common name, like "Command Pod Mk1" as opposed to the name which is "mk1pod") isn't in the dictionary, add a new element
-                if (!PartsRecovered.ContainsKey(pps.partInfo.title))
-                {
-                    //Add the title and qty=1 to the PartsRecovered
-                    PartsRecovered.Add(pps.partInfo.title, 1);
-                    //And the title and modified dryCost to the Costs
-                    Costs.Add(pps.partInfo.title, dryCost);
-                }
-                else
-                {
-                    //If it is in the dictionary already, just increment the qty. We already know the cost.
-                    ++PartsRecovered[pps.partInfo.title];
-                }
-
-                //Multiply by the RecoveryPercent
-                dryCost *= RecoveryPercent;
-                fuelCost *= RecoveryPercent;
-
-                //The FundsReturned is the sum of the current FundsReturned plus the part cost and fuel cost
-                FundsReturned += dryCost + fuelCost;
-                DryReturns += dryCost;
-                FuelReturns += fuelCost;
-
-            }
             //Add refunds for the stage
             if (FundsReturned > 0 && Recovered)
             {
@@ -1006,8 +1025,8 @@ namespace StageRecovery
                 msg.AppendLine("");
                 //List the total refunds for parts, fuel, and the combined total
                 msg.AppendLine($"Total refunds: {fundSymbol} {green}{(FundsReturned).ToString("N0")}{endC}");
-                msg.AppendLine($"Total refunded for parts: {fundSymbol} {green}{(DryReturns).ToString("N0")}{endC}");
-                msg.AppendLine($"Total refunded for fuel: {fundSymbol} {green}{(FuelReturns).ToString("N0")}{endC}");
+                msg.AppendLine($"Total refunded for parts: {fundSymbol} {green}{(DryReturned).ToString("N0")}{endC}");
+                msg.AppendLine($"Total refunded for fuel: {fundSymbol} {green}{(FuelReturned).ToString("N0")}{endC}");
                 msg.AppendLine($"Stage value: {fundSymbol} {green}{(FundsOriginal).ToString("N0")}{endC}");
 
                 if (KerbalsOnboard.Count > 0)
@@ -1082,12 +1101,12 @@ namespace StageRecovery
                 msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.HighCut) + " needed)");
                 
                 //If it failed because of burning up (can be in addition to speed) then we'll let you know
-                if (burnedUp)
+                if (BurnedUp)
                 {
                     msg.AppendLine("The stage burned up in the atmosphere! It was traveling at " + vessel.srfSpeed + " m/s.");
                 }
 
-                if (poweredRecovery && !burnedUp)
+                if (poweredRecovery && !BurnedUp)
                 {
                     msg.AppendLine("Attempted propulsive landing but could not reduce velocity enough for safe touchdown. Check the SR Flight GUI for additional info.");
                 }
@@ -1137,6 +1156,30 @@ namespace StageRecovery
             //The return value is now a simple matter. The function is setup for percentages but we want to return a float between 0 and 1, so divide by 100
             float ret = (float)(a * Math.Pow(v, 2) + b * v + c)/100f;
             return ret;
+        }
+
+        public float DetermineTrialedRecoveryValue()
+        {
+            Debug.Log( "[SRF] DetermineTrialedRecoveryValue() called." );
+
+            foreach ( var part in vessel.protoVessel.protoPartSnapshots )
+            {
+                Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Part name = \"" + part.partName + "\"" );
+                if ( part.partName == "Trialed Recovery Autopilot" )
+                {
+                    float retval = 0;
+                    foreach ( ProtoPartResourceSnapshot resource in part.resources )
+                    {
+                        Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Resource name = \""
+                                   + resource.resourceName + "\", amount = \"" + resource.amount + "\"");
+                        retval += (float)resource.amount;
+                    }
+                    Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Autopilot found, recovery value = \"" + retval + "\".");
+                    return retval;
+                }
+            }
+
+            return 0;
         }
     }
 }

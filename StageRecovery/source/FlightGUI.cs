@@ -239,8 +239,8 @@ namespace StageRecovery
             //If the stage was recovered, list the refunds for parts, fuel, and total, along with the overall percentage
             if (selectedStage.Recovered)
             {
-                GUILayout.Label("\nTotal refunded for parts: " + Math.Round(selectedStage.DryReturns, 2));
-                GUILayout.Label("Total refunded for fuel: " + Math.Round(selectedStage.FuelReturns, 2));
+                GUILayout.Label("\nTotal refunded for parts: " + Math.Round(selectedStage.DryReturned, 2));
+                GUILayout.Label("Total refunded for fuel: " + Math.Round(selectedStage.FuelReturned, 2));
                 GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
                 GUILayout.Label("Percent refunded: " + Math.Round(100 * selectedStage.RecoveryPercent, 2) + "%");
                 GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
@@ -315,7 +315,7 @@ namespace StageRecovery
             GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
 
             //If the stage was burned up, display this and the velocity it was going
-            if (selectedStage.burnedUp)
+            if (selectedStage.BurnedUp)
             {
                 GUILayout.Label("\nStage burned up on reentry!");
                 GUILayout.Label("Surface Speed: " + selectedStage.vessel.srfSpeed);
