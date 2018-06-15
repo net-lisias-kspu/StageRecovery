@@ -77,7 +77,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rem "C:\Users\magico13\Desktop\KSP_Modding\Tools\pdb2mdb\pdb2mdb.exe" "$(TargetFileName)"
-xcopy /Y "$(TargetPath)" "E:\Workshop\Coding\RnD\Kerbal Space Program\GameData\$(TargetName)\"
+xcopy /Y "$(TargetPath)" "E:\Workshop\Coding\RnD\KSPModding\Kerbal Space Program\GameData\$(TargetName)\"
 xcopy "$(ProjectDir)source" "E:\Workshop\Coding\Shared\RnD\Stage Recovery Fork\source" /Y /S
 rem xcopy /Y "$(TargetDir)$(TargetName).pdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"
 rem xcopy /Y "$(TargetDir)$(TargetName).dll.mdb" "D:\SteamLibrary\SteamApps\common\Kerbal Space Program\GameData\$(TargetName)\"</PostBuildEvent>
