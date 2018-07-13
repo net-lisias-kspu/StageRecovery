@@ -30,7 +30,7 @@ namespace StageRecovery
             }
         }
         public bool BurnedUp, poweredRecovery, noControl;
-        public float TrialedRecoveryValue;
+        public float RecordedRecoveryValue;
         public string StageName, ParachuteModule;
         public double Vt = 0;
         public List<string> ScienceExperiments = new List<string>();
@@ -127,10 +127,10 @@ namespace StageRecovery
 
             PreRecovered = preRecover;
 
-            TrialedRecoveryValue = DetermineTrialedRecoveryValue();
+            RecordedRecoveryValue = DetermineRecordedRecoveryValue();
 
             //Determine if the stage should be burned up
-            BurnedUp = TrialedRecoveryValue == 0 && DetermineIfBurnedUp();
+            BurnedUp = RecordedRecoveryValue == 0 && DetermineIfBurnedUp();
 
             //Determine what the terminal velocity should be
             Vt = DetermineTerminalVelocity();
@@ -207,7 +207,7 @@ namespace StageRecovery
         //This function/method/thing calculates the terminal velocity of the Stage
         private double DetermineTerminalVelocity()
         {
-            if ( TrialedRecoveryValue > 0 )
+            if ( RecordedRecoveryValue > 0 )
             {
                 return 0;
             }
@@ -676,11 +676,11 @@ namespace StageRecovery
             //Calculate the distance from KSC in meters
             KSCDistance = (float)SpaceCenter.Instance.GreatCircleDistance(SpaceCenter.Instance.cb.GetRelSurfaceNVector(vessel.latitude, vessel.longitude));
 
-            if (TrialedRecoveryValue > 0)
+            if (RecordedRecoveryValue > 0)
             {
                 SpeedPercent = 1.0f;
                 DistancePercent = 1.0f;
-                RecoveryPercent = Math.Min(TrialedRecoveryValue / FundsOriginal, 1.0f) * Settings.Instance.GlobalModifier;
+                RecoveryPercent = Math.Min(RecordedRecoveryValue / FundsOriginal, 1.0f) * Settings.Instance.GlobalModifier;
                 return;
             }
 
@@ -1158,23 +1158,23 @@ namespace StageRecovery
             return ret;
         }
 
-        public float DetermineTrialedRecoveryValue()
+        public float DetermineRecordedRecoveryValue()
         {
-            Debug.Log( "[SRF] DetermineTrialedRecoveryValue() called." );
+            Debug.Log("[SRF] DetermineRecordedRecoveryValue() called.");
 
             foreach ( var part in vessel.protoVessel.protoPartSnapshots )
             {
-                Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Part name = \"" + part.partName + "\"" );
-                if ( part.partName == "Trialed Recovery Autopilot" )
+                Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Part name = \"" + part.partName + "\"" );
+                if ( part.partName == "RecoveryGuidanceUnit" )
                 {
                     float retval = 0;
                     foreach ( ProtoPartResourceSnapshot resource in part.resources )
                     {
-                        Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Resource name = \""
+                        Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Resource name = \""
                                    + resource.resourceName + "\", amount = \"" + resource.amount + "\"");
                         retval += (float)resource.amount;
                     }
-                    Debug.Log("[SRF] DetermineTrialedRecoveryValue(): Autopilot found, recovery value = \"" + retval + "\".");
+                    Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Autopilot found, recovery value = \"" + retval + "\".");
                     return retval;
                 }
             }
