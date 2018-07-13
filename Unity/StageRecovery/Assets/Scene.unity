@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 1816756650}
   - component: {fileID: 1816756651}
   m_Layer: 0
-  m_Name: RecoveryGuidanceUnitCollider
+  m_Name: RecoveryGuidanceUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
