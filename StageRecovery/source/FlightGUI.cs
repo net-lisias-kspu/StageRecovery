@@ -288,28 +288,38 @@ namespace StageRecovery
         //This displays info about distance from KSC, terminal velocity, and all that miscellanous info
         private void DrawAdvancedInfo()
         {
-            //Display distance, module used, and terminal velocity
-            GUILayout.Label("Distance from KSC: " + Math.Round(selectedStage.KSCDistance/1000, 2) + "km");
-            GUILayout.Label("Parachute Module used: " + selectedStage.ParachuteModule);
-            GUILayout.Label("Terminal velocity: "+selectedStage.Vt + " m/s");
-            //List the Vt required for maximal/partial recovery
-            if (Settings.Instance.FlatRateModel)
+            if (selectedStage.RecordedRecoveryValue > 0)
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.CutoffVelocity + " m/s");
+                GUILayout.Label("Vessel guided to recovery by recovery guidance unit using pre-recorded flight parameters.");
             }
             else
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.HighCut + " m/s");
-                GUILayout.Label("Maximum velocity for total recovery: " + Settings.Instance.LowCut + " m/s");
+                //Display distance, module used, and terminal velocity
+                GUILayout.Label("Distance from KSC: " + Math.Round(selectedStage.KSCDistance / 1000, 2) + "km");
+                GUILayout.Label("Parachute Module used: " + selectedStage.ParachuteModule);
+                GUILayout.Label("Terminal velocity: " + selectedStage.Vt + " m/s");
+                //List the Vt required for maximal/partial recovery
+                if (Settings.Instance.FlatRateModel)
+                {
+                    GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.CutoffVelocity + " m/s");
+                }
+                else
+                {
+                    GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.HighCut + " m/s");
+                    GUILayout.Label("Maximum velocity for total recovery: " + Settings.Instance.LowCut + " m/s");
+                }
             }
 
             //List the percent refunded, broken down into distance and speed amounts
             GUILayout.Label("\nPercent refunded: "+ Math.Round(100*selectedStage.RecoveryPercent, 2) + "%");
-            GUILayout.Label("    --Distance: " + Math.Round(100 * selectedStage.DistancePercent, 2) + "%");
-            GUILayout.Label("    --Speed: " + Math.Round(100 * selectedStage.SpeedPercent, 2) + "%");
-            if (Settings.Instance.GlobalModifier != 1.0F)
+            if (selectedStage.RecordedRecoveryValue <= 0)
             {
-                GUILayout.Label("    --Global: " + Math.Round(100 * Settings.Instance.GlobalModifier, 2) + "%");
+                GUILayout.Label("    --Distance: " + Math.Round(100 * selectedStage.DistancePercent, 2) + "%");
+                GUILayout.Label("    --Speed: " + Math.Round(100 * selectedStage.SpeedPercent, 2) + "%");
+                if (Settings.Instance.GlobalModifier != 1.0F)
+                {
+                    GUILayout.Label("    --Global: " + Math.Round(100 * Settings.Instance.GlobalModifier, 2) + "%");
+                }
             }
             GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
             GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));

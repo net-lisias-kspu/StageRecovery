@@ -1016,11 +1016,14 @@ namespace StageRecovery
                 //msg.AppendLine("\n");
                 //List the percent returned and break it down into distance and speed percentages
                 msg.AppendLine("Recovery percentage: <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");
-                msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> distance");
-                msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> speed");
-                if (Settings.Instance.GlobalModifier != 1.0f)
+                if (RecordedRecoveryValue <= 0)
                 {
-                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings.Instance.GlobalModifier, 1) + "%</color> global modifier");
+                    msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> distance");
+                    msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> speed");
+                    if (Settings.Instance.GlobalModifier != 1.0f)
+                    {
+                        msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings.Instance.GlobalModifier, 1) + "%</color> global modifier");
+                    }
                 }
                 msg.AppendLine("");
                 //List the total refunds for parts, fuel, and the combined total
@@ -1047,10 +1050,19 @@ namespace StageRecovery
 
                 //By this point all the real work is done. Now we just display a bit of information
                 msg.AppendLine("\nAdditional Information:");
-                //Display which module was used for recovery
-                msg.AppendLine(ParachuteModule + " Module used.");
+
+                if (RecordedRecoveryValue == 0)
+                {
+                    //Display which module was used for recovery
+                    msg.AppendLine(ParachuteModule + " Module used.");
+                }
+
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                if (Settings.Instance.FlatRateModel)
+                if (RecordedRecoveryValue > 0)
+                {
+                    msg.AppendLine("Vessel guided to recovery by recovery guidance unit using pre-recorded flight parameters.");
+                }
+                else if (Settings.Instance.FlatRateModel)
                 {
                     msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings.Instance.CutoffVelocity + " needed)");
                 }
@@ -1095,8 +1107,13 @@ namespace StageRecovery
 
                 //By this point all the real work is done. Now we just display a bit of information
                 msg.AppendLine("\nAdditional Information:");
-                //Display which module was used for recovery
-                msg.AppendLine(ParachuteModule + " Module used.");
+
+                if (RecordedRecoveryValue == 0)
+                {
+                    //Display which module was used for recovery
+                    msg.AppendLine(ParachuteModule + " Module used.");
+                }
+
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
                 msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.HighCut) + " needed)");
                 
@@ -1162,24 +1179,24 @@ namespace StageRecovery
         {
             Debug.Log("[SRF] DetermineRecordedRecoveryValue() called.");
 
+            float retval = 0;
+
             foreach ( var part in vessel.protoVessel.protoPartSnapshots )
             {
-                Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Part name = \"" + part.partName + "\"" );
-                if ( part.partName == "RecoveryGuidanceUnit" )
+                foreach ( ProtoPartResourceSnapshot resource in part.resources )
                 {
-                    float retval = 0;
-                    foreach ( ProtoPartResourceSnapshot resource in part.resources )
+                    if (resource.resourceName.StartsWith("RecoveryValue"))
                     {
                         Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Resource name = \""
-                                   + resource.resourceName + "\", amount = \"" + resource.amount + "\"");
+                                    + resource.resourceName + "\", amount = \"" + resource.amount + "\"");
                         retval += (float)resource.amount;
                     }
-                    Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Autopilot found, recovery value = \"" + retval + "\".");
-                    return retval;
                 }
+                
             }
 
-            return 0;
+            Debug.Log("[SRF] DetermineRecordedRecoveryValue(): Autopilot found, recovery value = \"" + retval + "\".");
+            return retval;
         }
     }
 }
