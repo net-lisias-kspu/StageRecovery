@@ -1,8 +1,8 @@
 {
-    "NAME":"StageRecovery",
-    "URL":"https://raw.githubusercontent.com/magico13/StageRecovery/master/GameData/StageRecovery/SR.version",
+    "NAME":"StageRecoveryRGU",
+    "URL":"https://raw.githubusercontent.com/PaletzTheWise/StageRecovery/master/GameData/StageRecovery/SR.version",
     "DOWNLOAD":"http://forum.kerbalspaceprogram.com/index.php?/topic/78226-1",
-    "CHANGE_LOG_URL":"https://raw.githubusercontent.com/magico13/StageRecovery/master/GameData/StageRecovery/SR-Readme.txt",
+    "CHANGE_LOG_URL":"https://raw.githubusercontent.com/PaletzTheWise/StageRecovery/master/GameData/StageRecovery/SR-Readme.txt",
          "VERSION":{
          "MAJOR":1,
          "MINOR":8,

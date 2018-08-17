@@ -1,7 +1,11 @@
 Installation:
 Merge the GameData folder with the one located in the KSP directory. Delete the existing StageRecovery folder when updating to ensure compatibility.
 
+StageRecoveryRGU fork:
+Source: https://github.com/PaletzTheWise/StageRecovery
+Issue Tracker: https://github.com/PaletzTheWise/StageRecovery/issues
 
+Original StageRecovery:
 Forum: http://forum.kerbalspaceprogram.com/threads/86677-0-24-2-StageRecovery-Recover-Funds-from-Dropped-Stages-v1-4-1-%288-22-14%29
 Source: https://github.com/magico13/StageRecovery
 Issue Tracker: https://github.com/magico13/StageRecovery/issues
@@ -11,6 +15,9 @@ Please include the output_log.txt file from the KSP_Data folder if using 32 bit 
 
 
 Changelog:
+1.8.0.RGU.0 (2018-08-17)
+- Added Recovery Guidance Unit part
+
 1.8.0 (2018-03-11)
 - Built against KSP 1.4.0. Might be backward compatible.
 - Pre-recovery now fully recovers vessels and not just kerbals
