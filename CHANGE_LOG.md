@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2015-1229: 1.6.1 (magico13) for KSP 1.0.5
+	+ Small bugfix update to make powered recovery work properly with pre-recovered Kerbals.
 * 2015-1221: 1.6.0 (magico13) for KSP 1.0.5
 	+ Changes since 1.5.8:
 		- Hovering over Stock the SR icon in flight lets you preview the SR window
