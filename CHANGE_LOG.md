@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2016-0102: 1.6.2 (magico13) for KSP 1.0.5
+	+ Fix for things below 23km not being added to Recovery Queue
+	+ Fix for ModuleAblators that don't use Ablator resource
 * 2015-1229: 1.6.1 (magico13) for KSP 1.0.5
 	+ Small bugfix update to make powered recovery work properly with pre-recovered Kerbals.
 * 2015-1221: 1.6.0 (magico13) for KSP 1.0.5
