@@ -1,5 +1,10 @@
 # Stage Recovery :: Change log
 
+* 2017-0123: 1.6.6 (magico13) for KSP 1.2.2
+	+ Update to KSP 1.2.2.
+	+ Powered recovery now tries to perform a reentry burn to reduce speed and avoid burning up.
+	+ Kraken finds Kerbals to be less tasty when changing vessels/scenes (less randomly disappearing)
+	+ Terminal velocity estimations centralized and can be called through API/wrapper
 * 2016-1021: 1.6.5 (magico13) for KSP 1.2
 	+ 1.6.5 (10/20/2016)
 		- Update to KSP 1.2
