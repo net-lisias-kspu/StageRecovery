@@ -1,5 +1,10 @@
 # Stage Recovery :: Change log
 
+* 2017-0318: 1.7.0 (magico13) for KSP 1.2.2
+	+ 1.7.0 (03/18/2017)
+		- Added support for the updated FMRS
+		- Fixed bug with crew recovery that resulted in them still being marked dead
+		- Added option to disable kerbal pre-recovery
 * 2017-0129: 1.6.8 (magico13) for KSP 1.2.2
 	+ Fixed issue where parachutes seemingly weren't being accounted for when speeds were greater than DRMaxVelocity
 * 2017-0124: 1.6.7 (magico13) for KSP 1.2.2
