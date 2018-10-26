@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2017-0124: 1.6.7 (magico13) for KSP 1.2.2
+	+ Fixed issue with RealChute integration
 * 2017-0123: 1.6.6 (magico13) for KSP 1.2.2
 	+ Update to KSP 1.2.2.
 	+ Powered recovery now tries to perform a reentry burn to reduce speed and avoid burning up.
