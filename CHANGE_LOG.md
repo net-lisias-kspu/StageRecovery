@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2017-0129: 1.6.8 (magico13) for KSP 1.2.2
+	+ Fixed issue where parachutes seemingly weren't being accounted for when speeds were greater than DRMaxVelocity
 * 2017-0124: 1.6.7 (magico13) for KSP 1.2.2
 	+ Fixed issue with RealChute integration
 * 2017-0123: 1.6.6 (magico13) for KSP 1.2.2
