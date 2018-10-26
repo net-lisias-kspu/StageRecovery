@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2016-0916: 1.6.4.5 (magico13) for KSP 1.2 PRE-RELEASE
+	+ Recompile for KSP 1.2 Pre-release. Untested.
 * 2016-0827: 1.6.4.4 (magico13) for KSP 1.1.3 PRE-RELEASE
 	+ Added workaround for RealChuteFAR. FAR should now work mostly correctly.
 * 2016-0708: 1.6.4.3 (magico13) for KSP 1.1.3 PRE-RELEASE
