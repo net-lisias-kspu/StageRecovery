@@ -1,4 +1,8 @@
 Changelog:
+
+1.9.0.1 (unreleased)
+	Changed license to MIT
+
 1.9.0 (10/26/2018)
 	Adoption by Linuxgurugamer
 	Replaced toolbar code with the ToolbarController
