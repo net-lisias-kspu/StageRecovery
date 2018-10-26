@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2015-1109: 1.5.8 (magico13) for KSP 1.0.5
+	+ Update to KSP 1.0.5
 * 2015-0711: 1.5.7 (magico13) for KSP 0.24.2
 	+ Fixed issues with kerbal recovery causing lost levels
 	+ Fixed compatibility issue with RSS (checking only for Kerbin)
