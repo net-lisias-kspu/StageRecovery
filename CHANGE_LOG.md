@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2014-1223: 1.5.3 (magico13) for KSP 0.24.2
+	+ Fixed issue with losing experience on recovery. Kerbals now gain
+	+ experience as appropriate for landing on Kerbin.
 * 2014-1216: 1.5.2.1 (magico13) for KSP 0.24.2
 	+ Sorry for the hotfix update!
 		- Made min TWR setting functional
