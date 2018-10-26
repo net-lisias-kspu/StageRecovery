@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2017-0410: 1.7.1 (magico13) for KSP 1.2.2
+	+ 1.7.1 (04/09/2017)
+			- Added support for RecoveryController, an improved form of compatibility between recovery mods (thanks LinuxGuruGamer!)
 * 2017-0318: 1.7.0 (magico13) for KSP 1.2.2
 	+ 1.7.0 (03/18/2017)
 		- Added support for the updated FMRS
