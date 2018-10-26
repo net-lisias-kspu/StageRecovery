@@ -1,9 +1,20 @@
 ﻿using KSP.UI.Screens;
 using System;
 using UnityEngine;
+using ToolbarControl_NS;
+using ClickThroughFix;
 
 namespace StageRecovery
 {
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    public class RegisterToolbar : MonoBehaviour
+    {
+        void Start()
+        {
+            ToolbarControl.RegisterMod(SettingsGUI.MODID, SettingsGUI.MODNAME);
+        }
+    }
+
     //This class controls all the GUI elements for the in-game settings menu
     public class SettingsGUI
     {
@@ -31,6 +42,45 @@ namespace StageRecovery
 
         private Vector2 scrollPos;
 
+        static internal ToolbarControl toolbarControl;
+        internal const string MODID = "StageRecovery_NS";
+        internal const string MODNAME = "Stage Recovery";
+
+        const string ButtonLoc = "StageRecovery/PluginData/icon";
+        internal void InitializeToolbar(GameObject go)
+        {
+            Debug.Log("InitializeToolbar");
+            if (toolbarControl == null)
+            {
+                toolbarControl = go.AddComponent<ToolbarControl>();
+                toolbarControl.AddToAllToolbars(
+                    ShowWindow,
+                    hideAll,
+                    OnHoverOn,
+                    OnHoverOff,
+                    null,
+                    null,
+                    (ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),                  
+                    MODID,
+                    "stageControlButton",
+                    ButtonLoc + "-38",
+                    ButtonLoc + "-24",
+                    MODNAME
+                );
+
+            }
+        }
+        internal void DoOnDestroy()
+        {
+            Debug.Log("StageRecovery.SettingsGUI.OnDestroy");
+            if (toolbarControl != null)
+            {
+                toolbarControl.OnDestroy();
+                GameObject.Destroy(toolbarControl);
+                toolbarControl = null;
+            }
+        }
+#if false
         //The stock button. Used if Blizzy's toolbar isn't installed.
         public ApplicationLauncherButton SRButtonStock = null;
         //This function is used to add the button to the stock toolbar
@@ -87,6 +137,7 @@ namespace StageRecovery
                 ShowWindow();
             }
         }
+#endif
 
         //When the button is hovered over, show the flight GUI if in flight
         public void OnHoverOn()
@@ -255,7 +306,9 @@ namespace StageRecovery
             recoverClamps = Settings.Instance.RecoverClamps;
             minTWR = Settings.Instance.MinTWR.ToString();
             useUpgrades = Settings.Instance.UseUpgrades;
+#if false
             useToolbar = Settings.Instance.UseToolbarMod;
+#endif
             globMod = Settings.Instance.GlobalModifier;
             
             showWindow = true;
@@ -359,7 +412,9 @@ namespace StageRecovery
                 Settings.Instance.RecoverClamps = recoverClamps;
                 Settings.Instance.UseUpgrades = useUpgrades;
                 Settings.Instance.PreRecover = preRecover;
+#if false
                 Settings.Instance.UseToolbarMod = useToolbar;
+#endif
                 if (!float.TryParse(minTWR, out Settings.Instance.MinTWR))
                 {
                     Settings.Instance.MinTWR = 1.0f;

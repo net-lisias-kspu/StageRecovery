@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KSP.UI.Screens;
+using ToolbarControl_NS;
 
 namespace StageRecovery
 {
+
     [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
     public class StageRecovery : MonoBehaviour
     {
@@ -31,13 +33,13 @@ namespace StageRecovery
         {
             Debug.Log("[SR] Awake Start");
             instance = this;
-
+#if false
             //Needed to instantiate the Blizzy Toolbar button
             if (ToolbarManager.ToolbarAvailable && Settings.Instance != null && Settings.Instance.UseToolbarMod)
             {
                 Settings.Instance.gui.AddToolbarButton();
             }
-
+#endif
             //If we're in the MainMenu, don't do anything
             if (forbiddenScenes.Contains(HighLogic.LoadedScene))
             {
@@ -61,7 +63,8 @@ namespace StageRecovery
             {
                 return;
             }
-
+            Settings.Instance.gui.DoOnDestroy();
+#if false
             //Remove the button from the stock toolbar
             if (Settings.Instance.gui.SRButtonStock != null)
             {
@@ -72,6 +75,7 @@ namespace StageRecovery
             {
                 Settings.Instance.gui.SRToolbarButton.Destroy();
             }
+#endif
         }
 
         //Fired when the mod loads each scene
@@ -88,7 +92,7 @@ namespace StageRecovery
             {
                 return;
             }
-
+            Settings.Instance.gui.InitializeToolbar(this.gameObject);
             //If the event hasn't been added yet, run this code (adds the event and the stock button)
             if (!eventAdded)
             {
@@ -100,9 +104,14 @@ namespace StageRecovery
                 //Add the event that listens for unloads (for removing launch clamps)
                 GameEvents.onVesselGoOnRails.Add(VesselUnloadEvent);
                 //GameEvents..Add(DecoupleEvent);
+
+
+
+#if false
                 //If Blizzy's toolbar isn't available, use the stock one
                 //if (!ToolbarManager.ToolbarAvailable)
                 GameEvents.onGUIApplicationLauncherReady.Add(Settings.Instance.gui.OnGUIAppLauncherReady);
+#endif
 
                 cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home)+1000;
                 Debug.Log("[SR] Determined cutoff altitude to be " + cutoffAlt);
