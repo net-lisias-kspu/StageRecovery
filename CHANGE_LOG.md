@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2014-0830: 1.4.3 (magico13) for KSP 0.24.2
+	+ Should have been 0.01 pressure. I'm sorry about the second update! :(
 * 2014-0830: 1.4.2 (magico13) for KSP 0.24.2
 	+ Changed recovery code to check for altitudes above 100 meters and pressures
 	+ above 0.1 instead of just searching for below 35km.
