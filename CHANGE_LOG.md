@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2016-0503: 1.6.4.0 (magico13) for KSP 1.1.2.
+	+ Update to KSP 1.1.2.
 * 2016-0221: 1.6.3 (magico13) for KSP 1.0.5
 	+ Fix for kerbals being killed in landed vessels
 	+ MechJeb should appear as a valid control source for landed recovery (untested)
