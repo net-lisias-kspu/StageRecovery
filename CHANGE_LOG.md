@@ -1,5 +1,10 @@
 # Stage Recovery :: Change log
 
+* 2014-1216: 1.5.2.1 (magico13) for KSP 0.24.2
+	+ Sorry for the hotfix update!
+		- Made min TWR setting functional
+		- Fixed issue with calculating parachute drag values that caused parachute
+	+ recovery to not function.
 * 2014-1216: 1.5.2 (magico13) for KSP 0.24.2
 	+ 1.5.2 - (12/15/2014)
 		- Compatibility update for KSP 0.90
