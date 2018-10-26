@@ -1,5 +1,12 @@
 # Stage Recovery :: Change log
 
+* 2016-1010: 1.6.4.6 (magico13) for KSP 1.2 PRE-RELEASE
+	+ Another pre-release update for 1.2. A few minor additions:
+		- Editor GUI now splits on any IStageSeparator (so mod decouplers should work)
+		- Settings have been moved into StageRecovery/PluginData
+		- Added a global recovery modifier that applies to all recoveries (default 100%, but can go down to 0%)
+		- Added a safeguard against trying to recover the same vessel multiple times. Testing will require a bit of work, but it shouldn't spam messages or give you unlimited funds when an error occurs while a vessel is being destroyed.
+	+ Thanks to linuxgurugamer for the PR for the latest KSP pre-release, and Iskie for the PR that lets the editor GUI work with any IStageSeparator.
 * 2016-0916: 1.6.4.5 (magico13) for KSP 1.2 PRE-RELEASE
 	+ Recompile for KSP 1.2 Pre-release. Untested.
 * 2016-0827: 1.6.4.4 (magico13) for KSP 1.1.3 PRE-RELEASE
