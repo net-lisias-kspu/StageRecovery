@@ -1,5 +1,12 @@
 # Stage Recovery :: Change log
 
+* 2015-0711: 1.5.7 (magico13) for KSP 0.24.2
+	+ Fixed issues with kerbal recovery causing lost levels
+	+ Fixed compatibility issue with RSS (checking only for Kerbin)
+	+ Added info for when a stage is lost because no pilot or probe with SAS
+	+ Fixed up Tracking Station related things a bit. Powered recovery should
+	+ work now and you can terminate a flight and get things recovered as long as
+	+ its in the atmosphere at the time (including "orbiting" vessels)
 * 2015-0515: 1.5.6 (magico13) for KSP 0.24.2
 	+ 1.5.6 - (05/15/2015)
 		- Non-parachuted stages now have a fixed Vt of 200 m/s
