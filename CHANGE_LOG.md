@@ -1,5 +1,12 @@
 # Stage Recovery :: Change log
 
+* 2015-1221: 1.6.0 (magico13) for KSP 1.0.5
+	+ Changes since 1.5.8:
+		- Hovering over Stock the SR icon in flight lets you preview the SR window
+		- TweakScaled parachutes now supported
+		- Tourists and other crew are pre-recovered while in the flight scene, preventing contract failure
+		- Improved the Editor Helper. Now splits the vessel into individual stages and provides velocity estimates for each stage. Will be improved after receiving feedback
+		- New setting to completely remove all SR buttons, accessible only through the config file
 * 2015-1109: 1.5.8 (magico13) for KSP 1.0.5
 	+ Update to KSP 1.0.5
 * 2015-0711: 1.5.7 (magico13) for KSP 0.24.2
