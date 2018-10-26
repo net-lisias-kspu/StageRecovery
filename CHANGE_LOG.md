@@ -1,5 +1,13 @@
 # Stage Recovery :: Change log
 
+* 2018-1026: 1.9.0 (linuxgurugamer) for KSP 1.5.1
+	+ Adoption by Linuxgurugamer
+	+ Replaced toolbar code with the ToolbarController
+	+ Added support for the Clickthroughblocker
+	+ Fixed bug where toobar button wasn't being displayed after first scene if using the stock toolbar
+	+ Removed blizzy option from settings
+	+ Version bump from 1.6.5 due to incorrect version info
+	+ Updated changelog with data from spacedock
 * 2018-0311: 1.8.0 (magico13) for KSP 1.4.1
 	+ Built against KSP 1.4.0. Might be backward compatible.
 	+ Pre-recovery now fully recovers vessels and not just kerbals
