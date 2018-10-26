@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2016-0423: 1.6.4.2 (magico13) for KSP 1.1.2. PRE-RELEASE
+	+ Small update to fix some issues with mods using the API. KCT should work now. KK might work now but untested.
 * 2016-0422: 1.6.4.1 (magico13) for KSP 1.1.2. PRE-RELEASE
 	+ Should now work with RealChutes v1.4
 	+ Note that some discrepancies between what the editor helper predicts and what is seen in flight have been noticed. I'm looking into it.
