@@ -1,5 +1,10 @@
 # Stage Recovery :: Change log
 
+* 2014-1007: 1.5.1 (magico13) for KSP 0.24.2
+	+ 1.5.1 - (10/-07/2014)
+		- Compatibility update for KSP 0.25
+	+ NOTE: Does not include any changes due to strategies, so you won't get extra
+	+ recovery factor for the one (yet).
 * 2014-0906: 1.5.0 (magico13) for KSP 0.24.2
 	+ Added Ignore List. Any stages made up entirely of parts in the ignore list
 	+ won't attempt to be recovered.
