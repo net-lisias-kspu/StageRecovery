@@ -1,5 +1,11 @@
 # Stage Recovery :: Change log
 
+* 2014-0830: 1.4.2 (magico13) for KSP 0.24.2
+	+ Changed recovery code to check for altitudes above 100 meters and pressures
+	+ above 0.1 instead of just searching for below 35km.
+		- Fixed issue with displaying orbital velocity vector instead of speed in
+	+ Flight GUI.
+		- Was returning funds even for stages that had burned up, fixed now.
 * 2014-0822: 1.4.1.0 (magico13) for KSP 0.24.2
 	+ Added error catching to recovery code. Even if there's a bug, it shouldn't
 	+ break your game now.
