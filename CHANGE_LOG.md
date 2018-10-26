@@ -1,5 +1,14 @@
 # Stage Recovery :: Change log
 
+* 2014-1216: 1.5.2 (magico13) for KSP 0.24.2
+	+ 1.5.2 - (12/15/2014)
+		- Compatibility update for KSP 0.90
+		- Automatic recovery of launch clamps when they are unloaded.
+		- Right clicking on a stage in the flight GUI will now delete it.
+		- Added indicator to flight GUI showing which stage is selected.
+		- Several bug fixes.
+		- Contains a bug where kerbals will lose experience if they are in the craft
+	+ when it's "recovered". Will be fixed soon.
 * 2014-1007: 1.5.1 (magico13) for KSP 0.24.2
 	+ 1.5.1 - (10/-07/2014)
 		- Compatibility update for KSP 0.25
