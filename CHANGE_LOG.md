@@ -1,5 +1,15 @@
 # Stage Recovery :: Change log
 
+* 2016-1021: 1.6.5 (magico13) for KSP 1.2
+	+ 1.6.5 (10/20/2016)
+		- Update to KSP 1.2
+		- New estimator for stock parachutes based on physics. Not perfect, will try to improve
+		- No longer spams messages when the recovery errors (#32)
+		- Added a global recovery modifier option (#39)
+		- Settings now go in StageRecovery/PluginData/Config.txt
+		- Editor GUI now supports any IStageSeparators
+		- Pulled in some fixes for the Toolbar mod
+	+ Thank you linuxgurugamer, Iskie, and Kerbas-ad-astra for your PRs!
 * 2016-1010: 1.6.4.6 (magico13) for KSP 1.2 PRE-RELEASE
 	+ Another pre-release update for 1.2. A few minor additions:
 		- Editor GUI now splits on any IStageSeparator (so mod decouplers should work)
