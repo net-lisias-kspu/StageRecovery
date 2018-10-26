@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2016-0708: 1.6.4.3 (magico13) for KSP 1.1.3 PRE-RELEASE
+	+ This is an untested prerelease for KSP 1.1.3 that is simply a recompile. It may fix the issues with RealChute. It requires the last full release as a base, then replace the old .dll with this one.
 * 2016-0423: 1.6.4.2 (magico13) for KSP 1.1.2. PRE-RELEASE
 	+ Small update to fix some issues with mods using the API. KCT should work now. KK might work now but untested.
 * 2016-0422: 1.6.4.1 (magico13) for KSP 1.1.2. PRE-RELEASE
