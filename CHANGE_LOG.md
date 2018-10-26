@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2016-0221: 1.6.3 (magico13) for KSP 1.0.5
+	+ Fix for kerbals being killed in landed vessels
+	+ MechJeb should appear as a valid control source for landed recovery (untested)
 * 2016-0102: 1.6.2 (magico13) for KSP 1.0.5
 	+ Fix for things below 23km not being added to Recovery Queue
 	+ Fix for ModuleAblators that don't use Ablator resource
