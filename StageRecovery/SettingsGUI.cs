@@ -23,7 +23,8 @@ namespace StageRecovery
         public EditorGUI editorGUI = new EditorGUI();
 
         //The window is only shown when this is true
-        private bool showWindow, showBlacklist;
+        //private bool showWindow;
+        private bool showBlacklist;
 
         //The width of the window, for easy changing later if need be
         private static int windowWidth = 200;
@@ -34,12 +35,13 @@ namespace StageRecovery
         //Temporary holders for the settings. They are only copied to the settings when the Save button is pressed.
         //Floats, ints, and other numbers are best represented as strings until the settings are saved (then you parse them)
         //The reason for this is that you can't enter decimal values easily since typing "2." gets changed to "2" when to do a toString() ("25" then "2.5" will work though)
+#if false
         private string DRMaxVel, minTWR;
         //The exception is for sliders
         private float recMod, cutoff, lowCut, highCut, globMod;
         //Booleans are cool though. In fact, they are prefered (since they work well with toggles)
-        private bool enabled, showFail, showSuccess, flatRate, poweredRecovery, recoverClamps, useUpgrades, preRecover, useToolbar;
-
+        private bool enabled, showFail, showSuccess, flatRate, poweredRecovery, recoverClamps, useUpgrades, preRecover; //, useToolbar;
+#endif
         private Vector2 scrollPos;
 
         static internal ToolbarControl toolbarControl;
@@ -60,7 +62,7 @@ namespace StageRecovery
                     OnHoverOff,
                     null,
                     null,
-                    (ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),                  
+                    ( /* ApplicationLauncher.AppScenes.SPACECENTER | */ ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),                  
                     MODID,
                     "stageControlButton",
                     ButtonLoc + "-38",
@@ -165,10 +167,12 @@ namespace StageRecovery
             {
                 flightGUI.showFlightGUI = true;
             }
+#if false
             else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
             {
                 ShowSettings();
             }
+#endif
             else if (HighLogic.LoadedSceneIsEditor)
             {
                 EditorCalc();
@@ -178,10 +182,12 @@ namespace StageRecovery
         //Does stuff to draw the window.
         public void SetGUIPositions(GUI.WindowFunction OnWindow)
         {
+#if false
             if (showWindow)
             {
                 mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
             }
+#endif
 
             if (flightGUI.showFlightGUI)
             {
@@ -202,11 +208,12 @@ namespace StageRecovery
         //More drawing window stuff. I only half understand this. It just works.
         public void DrawGUIs(int windowID)
         {
+#if false
             if (showWindow)
             {
                 DrawSettingsGUI(windowID);
             }
-
+#endif
             if (flightGUI.showFlightGUI)
             {
                 flightGUI.DrawFlightGUI(windowID);
@@ -226,7 +233,7 @@ namespace StageRecovery
         //Hide all the windows. We only have one so this isn't super helpful, but alas.
         public void hideAll()
         {
-            showWindow = false;
+            //showWindow = false;
             flightGUI.showFlightGUI = false;
             editorGUI.showEditorGUI = false;
             showBlacklist = false;
@@ -289,31 +296,33 @@ namespace StageRecovery
             }
         }
 
+#if false
         //This function will show the settings window and copy the current settings into their holders
         public void ShowSettings()
         {
-            enabled = Settings.Instance.SREnabled;
-            recMod = Settings.Instance.RecoveryModifier;
-            cutoff = Settings.Instance.CutoffVelocity;
-            DRMaxVel = Settings.Instance.DeadlyReentryMaxVelocity.ToString();
-            preRecover = Settings.Instance.PreRecover;
-            showFail = Settings.Instance.ShowFailureMessages;
-            showSuccess = Settings.Instance.ShowSuccessMessages;
-            flatRate = Settings.Instance.FlatRateModel;
-            lowCut = Settings.Instance.LowCut;
-            highCut = Settings.Instance.HighCut;
-            poweredRecovery = Settings.Instance.PoweredRecovery;
-            recoverClamps = Settings.Instance.RecoverClamps;
-            minTWR = Settings.Instance.MinTWR.ToString();
-            useUpgrades = Settings.Instance.UseUpgrades;
+            enabled = Settings1.Instance.SREnabled;
+            recMod = (float)Settings2.Instance.RecoveryModifier;
+            cutoff = (float)Settings2.Instance.CutoffVelocity;
+            DRMaxVel = Settings3.Instance.DeadlyReentryMaxVelocity.ToString();
+            preRecover = Settings1.Instance.PreRecover;
+            showFail = Settings1.Instance.ShowFailureMessages;
+            showSuccess = Settings1.Instance.ShowSuccessMessages;
+            flatRate = Settings1.Instance.FlatRateModel;
+            lowCut = (float)Settings2.Instance.LowCut;
+            highCut = (float)Settings2.Instance.HighCut;
+            poweredRecovery = Settings1.Instance.PoweredRecovery;
+            recoverClamps = Settings1.Instance.RecoverClamps;
+            minTWR = Settings3.Instance.MinTWR.ToString();
+            useUpgrades = Settings1.Instance.UseUpgrades;
 #if false
             useToolbar = Settings.Instance.UseToolbarMod;
 #endif
-            globMod = Settings.Instance.GlobalModifier;
+            globMod = (float)Settings3.Instance.GlobalModifier;
             
-            showWindow = true;
+           // showWindow = true;
         }
-
+#endif
+#if false
         //The function that actually draws all the gui elements. I use GUILayout for doing everything because it's easy to use.
         private void DrawSettingsGUI(int windowID)
         {
@@ -381,7 +390,7 @@ namespace StageRecovery
             poweredRecovery = GUILayout.Toggle(poweredRecovery, "Try Powered Recovery");
             recoverClamps = GUILayout.Toggle(recoverClamps, "Recover Clamps");
             useUpgrades = GUILayout.Toggle(useUpgrades, "Tie Into Upgrades");
-            useToolbar = GUILayout.Toggle(useToolbar, "Use Toolbar Mod");
+            //useToolbar = GUILayout.Toggle(useToolbar, "Use Toolbar Mod");
 
             if (GUILayout.Button("Edit Ignore List"))
             {
@@ -393,34 +402,34 @@ namespace StageRecovery
             {
                 //When the button is clicked then this all is executed.
                 //This all sets the settings to the GUI version's values
-                Settings.Instance.SREnabled = enabled;
-                Settings.Instance.FlatRateModel = flatRate;
-                Settings.Instance.LowCut = lowCut;
-                Settings.Instance.HighCut = highCut;
-                Settings.Instance.RecoveryModifier = recMod;
-                Settings.Instance.CutoffVelocity = cutoff;
+                Settings1.Instance.SREnabled = enabled;
+                Settings1.Instance.FlatRateModel = flatRate;
+                Settings2.Instance.LowCut = lowCut;
+                Settings2.Instance.HighCut = highCut;
+                Settings2.Instance.RecoveryModifier = recMod;
+                Settings2.Instance.CutoffVelocity = cutoff;
                 //Strings must be parsed into the correct type. Using TryParse returns a bool stating whether it was sucessful. The value is saved in the out if it works
                 //Otherwise we set the value to the default
-                if (!float.TryParse(DRMaxVel, out Settings.Instance.DeadlyReentryMaxVelocity))
+                if (!float.TryParse(DRMaxVel, out Settings3.Instance.DeadlyReentryMaxVelocity))
                 {
-                    Settings.Instance.DeadlyReentryMaxVelocity = 2000f;
+                    Settings3.Instance.DeadlyReentryMaxVelocity = 2000f;
                 }
 
-                Settings.Instance.ShowFailureMessages = showFail;
-                Settings.Instance.ShowSuccessMessages = showSuccess;
-                Settings.Instance.PoweredRecovery = poweredRecovery;
-                Settings.Instance.RecoverClamps = recoverClamps;
-                Settings.Instance.UseUpgrades = useUpgrades;
-                Settings.Instance.PreRecover = preRecover;
+                Settings1.Instance.ShowFailureMessages = showFail;
+                Settings1.Instance.ShowSuccessMessages = showSuccess;
+                Settings1.Instance.PoweredRecovery = poweredRecovery;
+                Settings1.Instance.RecoverClamps = recoverClamps;
+                Settings1.Instance.UseUpgrades = useUpgrades;
+                Settings1.Instance.PreRecover = preRecover;
 #if false
                 Settings.Instance.UseToolbarMod = useToolbar;
 #endif
-                if (!float.TryParse(minTWR, out Settings.Instance.MinTWR))
+                if (!double.TryParse(minTWR, out Settings3.Instance.MinTWR))
                 {
-                    Settings.Instance.MinTWR = 1.0f;
+                    Settings3.Instance.MinTWR = 1.0f;
                 }
 
-                Settings.Instance.GlobalModifier = globMod;
+                Settings3.Instance.GlobalModifier = globMod;
                 //Finally we save the settings to the file
                 Settings.Instance.Save();
             }
@@ -435,6 +444,7 @@ namespace StageRecovery
                 GUI.DragWindow();
             }
         }
+#endif
 
         public void EditorCalc()
         {

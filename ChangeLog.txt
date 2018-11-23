@@ -2,6 +2,9 @@ Changelog:
 
 1.9.0.1 (unreleased)
 	Changed license to MIT
+	Moved all settings into stock settings page, both to reduce code and to have the settings persist on a per-save basis
+		Note:  Existing settings are not migrated
+
 
 1.9.0 (10/26/2018)
 	Adoption by Linuxgurugamer

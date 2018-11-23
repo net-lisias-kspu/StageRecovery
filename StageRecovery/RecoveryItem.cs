@@ -19,13 +19,13 @@ namespace StageRecovery
                     return false;
                 }
 
-                if (Settings.Instance.FlatRateModel)
+                if (Settings1.Instance.FlatRateModel)
                 {
-                    return Vt < Settings.Instance.CutoffVelocity;
+                    return Vt < Settings2.Instance.CutoffVelocity;
                 }
                 else
                 {
-                    return Vt < Settings.Instance.HighCut;
+                    return Vt < Settings2.Instance.HighCut;
                 }
             }
         }
@@ -58,7 +58,7 @@ namespace StageRecovery
                     bool controlled = vessel.protoVessel.wasControllable;
                     if (!controlled && KerbalsOnboard.Count > 0)
                     {
-                        if (!Settings.Instance.UseUpgrades)
+                        if (!Settings1.Instance.UseUpgrades)
                         {
                             controlled = true;
                         }
@@ -75,7 +75,7 @@ namespace StageRecovery
                         //double check that there aren't any probe cores
                         controlled = vessel.GetVesselCrew().Count > 0 || vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(m => m.moduleName == "ModuleCommand") && pps.partInfo.partPrefab.CrewCapacity == 0);
                     }
-                    if (controlled && Settings.Instance.UseUpgrades)
+                    if (controlled && Settings1.Instance.UseUpgrades)
                     {
                         controlled = vessel.GetVesselCrew().Exists(c => c.experienceTrait.Title == "Pilot") || KerbalsOnboard.Exists(pcm => pcm.CrewMember.experienceTrait.Title == "Pilot");
                         if (controlled)
@@ -133,7 +133,7 @@ namespace StageRecovery
 
             //Try to perform a powered landing, if needed
             double vt_old = Vt;
-            if (Vt > (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.LowCut) && Settings.Instance.PoweredRecovery)
+            if (Vt > (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.LowCut) && Settings1.Instance.PoweredRecovery)
             {
                 Vt = TryPoweredRecovery();
             }
@@ -373,7 +373,7 @@ namespace StageRecovery
             {
                 Debug.Log("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
 
-                if (totalThrust < (totalMass * 9.81) * Settings.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
+                if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
                 {
                     return finalVelocity;
                 }
@@ -514,7 +514,7 @@ namespace StageRecovery
         {
             Debug.Log("[SR] Trying powered recovery");
             //Determine the cutoff velocity that we're aiming for. This is dependent on the recovery model used (flat rate vs variable rate)
-            return ReduceSpeed_Engines(Vt, (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.LowCut) - 2);          
+            return ReduceSpeed_Engines(Vt, (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.LowCut) - 2);          
         }
 
 
@@ -534,22 +534,22 @@ namespace StageRecovery
                 //Holder for the chance of burning up in atmosphere (through my non-scientific calculations)
                 float burnChance = 0f;
                 //If DR is installed, the DRMaxVelocity setting is above 0, and the surface speed is above the DRMaxV setting then we calculate the burnChance
-                if (usingOverheat && Settings.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings.Instance.DeadlyReentryMaxVelocity)
+                if (usingOverheat && Settings1.Instance.UseDREVelocity && Settings3.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings3.Instance.DeadlyReentryMaxVelocity)
                 {
                     double srfSpeed = vessel.srfSpeed;
                     //Try to reduce our velocity to a safe level
-                    if (Settings.Instance.PoweredRecovery)
+                    if (Settings1.Instance.PoweredRecovery)
                     {
-                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings.Instance.DeadlyReentryMaxVelocity);
+                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings3.Instance.DeadlyReentryMaxVelocity);
                         //Vt = srfSpeed;
                     }
 
                     //the burnChance is 2% per 1% that the surface speed is above the DRMaxV
-                    burnChance = (float)(2 * ((srfSpeed / Settings.Instance.DeadlyReentryMaxVelocity) - 1));
+                    burnChance = (float)(2 * ((srfSpeed / Settings3.Instance.DeadlyReentryMaxVelocity) - 1));
                     //Log a message alerting us to the speed and the burnChance
                     if (burnChance > 0)
                     {
-                        Debug.Log("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
+                        Debug.Log("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings3.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
                     }
                 }
 
@@ -629,13 +629,13 @@ namespace StageRecovery
         private void SetRecoveryPercentages()
         {
             //If we're using the Flat Rate model then we need to check for control
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
                 //Assume uncontrolled until proven controlled
                 bool stageControllable = vessel.protoVessel.wasControllable;
                 if (!stageControllable && KerbalsOnboard.Count > 0)
                 {
-                    if (!Settings.Instance.UseUpgrades)
+                    if (!Settings1.Instance.UseUpgrades)
                     {
                         stageControllable = true;
                     }
@@ -659,9 +659,9 @@ namespace StageRecovery
                     }
                 }*/
                 //This is a fun trick for one-liners. The SpeedPercent is equal to 1 if stageControllable==true or the RecoveryModifier saved in the settings if that's false.
-                SpeedPercent = stageControllable ? 1.0f : Settings.Instance.RecoveryModifier;
+                SpeedPercent = stageControllable ? 1.0f : (float)Settings2.Instance.RecoveryModifier;
                 //If the speed is too high then we set the recovery due to speed to 0
-                SpeedPercent = Vt < Settings.Instance.CutoffVelocity ? SpeedPercent : 0;
+                SpeedPercent = Vt < Settings2.Instance.CutoffVelocity ? SpeedPercent : 0;
             }
             //If we're not using Flat Rate (thus using Variable Rate) then we have to do a bit more work to get the SpeedPercent
             else
@@ -685,16 +685,16 @@ namespace StageRecovery
             }
 
             //Get the reduction in returns due to distance (0.98 at KSC, .1 at maxDist)
-            if (Settings.Instance.DistanceOverride < 0)
+            if (!Settings1.Instance.UseDistanceOverride)
             {
                 DistancePercent = Mathf.Lerp(0.98f, 0.1f, (float)(KSCDistance / maxDist));
             }
             else
             {
-                DistancePercent = Settings.Instance.DistanceOverride;
+                DistancePercent = (float)Settings3.Instance.DistanceOverride;
             }
             //Combine the modifier from the velocity and the modifier from distance together
-            RecoveryPercent = SpeedPercent * DistancePercent * Settings.Instance.GlobalModifier;
+            RecoveryPercent = (float)SpeedPercent * DistancePercent * (float)Settings3.Instance.GlobalModifier;
         }
 
         //This populates the dictionary of Recovered Parts and the dictionary of Costs, along with total funds returns (original, modified, fuel, and dry)
@@ -888,7 +888,7 @@ namespace StageRecovery
         public void PreRecoverKerbals()
         {
             //if we're not supposed to pre-recover, then we shouldn't be here at all
-            if (!Settings.Instance.PreRecover)
+            if (!Settings1.Instance.PreRecover)
             {
                 return;
             }
@@ -988,7 +988,7 @@ namespace StageRecovery
 
 
             StringBuilder msg = new StringBuilder();
-            if (Recovered && Settings.Instance.ShowSuccessMessages)
+            if (Recovered && Settings1.Instance.ShowSuccessMessages)
             {
                 //Start adding some in-game display messages about the return
                 msg.AppendLine("<color=#8BED8B>Stage '" + StageName + "' recovered " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
@@ -999,9 +999,9 @@ namespace StageRecovery
                 msg.AppendLine("Recovery percentage: <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");
                 msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> distance");
                 msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> speed");
-                if (Settings.Instance.GlobalModifier != 1.0f)
+                if (Settings3.Instance.GlobalModifier != 1.0f)
                 {
-                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings.Instance.GlobalModifier, 1) + "%</color> global modifier");
+                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> global modifier");
                 }
                 msg.AppendLine("");
                 //List the total refunds for parts, fuel, and the combined total
@@ -1031,13 +1031,13 @@ namespace StageRecovery
                 //Display which module was used for recovery
                 msg.AppendLine(ParachuteModule + " Module used.");
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                if (Settings.Instance.FlatRateModel)
+                if (Settings1.Instance.FlatRateModel)
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings.Instance.CutoffVelocity + " needed)");
+                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.CutoffVelocity + " needed)");
                 }
                 else
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings.Instance.HighCut + " needed)");
+                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.HighCut + " needed)");
                 }
 
                 if (poweredRecovery)
@@ -1055,7 +1055,7 @@ namespace StageRecovery
                 MessageSystem.Message m = new MessageSystem.Message("Stage Recovered", msg.ToString(), MessageSystemButton.MessageButtonColor.BLUE, MessageSystemButton.ButtonIcons.MESSAGE);
                 MessageSystem.Instance.AddMessage(m);
             }
-            else if (!Recovered && Settings.Instance.ShowFailureMessages)
+            else if (!Recovered && Settings1.Instance.ShowFailureMessages)
             {
                 msg.AppendLine("<color=#FF9900>Stage '" + StageName + "' destroyed " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
                 
@@ -1079,7 +1079,7 @@ namespace StageRecovery
                 //Display which module was used for recovery
                 msg.AppendLine(ParachuteModule + " Module used.");
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.HighCut) + " needed)");
+                msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.HighCut) + " needed)");
                 
                 //If it failed because of burning up (can be in addition to speed) then we'll let you know
                 if (burnedUp)
@@ -1116,8 +1116,8 @@ namespace StageRecovery
             //We're following ax^2+bx+c=recovery
             //We know that -b/2a=LowCut since that's the only location where the derivative of the quadratic is 0 (the max)
             //Starting conditions: x=lowCut y=100, x=highCut y=0. Combined with the above info, we can calculate everything
-            float x0 = Settings.Instance.LowCut;
-            float x1 = Settings.Instance.HighCut;
+            float x0 = (float)Settings2.Instance.LowCut;
+            float x1 = (float)Settings2.Instance.HighCut;
             //If we're below the low cut, then return 1 (100%)
             if (v < x0)
             {

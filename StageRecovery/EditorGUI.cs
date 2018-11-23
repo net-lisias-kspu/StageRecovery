@@ -289,13 +289,13 @@ namespace StageRecovery
         {
             double Vt = GetVelocity(dry);
             bool recovered = false;
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
-                recovered = Vt < Settings.Instance.CutoffVelocity;
+                recovered = Vt < Settings2.Instance.CutoffVelocity;
             }
             else
             {
-                recovered = Vt < Settings.Instance.HighCut;
+                recovered = Vt < Settings2.Instance.HighCut;
             }
 
             if (!recovered)
@@ -304,11 +304,11 @@ namespace StageRecovery
             }
 
             double recoveryPercent = 0;
-            if (recovered && Settings.Instance.FlatRateModel)
+            if (recovered && Settings1.Instance.FlatRateModel)
             {
                 recoveryPercent = 1;
             }
-            else if (recovered && !Settings.Instance.FlatRateModel)
+            else if (recovered && !Settings1.Instance.FlatRateModel)
             {
                 recoveryPercent = RecoveryItem.GetVariableRecoveryValue(Vt);
             }
@@ -320,12 +320,12 @@ namespace StageRecovery
         {
             double vel = dry ? EmptyVelocity : FullVelocity;
             UnityEngine.Color stageColor = UnityEngine.Color.red;
-            if (vel < Settings.Instance.HighCut)
+            if (vel < Settings2.Instance.HighCut)
             {
                 stageColor = UnityEngine.Color.yellow;
             }
 
-            if (vel < Settings.Instance.LowCut)
+            if (vel < Settings2.Instance.LowCut)
             {
                 stageColor = UnityEngine.Color.green;
             }

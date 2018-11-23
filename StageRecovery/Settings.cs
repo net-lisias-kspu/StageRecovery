@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,17 +14,17 @@ namespace StageRecovery
         private static readonly Settings instance = new Settings();
 
         //This is the instance of the SettingsGUI, where we can change settings in game. This is how we interact with that class.
-        public SettingsGUI gui = new SettingsGUI();
+public SettingsGUI gui = new SettingsGUI();
 
         private string pluginDataPath = KSPUtil.ApplicationRootPath + "GameData/StageRecovery/PluginData";
         //The path for the settings file (Config.txt)
         private string filePath = "";
 
         //The persistent values are saved to the file and read in by them. They are saved as Name = Value and separated by new lines
-        [Persistent]
-        public float RecoveryModifier, DeadlyReentryMaxVelocity, CutoffVelocity, LowCut, HighCut, MinTWR, DistanceOverride, GlobalModifier;
-        [Persistent]
-        public bool SREnabled, ShowFailureMessages, ShowSuccessMessages, FlatRateModel, PoweredRecovery, RecoverClamps, UseUpgrades,  HideButton, PreRecover;
+        //[Persistent]
+        //public float RecoveryModifier, DeadlyReentryMaxVelocity, CutoffVelocity, LowCut, HighCut, MinTWR, DistanceOverride, GlobalModifier;
+        //[Persistent]
+        //public bool SREnabled, ShowFailureMessages, ShowSuccessMessages, FlatRateModel, PoweredRecovery, RecoverClamps, UseUpgrades,  HideButton, PreRecover;
 #if false
         UseToolbarMod,
 #endif
@@ -36,7 +37,7 @@ namespace StageRecovery
         private Settings()
         {
             filePath = pluginDataPath + "/Config.txt";
-
+#if false
             SREnabled = true;
             RecoveryModifier = 0.75f;
             ShowFailureMessages = true;
@@ -51,14 +52,16 @@ namespace StageRecovery
             MinTWR = 1.0f;
             UseUpgrades = true;
             PreRecover = true;
+#endif
 #if false
             UseToolbarMod = true;
 #endif
+#if false
             DistanceOverride = -1.0f;
             GlobalModifier = 1.0f;
 
-
             HideButton = false;
+#endif
 
             RecoveredStages = new List<RecoveryItem>();
             DestroyedStages = new List<RecoveryItem>();
@@ -71,7 +74,7 @@ namespace StageRecovery
                 return instance;
             }
         }
-
+#if false
         //Loads the settings from the file
         public void Load()
         {
@@ -90,7 +93,7 @@ namespace StageRecovery
             System.IO.Directory.CreateDirectory(pluginDataPath);
             cnTemp.Save(filePath);
         }
-
+#endif
         public void ClearStageLists()
         {
             RecoveredStages.Clear();
@@ -161,3 +164,4 @@ Copyright (C) 2018  Michael Marvin
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+

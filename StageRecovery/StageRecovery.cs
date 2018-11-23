@@ -113,7 +113,7 @@ namespace StageRecovery
                 GameEvents.onGUIApplicationLauncherReady.Add(Settings.Instance.gui.OnGUIAppLauncherReady);
 #endif
 
-                cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home)+1000;
+                cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home) + 1000;
                 Debug.Log("[SR] Determined cutoff altitude to be " + cutoffAlt);
 
                 //Register with the RecoveryController (do we only do this once?)
@@ -121,56 +121,60 @@ namespace StageRecovery
 
                 //Set the eventAdded flag to true so this code doesn't run again
                 eventAdded = true;
-            }
-            //Load the settings from file
-            Settings.Instance.Load();
-            //Confine the RecoveryModifier to be between 0 and 1
-            if (Settings.Instance.RecoveryModifier > 1)
-            {
-                Settings.Instance.RecoveryModifier = 1;
-            }
 
-            if (Settings.Instance.RecoveryModifier < 0)
-            {
-                Settings.Instance.RecoveryModifier = 0;
-            }
-            //Save the settings file (in case it doesn't exist yet). I suppose this is somewhat unnecessary if the file exists
-            Settings.Instance.Save();
-
-            //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
-            Settings.Instance.BlackList.Load();
-            Settings.Instance.BlackList.Save();
-
-            if (!HighLogic.LoadedSceneIsFlight)
-            {
-                Settings.Instance.ClearStageLists();
-            }
-
-            if (HighLogic.LoadedSceneIsFlight)
-            {
-                foreach (Vessel v in FlightGlobals.Vessels)
+#if false
+                //Load the settings from file
+                Settings.Instance.Load();
+#endif
+                //Confine the RecoveryModifier to be between 0 and 1
+                if (Settings2.Instance.RecoveryModifier > 1)
                 {
-                    TryWatchVessel(v);
+                    Settings2.Instance.RecoveryModifier = 1;
                 }
-            }
 
-            //Remove anything that happens in the future
-            List<Guid> removeList = new List<Guid>();
-            double currentUT = Planetarium.GetUniversalTime();
-            foreach (KeyValuePair<Guid, double> logItem in RecoverAttemptLog)
-            {
-                if (logItem.Value >= currentUT)
+                if (Settings2.Instance.RecoveryModifier < 0)
                 {
-                    removeList.Add(logItem.Key);
+                    Settings2.Instance.RecoveryModifier = 0;
                 }
-            }
-            foreach (Guid removeItem in removeList)
-            {
-                RecoverAttemptLog.Remove(removeItem);
-            }
-            //end future removal
+#if false
+                //Save the settings file (in case it doesn't exist yet). I suppose this is somewhat unnecessary if the file exists
+                Settings.Instance.Save();
+#endif
+                //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
+                Settings.Instance.BlackList.Load();
+                Settings.Instance.BlackList.Save();
 
-            sceneChangeComplete = true;
+                if (!HighLogic.LoadedSceneIsFlight)
+                {
+                    Settings.Instance.ClearStageLists();
+                }
+
+                if (HighLogic.LoadedSceneIsFlight)
+                {
+                    foreach (Vessel v in FlightGlobals.Vessels)
+                    {
+                        TryWatchVessel(v);
+                    }
+                }
+
+                //Remove anything that happens in the future
+                List<Guid> removeList = new List<Guid>();
+                double currentUT = Planetarium.GetUniversalTime();
+                foreach (KeyValuePair<Guid, double> logItem in RecoverAttemptLog)
+                {
+                    if (logItem.Value >= currentUT)
+                    {
+                        removeList.Add(logItem.Key);
+                    }
+                }
+                foreach (Guid removeItem in removeList)
+                {
+                    RecoverAttemptLog.Remove(removeItem);
+                }
+                //end future removal
+
+                sceneChangeComplete = true;
+            }
         }
 
         public void GameSceneLoadEvent(GameScenes newScene)
@@ -186,7 +190,7 @@ namespace StageRecovery
         public void VesselUnloadEvent(Vessel vessel)
         {
             //If we're disabled, just return
-            if (!Settings.Instance.SREnabled)
+            if (!Settings1.Instance.SREnabled)
             {
                 return;
             }
@@ -200,7 +204,7 @@ namespace StageRecovery
             ProtoVessel pv = vessel.protoVessel;
 
             //If we aren't supposed to recover clamps, then don't try.
-            if (Settings.Instance.RecoverClamps)
+            if (Settings1.Instance.RecoverClamps)
             {
                 //If we've already recovered the clamps, then no need to try again
                 if (clampsRecovered.Find(a => a.id == vessel.id) != null)
@@ -237,7 +241,7 @@ namespace StageRecovery
             }
             
             //If it's a stage that will be destroyed, we need to manually recover the Kerbals
-            if (Settings.Instance.PreRecover && pv.GetVesselCrew().Count > 0)
+            if (Settings1.Instance.PreRecover && pv.GetVesselCrew().Count > 0)
             {
                 //Check if the conditions for vessel destruction are met
                 if (vessel != FlightGlobals.ActiveVessel && !vessel.isEVA && vessel.mainBody == Planetarium.fetch.Home 
@@ -349,7 +353,7 @@ namespace StageRecovery
         public static int BuildingUpgradeLevel(SpaceCenterFacility facility)
         {
             int lvl = 0;
-            if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER && Settings.Instance.UseUpgrades)
+            if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER && Settings1.Instance.UseUpgrades)
             {
                 lvl = (int)Math.Round((ScenarioUpgradeableFacilities.GetFacilityLevelCount(facility) * ScenarioUpgradeableFacilities.GetFacilityLevel(facility)));
             }
@@ -450,7 +454,7 @@ namespace StageRecovery
         private void VesselDestroyEvent(Vessel v)
         {
             //If we're disabled, just return
-            if (!Settings.Instance.SREnabled)
+            if (!Settings1.Instance.SREnabled)
             {
                 return;
             }

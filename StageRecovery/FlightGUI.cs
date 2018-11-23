@@ -293,23 +293,23 @@ namespace StageRecovery
             GUILayout.Label("Parachute Module used: " + selectedStage.ParachuteModule);
             GUILayout.Label("Terminal velocity: "+selectedStage.Vt + " m/s");
             //List the Vt required for maximal/partial recovery
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.CutoffVelocity + " m/s");
+                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.CutoffVelocity + " m/s");
             }
             else
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.HighCut + " m/s");
-                GUILayout.Label("Maximum velocity for total recovery: " + Settings.Instance.LowCut + " m/s");
+                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.HighCut + " m/s");
+                GUILayout.Label("Maximum velocity for total recovery: " + Settings2.Instance.LowCut + " m/s");
             }
 
             //List the percent refunded, broken down into distance and speed amounts
             GUILayout.Label("\nPercent refunded: "+ Math.Round(100*selectedStage.RecoveryPercent, 2) + "%");
             GUILayout.Label("    --Distance: " + Math.Round(100 * selectedStage.DistancePercent, 2) + "%");
             GUILayout.Label("    --Speed: " + Math.Round(100 * selectedStage.SpeedPercent, 2) + "%");
-            if (Settings.Instance.GlobalModifier != 1.0F)
+            if (Settings3.Instance.GlobalModifier != 1.0F)
             {
-                GUILayout.Label("    --Global: " + Math.Round(100 * Settings.Instance.GlobalModifier, 2) + "%");
+                GUILayout.Label("    --Global: " + Math.Round(100 * Settings3.Instance.GlobalModifier, 2) + "%");
             }
             GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
             GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
