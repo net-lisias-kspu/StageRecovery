@@ -144,7 +144,7 @@ namespace StageRecovery
             }
 
             ConsolidateStages();
-            Debug.Log("[SR] Found " + stages.Count + " stages!");
+            Log.Info("[SR] Found " + stages.Count + " stages!");
         }
 
         StageParts DetermineStage(Part parent)
@@ -200,7 +200,7 @@ namespace StageRecovery
 
                 if (j > i+1)
                 {
-                    Debug.Log("[SR] Found " + (j - i) + " identical stages");
+                    Log.Info("[SR] Found " + (j - i) + " identical stages");
                     //some stages are the same (up to j)
                     //merge the stages
                     for (int k = j-1; k>i; k--)

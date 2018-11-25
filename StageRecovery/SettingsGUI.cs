@@ -51,7 +51,7 @@ namespace StageRecovery
         const string ButtonLoc = "StageRecovery/PluginData/icon";
         internal void InitializeToolbar(GameObject go)
         {
-            Debug.Log("InitializeToolbar");
+            Log.Info("[SR]  InitializeToolbar");
             if (toolbarControl == null)
             {
                 toolbarControl = go.AddComponent<ToolbarControl>();
@@ -74,7 +74,7 @@ namespace StageRecovery
         }
         internal void DoOnDestroy()
         {
-            Debug.Log("StageRecovery.SettingsGUI.OnDestroy");
+            Log.Info("[SR] StageRecovery.SettingsGUI.OnDestroy");
             if (toolbarControl != null)
             {
                 toolbarControl.OnDestroy();

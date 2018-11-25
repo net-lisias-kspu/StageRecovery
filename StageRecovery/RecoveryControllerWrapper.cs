@@ -100,21 +100,21 @@ namespace StageRecovery
                         }
                         else
                         {
-                            Debug.Log(func + " not available in RecoveryController");                           
+                            Log.Info("[SR] " + func + " not available in RecoveryController");                           
                         }
                     }
                     else
                     {
-                        Debug.Log(func + "  failed");
+                        Log.Info("[SR] " + func + "  failed");
                         return null;
                     }
                 }
-                Debug.Log("calledtype failed");
+                Log.Info("calledtype failed");
                 return null;
             }
             catch (Exception e)
             {
-                Debug.Log("Error calling type: " + e);
+                Log.Info("[SR] Error calling type: " + e);
                 return null;
             }
         }
