@@ -14,20 +14,12 @@ namespace StageRecovery
         private static readonly Settings instance = new Settings();
 
         //This is the instance of the SettingsGUI, where we can change settings in game. This is how we interact with that class.
-public SettingsGUI gui = new SettingsGUI();
+        public SettingsGUI gui = new SettingsGUI();
 
         private string pluginDataPath = KSPUtil.ApplicationRootPath + "GameData/StageRecovery/PluginData";
         //The path for the settings file (Config.txt)
         private string filePath = "";
 
-        //The persistent values are saved to the file and read in by them. They are saved as Name = Value and separated by new lines
-        //[Persistent]
-        //public float RecoveryModifier, DeadlyReentryMaxVelocity, CutoffVelocity, LowCut, HighCut, MinTWR, DistanceOverride, GlobalModifier;
-        //[Persistent]
-        //public bool SREnabled, ShowFailureMessages, ShowSuccessMessages, FlatRateModel, PoweredRecovery, RecoverClamps, UseUpgrades,  HideButton, PreRecover;
-#if false
-        UseToolbarMod,
-#endif
 
         public bool Clicked = false;
         public List<RecoveryItem> RecoveredStages, DestroyedStages;
@@ -37,31 +29,6 @@ public SettingsGUI gui = new SettingsGUI();
         private Settings()
         {
             filePath = pluginDataPath + "/Config.txt";
-#if false
-            SREnabled = true;
-            RecoveryModifier = 0.75f;
-            ShowFailureMessages = true;
-            ShowSuccessMessages = true;
-            DeadlyReentryMaxVelocity = 2000f;
-            CutoffVelocity = 10f;
-            FlatRateModel = false;
-            LowCut = 6f;
-            HighCut = 12f;
-            PoweredRecovery = true;
-            RecoverClamps = true;
-            MinTWR = 1.0f;
-            UseUpgrades = true;
-            PreRecover = true;
-#endif
-#if false
-            UseToolbarMod = true;
-#endif
-#if false
-            DistanceOverride = -1.0f;
-            GlobalModifier = 1.0f;
-
-            HideButton = false;
-#endif
 
             RecoveredStages = new List<RecoveryItem>();
             DestroyedStages = new List<RecoveryItem>();
@@ -74,26 +41,7 @@ public SettingsGUI gui = new SettingsGUI();
                 return instance;
             }
         }
-#if false
-        //Loads the settings from the file
-        public void Load()
-        {
-            if (System.IO.File.Exists(filePath))
-            {
-                ConfigNode cnToLoad = ConfigNode.Load(filePath);
-                ConfigNode.LoadObjectFromConfig(this, cnToLoad);
-            }
-        }
 
-        //Saves the settings to the file
-        public void Save()
-        {
-            ConfigNode cnTemp = ConfigNode.CreateConfigFromObject(this, new ConfigNode());
-            //create the file path if needed
-            System.IO.Directory.CreateDirectory(pluginDataPath);
-            cnTemp.Save(filePath);
-        }
-#endif
         public void ClearStageLists()
         {
             RecoveredStages.Clear();
@@ -147,7 +95,7 @@ public SettingsGUI gui = new SettingsGUI();
         }
     }
 
-}             
+}
 /*
 Copyright (C) 2018  Michael Marvin
 

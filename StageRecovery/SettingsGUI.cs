@@ -23,25 +23,16 @@ namespace StageRecovery
         public EditorGUI editorGUI = new EditorGUI();
 
         //The window is only shown when this is true
-        //private bool showWindow;
+        private bool showWindow;
         private bool showBlacklist;
 
         //The width of the window, for easy changing later if need be
-        private static int windowWidth = 200;
+        private static int windowWidth = 300;
         //The main Rect object that the window occupies
-        public Rect mainWindowRect = new Rect(0, 0, windowWidth, 1);
+        public Rect mainWindowRect = new Rect((Screen.width - windowWidth)/2, Screen.height / 2, windowWidth, 1);
         public Rect blacklistRect = new Rect(0, 0, 360, 1);
 
-        //Temporary holders for the settings. They are only copied to the settings when the Save button is pressed.
-        //Floats, ints, and other numbers are best represented as strings until the settings are saved (then you parse them)
-        //The reason for this is that you can't enter decimal values easily since typing "2." gets changed to "2" when to do a toString() ("25" then "2.5" will work though)
-#if false
-        private string DRMaxVel, minTWR;
-        //The exception is for sliders
-        private float recMod, cutoff, lowCut, highCut, globMod;
-        //Booleans are cool though. In fact, they are prefered (since they work well with toggles)
-        private bool enabled, showFail, showSuccess, flatRate, poweredRecovery, recoverClamps, useUpgrades, preRecover; //, useToolbar;
-#endif
+
         private Vector2 scrollPos;
 
         static internal ToolbarControl toolbarControl;
@@ -51,6 +42,10 @@ namespace StageRecovery
         const string ButtonLoc = "StageRecovery/PluginData/icon";
         internal void InitializeToolbar(GameObject go)
         {
+            ApplicationLauncher.AppScenes spaceCenter = 0;
+
+            if (!Settings1.Instance.hideSpaceCenterButton)
+                spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
             Log.Info("[SR]  InitializeToolbar");
             if (toolbarControl == null)
             {
@@ -62,7 +57,9 @@ namespace StageRecovery
                     OnHoverOff,
                     null,
                     null,
-                    ( /* ApplicationLauncher.AppScenes.SPACECENTER | */ ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),                  
+                    (
+                    spaceCenter | 
+                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
                     MODID,
                     "stageControlButton",
                     ButtonLoc + "-38",
@@ -82,64 +79,6 @@ namespace StageRecovery
                 toolbarControl = null;
             }
         }
-#if false
-        //The stock button. Used if Blizzy's toolbar isn't installed.
-        public ApplicationLauncherButton SRButtonStock = null;
-        //This function is used to add the button to the stock toolbar
-        public void OnGUIAppLauncherReady()
-        {
-            if (ToolbarManager.ToolbarAvailable && Settings.Instance.UseToolbarMod)
-            {
-                return;
-            }
-
-            if (Settings.Instance.HideButton) //If told to hide the button, then don't show the button. Blizzy's can do this automatically.
-            {
-                return;
-            }
-
-            bool vis;
-            if (ApplicationLauncher.Ready && (SRButtonStock == null || !ApplicationLauncher.Instance.Contains(SRButtonStock, out vis))) //Add Stock button
-            {
-                SRButtonStock = ApplicationLauncher.Instance.AddModApplication(
-                    ShowWindow,
-                    hideAll,
-                    OnHoverOn,
-                    OnHoverOff,
-                    null,
-                    null,
-                    (ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
-                    GameDatabase.Instance.GetTexture("StageRecovery/icon", false));
-            }
-        }
-
-        //This is all for Blizzy's toolbar
-        public IButton SRToolbarButton = null;
-        public void AddToolbarButton()
-        {
-            SRToolbarButton = ToolbarManager.Instance.add("StageRecovery", "MainButton");
-            SRToolbarButton.Visibility = new GameScenesVisibility(new GameScenes[] { GameScenes.SPACECENTER, GameScenes.FLIGHT, GameScenes.EDITOR });
-            SRToolbarButton.TexturePath = "StageRecovery/icon_blizzy";
-            SRToolbarButton.ToolTip = "StageRecovery";
-            SRToolbarButton.OnClick += ((e) =>
-            {
-                onClick();
-            });
-        }
-
-        //This method is used when the toolbar button is clicked. It alternates between showing the window and hiding it.
-        public void onClick()
-        {
-            if (Settings.Instance.Clicked && (showWindow || flightGUI.showFlightGUI || editorGUI.showEditorGUI))
-            {
-                hideAll();
-            }
-            else
-            {
-                ShowWindow();
-            }
-        }
-#endif
 
         //When the button is hovered over, show the flight GUI if in flight
         public void OnHoverOn()
@@ -163,16 +102,22 @@ namespace StageRecovery
         public void ShowWindow()
         {
             Settings.Instance.Clicked = true;
+            switch (HighLogic.LoadedScene)
+            {
+                case GameScenes.FLIGHT:
+                    flightGUI.showFlightGUI = true;
+                    break;
+                case GameScenes.EDITOR:
+                    EditorCalc();
+                    break;
+                case GameScenes.SPACECENTER:
+                    showWindow = true;
+                    break;
+            }
             if (HighLogic.LoadedSceneIsFlight)
             {
                 flightGUI.showFlightGUI = true;
             }
-#if false
-            else if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
-            {
-                ShowSettings();
-            }
-#endif
             else if (HighLogic.LoadedSceneIsEditor)
             {
                 EditorCalc();
@@ -180,15 +125,8 @@ namespace StageRecovery
         }
 
         //Does stuff to draw the window.
-        public void SetGUIPositions(GUI.WindowFunction OnWindow)
+        public void SetGUIPositions()
         {
-#if false
-            if (showWindow)
-            {
-                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
-            }
-#endif
-
             if (flightGUI.showFlightGUI)
             {
                 flightGUI.flightWindowRect = GUILayout.Window(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
@@ -198,42 +136,20 @@ namespace StageRecovery
             {
                 blacklistRect = GUILayout.Window(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);
             }
-
+            if (showWindow)
+            {
+                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
+            }
             if (editorGUI.showEditorGUI)
             {
                 editorGUI.EditorGUIRect = GUILayout.Window(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
             }
         }
 
-        //More drawing window stuff. I only half understand this. It just works.
-        public void DrawGUIs(int windowID)
-        {
-#if false
-            if (showWindow)
-            {
-                DrawSettingsGUI(windowID);
-            }
-#endif
-            if (flightGUI.showFlightGUI)
-            {
-                flightGUI.DrawFlightGUI(windowID);
-            }
-
-            if (showBlacklist)
-            {
-                DrawBlacklistGUI(windowID);
-            }
-
-            if (editorGUI.showEditorGUI)
-            {
-                editorGUI.DrawEditorGUI(windowID);
-            }
-        }
-
         //Hide all the windows. We only have one so this isn't super helpful, but alas.
         public void hideAll()
         {
-            //showWindow = false;
+            showWindow = false;
             flightGUI.showFlightGUI = false;
             editorGUI.showEditorGUI = false;
             showBlacklist = false;
@@ -241,6 +157,7 @@ namespace StageRecovery
             editorGUI.UnHighlightAll();
         }
 
+#if false
         //Resets the windows. Hides them and resets the Rect object. Not really needed, but it's here
         public void reset()
         {
@@ -249,6 +166,33 @@ namespace StageRecovery
             flightGUI.flightWindowRect = new Rect((Screen.width - 768) / 2, (Screen.height - 540) / 2, 768, 540);
             editorGUI.EditorGUIRect = new Rect(Screen.width / 3, Screen.height / 3, 200, 1);
             blacklistRect = new Rect(0, 0, 360, 1);
+        }
+#endif
+        private void DrawSettingsGUI(int windowID)
+        {
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Settings are now in the stock settings");
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("(old settings, if any, were NOT migrated)");
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Close", GUILayout.Width(60)))
+            {
+                showWindow = false;
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+          
+            GUILayout.EndVertical();
+            GUI.DragWindow();
         }
 
         private string tempListItem = "";
@@ -296,155 +240,6 @@ namespace StageRecovery
             }
         }
 
-#if false
-        //This function will show the settings window and copy the current settings into their holders
-        public void ShowSettings()
-        {
-            enabled = Settings1.Instance.SREnabled;
-            recMod = (float)Settings2.Instance.RecoveryModifier;
-            cutoff = (float)Settings2.Instance.CutoffVelocity;
-            DRMaxVel = Settings3.Instance.DeadlyReentryMaxVelocity.ToString();
-            preRecover = Settings1.Instance.PreRecover;
-            showFail = Settings1.Instance.ShowFailureMessages;
-            showSuccess = Settings1.Instance.ShowSuccessMessages;
-            flatRate = Settings1.Instance.FlatRateModel;
-            lowCut = (float)Settings2.Instance.LowCut;
-            highCut = (float)Settings2.Instance.HighCut;
-            poweredRecovery = Settings1.Instance.PoweredRecovery;
-            recoverClamps = Settings1.Instance.RecoverClamps;
-            minTWR = Settings3.Instance.MinTWR.ToString();
-            useUpgrades = Settings1.Instance.UseUpgrades;
-#if false
-            useToolbar = Settings.Instance.UseToolbarMod;
-#endif
-            globMod = (float)Settings3.Instance.GlobalModifier;
-            
-           // showWindow = true;
-        }
-#endif
-#if false
-        //The function that actually draws all the gui elements. I use GUILayout for doing everything because it's easy to use.
-        private void DrawSettingsGUI(int windowID)
-        {
-            //We start by begining a vertical segment. All new elements will be placed below the previous one.
-            GUILayout.BeginVertical();
-
-            //Whether the mod is enabled or not
-            enabled = GUILayout.Toggle(enabled, " Mod Enabled");
-
-            //A global modifier that affects returns
-            GUILayout.Label("Global Modifier: "+Math.Round(100*globMod) + "%");
-            globMod = (float)Math.Round(GUILayout.HorizontalSlider(globMod, 0, 1), 3);
-
-            //We can toggle the Flat Rate Model on and off with a toggle
-            flatRate = GUILayout.Toggle(flatRate, flatRate ? "Flat Rate Model" : "Variable Rate Model");
-            //If Flat Rate is on we show this info
-            if (flatRate)
-            {
-                //First off is a label saying what the modifier is (in percent)
-                GUILayout.Label("Recovery Modifier: " + Math.Round(100 * recMod) + "%");
-                //Then we have a slider that goes between 0 and 1 that sets the recMod
-                recMod = GUILayout.HorizontalSlider(recMod, 0, 1);
-                //We round the recMod for two reasons: it looks better and it makes it easier to select specific values. 
-                //In this case it limits it to whole percentages
-                recMod = (float)Math.Round(recMod, 2);
-
-                //We do a similar thing for the cutoff velocity, limiting it to between 2 and 12 m/s
-                GUILayout.Label("Cutoff Velocity: " + cutoff + "m/s");
-                cutoff = GUILayout.HorizontalSlider(cutoff, 2, 12);
-                cutoff = (float)Math.Round(cutoff, 1);
-            }
-            //If we're using the Variable Rate Model we have to show other info
-            else
-            {
-                //Like for the flat rate recovery modifier and cutoff, we present a label and a slider for the low cutoff velocity
-                GUILayout.Label("Low Cutoff Velocity: " + lowCut + "m/s");
-                lowCut = GUILayout.HorizontalSlider(lowCut, 0, 10);
-                lowCut = (float)Math.Round(lowCut, 1);
-
-                //And another slider for the high cutoff velocity (with limits between lowCut and 16)
-                GUILayout.Label("High Cutoff Velocity: " + highCut + "m/s");
-                highCut = GUILayout.HorizontalSlider(highCut, lowCut + 0.1f, 16);
-                highCut = (float)Math.Max(Math.Round(highCut, 1), lowCut + 0.1);
-            }
-
-            //We begin a horizontal, meaning new elements will be placed to the right of previous ones
-            GUILayout.BeginHorizontal();
-            //First element is a label
-            GUILayout.Label("DR Velocity");
-            //Followed by a text field where we can set the DRMaxVel value (as a string for the moment)
-            DRMaxVel = GUILayout.TextField(DRMaxVel, 6);
-            //Ending the horizontal means new elements will now be placed below previous ones (so these two will be side by side with things above and below too)
-            //Make sure to End anything you Begin!
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Powered TWR");
-            minTWR = GUILayout.TextField(minTWR, 4);
-            GUILayout.EndHorizontal();
-
-            //The rest are just toggles and are put one after the other
-            preRecover = GUILayout.Toggle(preRecover, "Pre-Recover Vessels");
-            showFail = GUILayout.Toggle(showFail, "Failure Messages");
-            showSuccess = GUILayout.Toggle(showSuccess, "Success Messages");
-            poweredRecovery = GUILayout.Toggle(poweredRecovery, "Try Powered Recovery");
-            recoverClamps = GUILayout.Toggle(recoverClamps, "Recover Clamps");
-            useUpgrades = GUILayout.Toggle(useUpgrades, "Tie Into Upgrades");
-            //useToolbar = GUILayout.Toggle(useToolbar, "Use Toolbar Mod");
-
-            if (GUILayout.Button("Edit Ignore List"))
-            {
-                showBlacklist = true;
-            }
-
-            //We then provide a single button to save the settings. The window can be closed by clicking on the toolbar button, which cancels any changes
-            if (GUILayout.Button("Save"))
-            {
-                //When the button is clicked then this all is executed.
-                //This all sets the settings to the GUI version's values
-                Settings1.Instance.SREnabled = enabled;
-                Settings1.Instance.FlatRateModel = flatRate;
-                Settings2.Instance.LowCut = lowCut;
-                Settings2.Instance.HighCut = highCut;
-                Settings2.Instance.RecoveryModifier = recMod;
-                Settings2.Instance.CutoffVelocity = cutoff;
-                //Strings must be parsed into the correct type. Using TryParse returns a bool stating whether it was sucessful. The value is saved in the out if it works
-                //Otherwise we set the value to the default
-                if (!float.TryParse(DRMaxVel, out Settings3.Instance.DeadlyReentryMaxVelocity))
-                {
-                    Settings3.Instance.DeadlyReentryMaxVelocity = 2000f;
-                }
-
-                Settings1.Instance.ShowFailureMessages = showFail;
-                Settings1.Instance.ShowSuccessMessages = showSuccess;
-                Settings1.Instance.PoweredRecovery = poweredRecovery;
-                Settings1.Instance.RecoverClamps = recoverClamps;
-                Settings1.Instance.UseUpgrades = useUpgrades;
-                Settings1.Instance.PreRecover = preRecover;
-#if false
-                Settings.Instance.UseToolbarMod = useToolbar;
-#endif
-                if (!double.TryParse(minTWR, out Settings3.Instance.MinTWR))
-                {
-                    Settings3.Instance.MinTWR = 1.0f;
-                }
-
-                Settings3.Instance.GlobalModifier = globMod;
-                //Finally we save the settings to the file
-                Settings.Instance.Save();
-            }
-
-            //The last GUI element is added, so now we close the Vertical with EndVertical(). If you don't close all the things you open, the GUI will not display any elements
-            GUILayout.EndVertical();
-
-            //This last thing checks whether the right mouse button or middle mouse button are clicked on the window. If they are, we ignore it, otherwise we GUI.DragWindow()
-            //Calling that allows the window to be moved by clicking it (anywhere empty on the window) with the left mouse button and dragging it to wherever you want.
-            if (!Input.GetMouseButtonDown(1) && !Input.GetMouseButtonDown(2))
-            {
-                GUI.DragWindow();
-            }
-        }
-#endif
 
         public void EditorCalc()
         {

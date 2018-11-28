@@ -1,6 +1,12 @@
 Changelog:
+1.9.0.2
+	Removed old, unused code, and code obsoleted by the ToolbarController
+	Changed default for UseDistanceOverride from true to false
+	Removed some unnecessary window calls
+	Added back button on Spacecenter screen, opens window to direct people to Stock Settings pages
+	Added option to disable the button on spacecenter scene
 
-1.9.0.1 (unreleased)
+1.9.0.1
 	Changed license to MIT
 	Moved all settings into stock settings page, both to reduce code and to have the settings persist on a per-save basis
 		Note:  Existing settings are not migrated

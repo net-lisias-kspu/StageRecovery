@@ -30,7 +30,7 @@ namespace StageRecovery
 
         [GameParameters.CustomParameterUI("Use Distance Override",
             toolTip = "Enable Distance Override to use a specified value for distance modification rather than calculating it")]
-        public bool UseDistanceOverride = true;
+        public bool UseDistanceOverride = false;
 
         [GameParameters.CustomParameterUI("Enable Flat Rate Model",
             toolTip = "Disabled this to use a Variable Rate Model")]
@@ -40,7 +40,8 @@ namespace StageRecovery
         public bool UseDREVelocity = true;
 
 
-        [GameParameters.CustomParameterUI("Pre-Recover Vessels")]
+        [GameParameters.CustomParameterUI("Pre-Recover Vessels",
+            toolTip = "Recover Kerbals before a ship is deleted")]
         public bool PreRecover = true;
 
         [GameParameters.CustomParameterUI("Failure Messages")]
@@ -57,6 +58,10 @@ namespace StageRecovery
 
         [GameParameters.CustomParameterUI("Tie Into Upgrades")]
         public bool UseUpgrades = true;
+
+        [GameParameters.CustomParameterUI("Hide the SpaceCenter button",
+            toolTip = "The button merely opens a window directing you to these settings pages")]
+        public bool hideSpaceCenterButton = false;
 
 
 
@@ -81,7 +86,7 @@ namespace StageRecovery
         public override string Section { get { return "Stage Recovery"; } }
         public override string DisplaySection { get { return "Stage Recovery"; } }
         public override int SectionOrder { get { return 2; } }
-        public override bool HasPresets { get { return true; } }
+        public override bool HasPresets { get { return false; } }
 
         /// ///////////////
         // RecoveryModifier
@@ -117,14 +122,6 @@ namespace StageRecovery
          toolTip = "Maximum velocity for total recovery")]
         public double LowCut = 6f;
 
-
-        public override void SetDifficultyPreset(GameParameters.Preset preset)
-        {
-            RecoveryModifier = 0.75f;
-            CutoffVelocity = 10f;
-            LowCut = 6f;
-            HighCut = 12f;
-        }
 
 
         public override bool Enabled(MemberInfo member, GameParameters parameters)
@@ -167,7 +164,7 @@ namespace StageRecovery
         public override string Section { get { return "Stage Recovery"; } }
         public override string DisplaySection { get { return "Stage Recovery"; } }
         public override int SectionOrder { get { return 3; } }
-        public override bool HasPresets { get { return true; } }
+        public override bool HasPresets { get { return false; } }
 
         /// /////////////
         // GlobalModifier
@@ -203,38 +200,6 @@ namespace StageRecovery
             set { distanceOverride = value; }
         }
 
-#if false
-        /// ///////////////
-        // RecoveryModifier
-        /// ///////////////
-        public float recoveryModifier = 0.75f;
-        [GameParameters.CustomFloatParameterUI("Flat Rate Recovery Modifier (%)", minValue = 0.0f, maxValue = 100.0f,
-         toolTip = "Modifies recovery payout by this percentage")]
-        public float RecoveryMod
-        {
-            get { return recoveryModifier * 100; }
-            set { recoveryModifier = value / 100.0f; }
-        }
-        public float RecoveryModifier
-        {
-            get { return recoveryModifier ; }
-            set { recoveryModifier = value ; }
-        }
-        /// ///////////////
-
-        [GameParameters.CustomFloatParameterUI("Flat Rate Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for recovery")]
-        public double CutoffVelocity = 10f;
-
-
-        [GameParameters.CustomFloatParameterUI("Variable Rate High Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for recovery")]
-        public double HighCut = 12f;
-
-        [GameParameters.CustomFloatParameterUI("Variable Rate Low Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for total recovery")]
-        public double LowCut = 6f;
-#endif
 
         /// ///////////////////////
         // DeadlyReentrymaxVelocity
@@ -254,33 +219,8 @@ namespace StageRecovery
         public double MinTWR = 1.0f;
 
 
-
-        public override void SetDifficultyPreset(GameParameters.Preset preset)
-        {
-            DeadlyReentryMaxVelocity = 2000f;
-            MinTWR = 1.0f;
-            DistanceOverride = 0.01f;
-            GlobalModifier = 1.0f;
-        }
-
         public override bool Enabled(MemberInfo member, GameParameters parameters)
         {
-#if false
-            if (Settings1.Instance.FlatRateModel)
-            {
-                if (member.Name == "HighCut" ||
-                    member.Name == "LowCut")
-                    return false;
-            }
-            else
-            {
-                if (member.Name == "RecoveryMod" ||
-                    member.Name == "CutoffVelocity")
-                    return false;
-
-            }
-#endif
-
             return true; //otherwise return true
         }
 

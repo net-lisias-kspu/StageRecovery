@@ -33,13 +33,7 @@ namespace StageRecovery
         {
             Log.Info("[SR] Awake Start");
             instance = this;
-#if false
-            //Needed to instantiate the Blizzy Toolbar button
-            if (ToolbarManager.ToolbarAvailable && Settings.Instance != null && Settings.Instance.UseToolbarMod)
-            {
-                Settings.Instance.gui.AddToolbarButton();
-            }
-#endif
+
             //If we're in the MainMenu, don't do anything
             if (forbiddenScenes.Contains(HighLogic.LoadedScene))
             {
@@ -51,7 +45,7 @@ namespace StageRecovery
         {
             if (Settings.Instance != null && Settings.Instance.gui != null)
             {
-                Settings.Instance.gui.SetGUIPositions(Settings.Instance.gui.DrawGUIs);
+                Settings.Instance.gui.SetGUIPositions();
             }
         }
 
@@ -64,21 +58,12 @@ namespace StageRecovery
                 return;
             }
             Settings.Instance.gui.DoOnDestroy();
-#if false
-            //Remove the button from the stock toolbar
-            if (Settings.Instance.gui.SRButtonStock != null)
-            {
-                ApplicationLauncher.Instance.RemoveModApplication(Settings.Instance.gui.SRButtonStock);
-            }
-            //Remove the button from Blizzy's toolbar
-            if (Settings.Instance.gui.SRToolbarButton != null)
-            {
-                Settings.Instance.gui.SRToolbarButton.Destroy();
-            }
-#endif
+
+
             GameEvents.onGameSceneLoadRequested.Remove(GameSceneLoadEvent);
             GameEvents.onVesselWillDestroy.Remove(VesselDestroyEvent);
             GameEvents.onVesselGoOnRails.Remove(VesselUnloadEvent);
+            GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
         }
 
         //Fired when the mod loads each scene
@@ -96,6 +81,8 @@ namespace StageRecovery
                 return;
             }
             Settings.Instance.gui.InitializeToolbar(this.gameObject);
+
+
             //If the event hasn't been added yet, run this code (adds the event and the stock button)
             //if (!eventAdded)
             {
@@ -109,6 +96,7 @@ namespace StageRecovery
                 //GameEvents..Add(DecoupleEvent);
 
 
+                GameEvents.OnGameSettingsApplied.Add(GameSettingsAppliedEvent);
 
 
 
@@ -121,10 +109,6 @@ namespace StageRecovery
                 //Set the eventAdded flag to true so this code doesn't run again
                 eventAdded = true;
 
-#if false
-                //Load the settings from file
-                Settings.Instance.Load();
-#endif
                 //Confine the RecoveryModifier to be between 0 and 1
                 if (Settings2.Instance.RecoveryModifier > 1)
                 {
@@ -135,10 +119,7 @@ namespace StageRecovery
                 {
                     Settings2.Instance.RecoveryModifier = 0;
                 }
-#if false
-                //Save the settings file (in case it doesn't exist yet). I suppose this is somewhat unnecessary if the file exists
-                Settings.Instance.Save();
-#endif
+
                 //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
                 Settings.Instance.BlackList.Load();
                 Settings.Instance.BlackList.Save();
@@ -189,8 +170,7 @@ namespace StageRecovery
         public void VesselUnloadEvent(Vessel vessel)
         {
             //If we're disabled, just return
-            Log.Info("[SR] VesselUnloadEvent, SREnabled: " + Settings1.Instance.SREnabled + ", RecoverClamps: " + Settings1.Instance.RecoverClamps +
-                ", PreRecover: " + Settings1.Instance.PreRecover);
+
             if (!Settings1.Instance.SREnabled)
             {
                 return;
@@ -258,6 +238,13 @@ namespace StageRecovery
                     TryWatchVessel(vessel);
                 }
             }
+        }
+
+        void GameSettingsAppliedEvent()
+        {
+            Settings.Instance.gui.DoOnDestroy();
+
+            Settings.Instance.gui.InitializeToolbar(this.gameObject);
         }
 
         public void FixedUpdate()
