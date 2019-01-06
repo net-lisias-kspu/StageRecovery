@@ -64,6 +64,11 @@ namespace StageRecovery
             GameEvents.onVesselWillDestroy.Remove(VesselDestroyEvent);
             GameEvents.onVesselGoOnRails.Remove(VesselUnloadEvent);
             GameEvents.OnGameSettingsApplied.Remove(GameSettingsAppliedEvent);
+
+            if (HighLogic.LoadedSceneIsEditor)
+            {
+                GameEvents.onEditorShipModified.Remove(ShipModifiedEvent);
+            }
         }
 
         //Fired when the mod loads each scene
@@ -136,7 +141,10 @@ namespace StageRecovery
                     TryWatchVessel(v);
                 }
             }
-
+            if (HighLogic.LoadedSceneIsEditor)
+            {
+                GameEvents.onEditorShipModified.Add(ShipModifiedEvent);
+            }
             //Remove anything that happens in the future
             List<Guid> removeList = new List<Guid>();
             double currentUT = Planetarium.GetUniversalTime();
@@ -155,6 +163,11 @@ namespace StageRecovery
 
             sceneChangeComplete = true;
 
+        }
+
+        public void ShipModifiedEvent(ShipConstruct sc)
+        {
+            EditorGUI.Instance.Recalculate();
         }
 
         public void GameSceneLoadEvent(GameScenes newScene)

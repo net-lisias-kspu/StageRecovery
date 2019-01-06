@@ -9,10 +9,17 @@ namespace StageRecovery
 {
     public class EditorGUI
     {
+        static internal EditorGUI Instance;
+
         public List<EditorStatItem> stages = new List<EditorStatItem>();
         public bool showEditorGUI = false;
         bool highLight = false, tanksDry = true;
         public Rect EditorGUIRect = new Rect(Screen.width / 3, Screen.height / 3, 250, 1);
+
+        public EditorGUI()
+        {
+            Instance = this;
+        }
 
         public void DrawEditorGUI(int windowID)
         {
@@ -67,6 +74,8 @@ namespace StageRecovery
 
             if (GUILayout.Button("Recalculate"))
             {
+                Recalculate();
+#if false
                 BreakShipIntoStages();
                 if (highLight)
                 {
@@ -74,6 +83,7 @@ namespace StageRecovery
                 }
 
                 EditorGUIRect.height = 1; //reset the height so it is the smallest size it needs to be 
+#endif
             }
             GUILayout.EndVertical();
 
@@ -88,6 +98,17 @@ namespace StageRecovery
             {
                 GUI.DragWindow();
             }
+        }
+
+        internal void Recalculate()
+        {
+            BreakShipIntoStages();
+            if (highLight)
+            {
+                HighlightAll();
+            }
+
+            EditorGUIRect.height = 1; //reset the height so it is the smallest size it needs to be 
         }
 
         public void UnHighlightAll()
@@ -117,7 +138,21 @@ namespace StageRecovery
             int stageNum = 0;
 
             StageParts stage = new StageParts();
-            List<Part> RemainingDecouplers = new List<Part>() { parts[0] };
+            List<Part> RemainingDecouplers = null; // = new List<Part>() { parts[0] };
+           
+            foreach (var p in parts)
+            {
+                if (p.parent == null)
+                {
+                    RemainingDecouplers = new List<Part>() { p };
+                    break;
+                }
+            }
+            if (RemainingDecouplers == null)
+            {
+                Log.Error("No parent part found");
+                return;
+            }
             while (RemainingDecouplers.Count > 0)
             {
                 //determine stages from the decouplers

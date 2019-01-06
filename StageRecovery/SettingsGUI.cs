@@ -129,20 +129,20 @@ namespace StageRecovery
         {
             if (flightGUI.showFlightGUI)
             {
-                flightGUI.flightWindowRect = GUILayout.Window(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
+                flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
             }
 
             if (showBlacklist)
             {
-                blacklistRect = GUILayout.Window(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);
+                blacklistRect = ClickThruBlocker.GUILayoutWindow(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);
             }
             if (showWindow)
             {
-                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
+                mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
             }
             if (editorGUI.showEditorGUI)
             {
-                editorGUI.EditorGUIRect = GUILayout.Window(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
+                editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
             }
         }
 
