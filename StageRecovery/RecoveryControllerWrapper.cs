@@ -62,6 +62,8 @@ namespace StageRecovery
                     {
                         calledType = Type.GetType("RecoveryController.RecoveryController,RecoveryController");
                     }
+                    else
+                        Log.Info("RecoveryController NOT available");
                 }
                 return recoveryControllerAvailable.GetValueOrDefault();
             }
