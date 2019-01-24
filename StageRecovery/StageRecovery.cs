@@ -110,7 +110,8 @@ namespace StageRecovery
                 Log.Info("[SR] Determined cutoff altitude to be " + cutoffAlt);
 
                 //Register with the RecoveryController (do we only do this once?)
-                Log.Info("[SR] RecoveryController registration success: " + RecoveryControllerWrapper.RegisterMod("StageRecovery"));
+                var s = RecoveryControllerWrapper.RegisterModWithRecoveryController("StageRecovery");
+                Log.Info("[SR] RecoveryController registration success: " + s);
 
                 //Set the eventAdded flag to true so this code doesn't run again
                 //eventAdded = true;

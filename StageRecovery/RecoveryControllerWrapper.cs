@@ -125,13 +125,13 @@ namespace StageRecovery
             }
         }
 
-        public static  bool RegisterMod(string modName)
+        public static  bool RegisterModWithRecoveryController(string modName)
         {
-            Log.Info("RegisterMod");
+            Log.Info("RegisterModWithRecoveryController");
             var s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
-                Log.Info("RegisterMod, CallRecoveryController returned null");
+                Log.Error("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
             Log.Info("RegisterMod returning: " + ((bool)s).ToString());
