@@ -55,6 +55,7 @@ namespace StageRecovery
         {
             get
             {
+                Log.Info("RecoveryControllerAvailable");
                 if (recoveryControllerAvailable == null)
                 {
                     recoveryControllerAvailable = AssemblyLoader.loadedAssemblies.Any(a => a.assembly.GetName().Name == "RecoveryController");
@@ -75,19 +76,22 @@ namespace StageRecovery
             {
                 return null;
             }
-
+            Log.Info("CallRecoveryController, func: " + func);
             try
             {
                  
                 if (calledType != null)
                 {
+                    Log.Info("calledtype not null: " + calledType.ToString());
                     MonoBehaviour rcRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class Historian exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
                     if (rcRef != null)
                     {
+                        Log.Info("rcRef not null");
                         MethodInfo myMethod = calledType.GetMethod(func, BindingFlags.Instance | BindingFlags.Public);
 
                         if (myMethod != null)
                         {
+                            Log.Info("myMethod not null");
                             object magicValue;
                             if (modName != null)
                             {
@@ -123,12 +127,14 @@ namespace StageRecovery
 
         public static  bool RegisterMod(string modName)
         {
+            Log.Info("RegisterMod");
             var s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
+                Log.Info("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
-
+            Log.Info("RegisterMod returning: " + ((bool)s).ToString());
             return (bool)s;
         }
 

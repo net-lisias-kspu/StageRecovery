@@ -981,7 +981,7 @@ namespace StageRecovery
         public void PostStockMessage()
         {
             string fundSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Funds\" tint=1>";
-            string sciSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Science\" tint=0>";
+            //string sciSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Science\" tint=0>";
             string green = "<color=#B4D455>";
             string blue = "<color=#6DCFF6>";
             string endC = "</color>";

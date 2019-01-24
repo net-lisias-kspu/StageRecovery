@@ -8,12 +8,13 @@ using ToolbarControl_NS;
 namespace StageRecovery
 {
 
-    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
+//    [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
+    [KSPAddon(KSPAddon.Startup.FlightEditorAndKSC, false)]
     public class StageRecovery : MonoBehaviour
     {
         public static StageRecovery instance;
         //Flag that says whether the VesselDestroyEvent has been added, so we don't accidentally add it twice.
-        private bool eventAdded = false;
+        //private bool eventAdded = false;
         private bool sceneChangeComplete = false;
 
         private List<RecoveryItem> RecoveryQueue = new List<RecoveryItem>(); //Vessels added to this are pre-recovered
@@ -112,7 +113,7 @@ namespace StageRecovery
                 Log.Info("[SR] RecoveryController registration success: " + RecoveryControllerWrapper.RegisterMod("StageRecovery"));
 
                 //Set the eventAdded flag to true so this code doesn't run again
-                eventAdded = true;
+                //eventAdded = true;
 
                 //Confine the RecoveryModifier to be between 0 and 1
                 if (Settings2.Instance.RecoveryModifier > 1)

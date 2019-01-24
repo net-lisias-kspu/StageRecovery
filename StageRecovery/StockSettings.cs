@@ -23,6 +23,9 @@ namespace StageRecovery
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return false; } }
 
+        internal static bool settingsFlatRateModel = false;
+        internal static bool settingsUseDREVelocity = true;
+        internal static bool settingsUseDistanceOverride = false;
 
         [GameParameters.CustomParameterUI("Mod Enabled")]
         public bool SREnabled = true;
@@ -68,6 +71,11 @@ namespace StageRecovery
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
+
+            settingsFlatRateModel = FlatRateModel;
+            settingsUseDREVelocity = UseDREVelocity;
+            settingsUseDistanceOverride = UseDistanceOverride;
+
             return true;
         }
         public override IList ValidValues(MemberInfo member)
@@ -133,7 +141,10 @@ namespace StageRecovery
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
-            if (Settings1.Instance.FlatRateModel)
+            //if (HighLogic.CurrentGame == null || HighLogic.CurrentGame.Parameters == null)
+            //    return true;
+
+            if (SR1.settingsFlatRateModel)
             {
                 if (member.Name == "HighCut" ||
                     member.Name == "LowCut")
@@ -226,10 +237,13 @@ namespace StageRecovery
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
+            //if (HighLogic.CurrentGame == null || HighLogic.CurrentGame.Parameters == null)
+            //    return true;
+
             if (member.Name == "DreVelocity")
-                return Settings1.Instance.UseDREVelocity;
+                return SR1.settingsUseDREVelocity;
             if (member.Name == "DistanceOver")
-                return Settings1.Instance.UseDistanceOverride;
+                return SR1.settingsUseDistanceOverride;
             return true;
         }
 
