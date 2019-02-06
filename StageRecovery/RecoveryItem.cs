@@ -161,6 +161,10 @@ namespace StageRecovery
                 Math.Round(SpeedPercent, 3), 
                 Math.Round(RecoveryPercent, 3), 
                 Math.Round(FundsReturned, 2)));
+            foreach (var r in propRemaining)
+            {
+                Log.Info("Remaining " + r.Key + ": " + r.Value.ToString("N1"));
+            }
 
             return Recovered;
         }
@@ -228,6 +232,8 @@ namespace StageRecovery
             //Return the total mass
             return (float)mass;
         }
+
+        public Dictionary<string, double> propRemaining = new Dictionary<string, double>();
 
         /// <summary>
         /// Attempts to use the engines to reduce the speed to the provided target value
@@ -405,7 +411,7 @@ namespace StageRecovery
                     foreach (KeyValuePair<string, double> entry in propsUsed)
                     {
                         double amt = massRequired * entry.Value / DnRnSum;
-                        propAmounts.Add(entry.Key, amt);
+                        propAmounts.Add(entry.Key, amt);                        
                     }
 
                     //Assume we have enough fuel until we check
@@ -416,6 +422,7 @@ namespace StageRecovery
                     foreach (KeyValuePair<string, double> entry in propAmounts)
                     {
                         double density = PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                        propRemaining.Add(entry.Key, Math.Max(0, resources[entry.Key] - entry.Value));
                         if (!resources.ContainsKey(entry.Key) || (entry.Value > resources[entry.Key] &&
                             (entry.Value - resources[entry.Key]) * density > limiter))
                         {
@@ -706,12 +713,13 @@ namespace StageRecovery
                 float dryCost, fuelCost;
                 //Stock function for taking a ProtoPartSnapshot and the corresponding AvailablePart (aka, partInfo) and determining the value 
                 //of the fuel contained and base part. Whole thing returns the combined total, but we'll do that manually
+
+               
                 ShipConstruction.GetPartCosts(pps, pps.partInfo, out dryCost, out fuelCost);
                 //Set the dryCost to 0 if it's less than 0 (also could be done with dryCost = Math.Max(0, dryCost);)
                 dryCost = dryCost < 0 ? 0 : dryCost;
                 //Same for the fuelCost
                 fuelCost = fuelCost < 0 ? 0 : fuelCost;
-
                 //The unmodified returns are just the costs for the part added to the others
                 FundsOriginal += dryCost + fuelCost;
 
@@ -1004,6 +1012,15 @@ namespace StageRecovery
                     msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> global modifier");
                 }
                 msg.AppendLine("");
+                if (propRemaining.Count > 0)
+                {
+                    msg.AppendLine("Remaining Fuel");
+                    foreach (var r in propRemaining)
+                    {
+                        msg.AppendLine(r.Key + ": " + r.Value.ToString("N1"));
+                    }
+                    msg.AppendLine("");
+                }
                 //List the total refunds for parts, fuel, and the combined total
                 msg.AppendLine($"Total refunds: {fundSymbol} {green}{(FundsReturned).ToString("N0")}{endC}");
                 msg.AppendLine($"Total refunded for parts: {fundSymbol} {green}{(DryReturns).ToString("N0")}{endC}");

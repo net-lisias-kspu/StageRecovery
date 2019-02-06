@@ -1,5 +1,9 @@
 Changelog:
 
+1.9.1
+	Added display of remaining fuel after recovery
+	Added "Fuel" section to the SR window, only if there was any leftover fuel
+
 1.9.0.7
 	Fixed registration with the RecoveryController by moving initialization OUT of the Log.Info line
 

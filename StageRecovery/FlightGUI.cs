@@ -177,19 +177,26 @@ namespace StageRecovery
 
                 GUILayout.BeginVertical(HighLogic.Skin.textArea);
                 //Show a toolbar with options for specific data, defaulting to the Parts list
-                infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                if (selectedStage.propRemaining.Count > 0)
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Fuel", "Crew", "Science", "Info" });
+                else
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
                 //List the stage name and whether it was recovered or destroyed
                 GUILayout.Label("Stage name: " + selectedStage.StageName);
                 GUILayout.Label("Status: " + (selectedStage.Recovered ? "RECOVERED" : "DESTROYED"));
                 //Put everything in a scroll view in case it is too much data for the window to display
                 infoScroll = GUILayout.BeginScrollView(infoScroll);
+                if (selectedStage.propRemaining.Count == 0 && infoBarIndex > 0)
+                    infoBarIndex++;
+
                 //Depending on the selected data view we display different things (split into different functions for ease)
                 switch (infoBarIndex)
                 {
                     case 0: DrawPartsInfo(); break;
-                    case 1: DrawCrewInfo(); break;
-                    case 2: DrawScienceInfo(); break;
-                    case 3: DrawAdvancedInfo(); break;
+                    case 1: DrawFuelInfo(); break;
+                    case 2: DrawCrewInfo(); break;
+                    case 3: DrawScienceInfo(); break;
+                    case 4: DrawAdvancedInfo(); break;
                 }
                 GUILayout.EndScrollView();
                 GUILayout.EndVertical();
@@ -251,6 +258,24 @@ namespace StageRecovery
             }
         }
 
+        //Draw all the info for recovered/destroyed parts
+        private void DrawFuelInfo()
+        {
+            //List all of the parts and their recovered costs (or value if destroyed)
+            GUILayout.Label("Remaining Fuel:\n");
+
+            //If the stage was recovered, list the remaining fuel, if any
+            if (selectedStage.Recovered)
+            {
+                if (selectedStage.propRemaining.Count > 0)
+                {
+                    foreach (var r in selectedStage.propRemaining)
+                    {
+                        GUILayout.Label(r.Key + ": " + r.Value.ToString("N1"));
+                    }
+                }
+            }
+        }
         //This displays what crew members were onboard the stage, if any (recovered or not)
         private void DrawCrewInfo()
         {
