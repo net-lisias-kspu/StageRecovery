@@ -178,25 +178,27 @@ namespace StageRecovery
                 GUILayout.BeginVertical(HighLogic.Skin.textArea);
                 //Show a toolbar with options for specific data, defaulting to the Parts list
                 if (selectedStage.propRemaining.Count > 0)
-                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Fuel", "Crew", "Science", "Info" });
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info", "Fuel" });
                 else
+                {
+                    if (infoBarIndex == 4)
+                        infoBarIndex = 3;
                     infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                }
                 //List the stage name and whether it was recovered or destroyed
                 GUILayout.Label("Stage name: " + selectedStage.StageName);
                 GUILayout.Label("Status: " + (selectedStage.Recovered ? "RECOVERED" : "DESTROYED"));
                 //Put everything in a scroll view in case it is too much data for the window to display
-                infoScroll = GUILayout.BeginScrollView(infoScroll);
-                if (selectedStage.propRemaining.Count == 0 && infoBarIndex > 0)
-                    infoBarIndex++;
+                infoScroll = GUILayout.BeginScrollView(infoScroll);                
 
                 //Depending on the selected data view we display different things (split into different functions for ease)
                 switch (infoBarIndex)
                 {
                     case 0: DrawPartsInfo(); break;
-                    case 1: DrawFuelInfo(); break;
-                    case 2: DrawCrewInfo(); break;
-                    case 3: DrawScienceInfo(); break;
-                    case 4: DrawAdvancedInfo(); break;
+                    case 1: DrawCrewInfo(); break;
+                    case 2: DrawScienceInfo(); break;
+                    case 3: DrawAdvancedInfo(); break;
+                    case 4: DrawFuelInfo(); break;
                 }
                 GUILayout.EndScrollView();
                 GUILayout.EndVertical();

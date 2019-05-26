@@ -6,14 +6,6 @@ using ClickThroughFix;
 
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        void Start()
-        {
-            ToolbarControl.RegisterMod(SettingsGUI.MODID, SettingsGUI.MODNAME);
-        }
-    }
 
     //This class controls all the GUI elements for the in-game settings menu
     public class SettingsGUI
@@ -44,11 +36,11 @@ namespace StageRecovery
         {
             ApplicationLauncher.AppScenes spaceCenter = 0;
 
-            if (!Settings1.Instance.hideSpaceCenterButton)
-                spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
-            Log.Info("[SR]  InitializeToolbar");
+               Log.Info("[SR]  InitializeToolbar");
             if (toolbarControl == null)
             {
+                if (!Settings1.Instance.hideSpaceCenterButton)
+                    spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
                 toolbarControl = go.AddComponent<ToolbarControl>();
                 toolbarControl.AddToAllToolbars(
                     ShowWindow,

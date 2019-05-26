@@ -104,6 +104,8 @@ namespace StageRecovery
 
                 GameEvents.OnGameSettingsApplied.Add(GameSettingsAppliedEvent);
 
+                GameEvents.onVesselRecovered.Add(onVesselRecovered);
+                GameEvents.onVesselTerminated.Add(onVesselTerminated);
 
 
                 cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home) + 1000;
@@ -117,15 +119,8 @@ namespace StageRecovery
                 //eventAdded = true;
 
                 //Confine the RecoveryModifier to be between 0 and 1
-                if (Settings2.Instance.RecoveryModifier > 1)
-                {
-                    Settings2.Instance.RecoveryModifier = 1;
-                }
-
-                if (Settings2.Instance.RecoveryModifier < 0)
-                {
-                    Settings2.Instance.RecoveryModifier = 0;
-                }
+                Settings2.Instance.RecoveryModifier =
+                    (Settings2.Instance.RecoveryModifier < 0) ? 0 : (Settings2.Instance.RecoveryModifier > 1) ? 1 : Settings2.Instance.RecoveryModifier;
 
                 //Load and resave the BlackList. The save ensures that the file will be created if it doesn't exist.
                 Settings.Instance.BlackList.Load();
@@ -165,6 +160,14 @@ namespace StageRecovery
 
             sceneChangeComplete = true;
 
+        }
+        void onVesselRecovered(ProtoVessel pv, bool b)
+        {
+            Log.Error("onVesselRecovered: " + pv.vesselName);
+        }
+        void onVesselTerminated(ProtoVessel pv)
+        {
+            Log.Error("onVesselTerminated: " + pv.vesselName);
         }
 
         public void ShipModifiedEvent(ShipConstruct sc)

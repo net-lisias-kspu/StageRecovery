@@ -43,6 +43,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="RecoveryControllerWrapper.cs" />
     <Compile Include="RecoveryItem.cs" />
+    <Compile Include="RegisterToolbar.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsGUI.cs" />
     <Compile Include="StageRecovery.cs" />

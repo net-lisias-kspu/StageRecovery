@@ -161,11 +161,12 @@ namespace StageRecovery
                 Math.Round(SpeedPercent, 3), 
                 Math.Round(RecoveryPercent, 3), 
                 Math.Round(FundsReturned, 2)));
+#if DEBUG
             foreach (var r in propRemaining)
             {
                 Log.Info("Remaining " + r.Key + ": " + r.Value.ToString("N1"));
             }
-
+#endif
             return Recovered;
         }
 
