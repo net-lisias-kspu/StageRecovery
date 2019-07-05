@@ -682,20 +682,14 @@ namespace StageRecovery
             //Calculate the max distance from KSC (half way around a circle the size of Kerbin)
             double maxDist = SpaceCenter.Instance.cb.Radius * Math.PI;
 
-            int TSUpgrades = StageRecovery.BuildingUpgradeLevel(SpaceCenterFacility.TrackingStation);
-            if (TSUpgrades == 0)
-            {
-                maxDist *= (0.5);
-            }
-            else if (TSUpgrades == 1)
-            {
-                maxDist *= (0.75);
-            }
-
             //Get the reduction in returns due to distance (0.98 at KSC, .1 at maxDist)
             if (!Settings1.Instance.UseDistanceOverride)
             {
-                DistancePercent = Mathf.Lerp(0.98f, 0.1f, (float)(KSCDistance / maxDist));
+                DistancePercent = Mathf.Lerp(
+                    Math.Max(0.0f, Math.Min(1f, 0.98f + ValueModifierQuery.RunQuery("RecoveryMaximumDelta", 1f).GetEffectDelta())),
+                    Math.Max(0.0f, Math.Min(1f, 0.1f + ValueModifierQuery.RunQuery("RecoveryMinimumDelta", 1f).GetEffectDelta())),
+                    (float) (KSCDistance / maxDist)
+                );
             }
             else
             {
