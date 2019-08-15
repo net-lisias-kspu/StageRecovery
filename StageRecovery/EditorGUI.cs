@@ -190,6 +190,14 @@ namespace StageRecovery
             {
                 Part checking = toCheck[0];
                 toCheck.RemoveAt(0);
+
+                //handle Engine Plates, otherwise it ends up in the wrong stage
+                if (checking.Modules.Contains("ModuleDynamicNodes"))
+                {
+                    toCheck.Add(checking.FindAttachNode("bottom").attachedPart);
+                    continue;
+                }
+                
                 stage.parts.Add(checking);
 
                 foreach (Part part in checking.children)
@@ -199,6 +207,22 @@ namespace StageRecovery
                     if (part.FindModulesImplementing<IStageSeparator>().Count > 0)
                     {
                         stage.decouplers.Add(part);
+
+                        //handle Engine Plates (needs cleaner way to recognise!)
+                        if (part.Modules.Contains("ModuleDynamicNodes"))
+                        {
+                            //add engine plate to stage, otherwise it ends up in the wrong stage
+                            stage.parts.Add(part);
+
+                            foreach (var node in part.attachNodes)
+                            {
+                                //add all parts to the stage that are attached to any nodes EXCEPT "bottom" and "top"
+                                if (node.attachedPart != null && node.id != "bottom" && node.id != "top")
+                                {
+                                    toCheck.Add(node.attachedPart);
+                                }
+                            }
+                        }
                     }
                     else
                     {
