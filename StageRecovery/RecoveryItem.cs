@@ -110,8 +110,10 @@ namespace StageRecovery
             //Pack all the parts. I got this from MCE and everything works so I haven't tried removing it.
             if (!vessel.packed)
             {
-                foreach (Part p in vessel.Parts)
+                for (int i = 0; i < vessel.Parts.Count; i++)
+                //foreach (Part p in vessel.Parts)
                 {
+                    Part p = vessel.Parts[i];
                     p.Pack();
                 }
             }

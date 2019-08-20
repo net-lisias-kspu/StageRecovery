@@ -48,8 +48,11 @@ namespace StageRecovery
             }
 
             //list each stage, with info for each
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Stage " + stage.stageNumber);
                 double vel = tanksDry ? stage.EmptyVelocity : stage.FullVelocity;
@@ -114,8 +117,10 @@ namespace StageRecovery
         public void UnHighlightAll()
         {
             highLight = false;
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
                 stage.UnHighlight();
             }
         }
@@ -123,8 +128,10 @@ namespace StageRecovery
         public void HighlightAll()
         {
             highLight = true;
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
                 stage.Highlight(tanksDry);
             }
         }
@@ -140,8 +147,10 @@ namespace StageRecovery
             StageParts stage = new StageParts();
             List<Part> RemainingDecouplers = null; // = new List<Part>() { parts[0] };
            
-            foreach (var p in parts)
+            for (int i = 0; i < parts.Count; i++)
+            //foreach (var p in parts)
             {
+                Part p = parts[i];
                 if (p.parent == null)
                 {
                     RemainingDecouplers = new List<Part>() { p };
@@ -192,7 +201,7 @@ namespace StageRecovery
                 toCheck.RemoveAt(0);
 
                 //handle Engine Plates, otherwise it ends up in the wrong stage
-                if (checking.Modules.Contains("ModuleDynamicNodes"))
+                if (checking.Modules.Contains("ModuleDynamicNodes") && checking.Modules.Contains("ModuleDecouple"))
                 {
                     toCheck.Add(checking.FindAttachNode("bottom").attachedPart);
                     continue;
@@ -200,8 +209,11 @@ namespace StageRecovery
                 
                 stage.parts.Add(checking);
 
-                foreach (Part part in checking.children)
+                for (int i = 0; i < checking.children.Count; i++)
+                //foreach (Part part in checking.children)
                 {
+                    Part part = checking.children[i];
+
                     //search for decouplers
                     //if (part.Modules.Contains("ModuleDecouple") || part.Modules.Contains("ModuleAnchoredDecoupler"))
                     if (part.FindModulesImplementing<IStageSeparator>().Count > 0)
@@ -209,7 +221,7 @@ namespace StageRecovery
                         stage.decouplers.Add(part);
 
                         //handle Engine Plates (needs cleaner way to recognise!)
-                        if (part.Modules.Contains("ModuleDynamicNodes"))
+                        if (part.Modules.Contains("ModuleDynamicNodes") && part.Modules.Contains("ModuleDecouple"))
                         {
                             //add engine plate to stage, otherwise it ends up in the wrong stage
                             stage.parts.Add(part);
