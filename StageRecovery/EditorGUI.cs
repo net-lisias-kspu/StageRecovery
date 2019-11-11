@@ -193,7 +193,42 @@ namespace StageRecovery
             ConsolidateStages();
             Log.Info("[SR] Found " + stages.Count + " stages!");
         }
+        PartModule pm = null;
+        bool CheckForEnginePlate(Part parent, Part checking)
+        {
+            // The following code is designed to deal with the new engine plates in MakingHistory, which have embedded
+            // decouplers which work on the stage below
+            ModuleDecouple md = null;
 
+            // First, if this is an engineplate, do not treat it as a decoupler
+            if (checking.Modules.Contains("ModuleDynamicNodes") && checking.Modules.Contains("ModuleDecouple"))
+            {
+                md = checking.Modules.GetModule<ModuleDecouple>();
+
+                if (md.isEnginePlate)
+                {
+                    // If the parent IS an engineplate, get the module and use it later
+                    if (parent.Modules.Contains("ModuleDynamicNodes") && parent.Modules.Contains("ModuleDecouple"))
+                        pm = parent.Modules.GetModule<ModuleDecouple>();
+                    else
+                        pm = null;
+                }
+
+                return md.isEnginePlate;
+            }
+            return false;
+        }
+
+        bool CheckForParentEnginePlate(Part part)
+        {
+            // If the parent IS an engineplate, and this part is NOT a decoupler, then treat it as if it WAS 
+            // a decoupler and add it to the list
+            if (pm != null && ((ModuleDecouple)pm).isEnginePlate && part.FindModulesImplementing<IStageSeparator>().Count == 0)
+            {
+                return true;
+            }
+            return false;
+        }
         StageParts DetermineStage(Part parent)
         {
             Log.Info("DetermineStage 1 parent: " + parent.partInfo.title);
@@ -203,26 +238,11 @@ namespace StageRecovery
             {
                 Part checking = toCheck[0];
                 toCheck.RemoveAt(0);
-
-            
-                // The following code is designed to deal with the new engine plates in MakingHistory, which have embedded
-                // decouplers which work on the stage below
-                ModuleDecouple md = null;
-
-                // First, if this is an engineplate, do not treat it as a decoupler
-                if (checking.Modules.Contains("ModuleDynamicNodes") && checking.Modules.Contains("ModuleDecouple"))
+                bool isEnginePlate = false;
+                if (Versioning.version_major == 1 && Versioning.version_minor >= 7)
                 {
-                     md = checking.Modules.GetModule<ModuleDecouple>();
-                    if (md.isEnginePlate)
-                        continue;
+                    isEnginePlate = CheckForEnginePlate(parent, checking);
                 }
-                // If the parent IS an engineplate, get the module and use it later
-                if (parent.Modules.Contains("ModuleDynamicNodes") && parent.Modules.Contains("ModuleDecouple"))
-                {
-                    md = parent.Modules.GetModule<ModuleDecouple>();
-                }
-                else
-                    md = null;
 
                 stage.parts.Add(checking);
 
@@ -234,13 +254,15 @@ namespace StageRecovery
                     //search for decouplers
                     //if (part.Modules.Contains("ModuleDecouple") || part.Modules.Contains("ModuleAnchoredDecoupler"))
 
-                    // If the parent IS an engineplate, and this part is NOT a decoupler, then treat it as if it WAS 
-                    // a decoupler and add it to the list
-                    if (md != null && md.isEnginePlate && part.FindModulesImplementing<IStageSeparator>().Count == 0)
+                    if (Versioning.version_major == 1 && Versioning.version_minor >= 7 && isEnginePlate)
                     {
-                        stage.decouplers.Add(part);
-                        continue;
+                        if (CheckForParentEnginePlate(part))
+                        {
+                            stage.decouplers.Add(part);
+                            continue;
+                        }
                     }
+
                     // If this part is a decoupler, add it to the list
                     if (part.FindModulesImplementing<IStageSeparator>().Count > 0)
                     {
