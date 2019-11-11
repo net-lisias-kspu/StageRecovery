@@ -1,5 +1,8 @@
 Changelog:
 
+1.9.2
+	Updated for KSP 1.8
+
 1.9.1.3
 	Rewrite engine plate code due to an infinite loop which was happening when the top node of an engineplate was attached before the bottom node was
 
