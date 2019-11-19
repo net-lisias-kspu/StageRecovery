@@ -131,7 +131,7 @@ namespace StageRecovery
             var s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
-                Log.Error("RegisterMod, CallRecoveryController returned null");
+                Log.Info("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
             Log.Info("RegisterMod returning: " + ((bool)s).ToString());
