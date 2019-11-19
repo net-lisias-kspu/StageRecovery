@@ -29,7 +29,10 @@ set VERSIONFILE=%GAMEDIR%.version
 set LICENSE=License.txt
 set README=ReadMe.md
 
-set RELEASEDIR=d:\Users\jbb\release
+set RELEASEDIR=$~dp0/../release
+IF NOT EXIST "%RELEASEDIR%" (
+	MKDIR "%RELEASEDIR%"
+)
 set ZIP="c:\Program Files\7-zip\7z.exe"
 
 rem Copy files to GameData locations

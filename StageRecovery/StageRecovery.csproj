@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(SolutionDir)\StageRecovery.Common.props" Condition="Exists('$(SolutionDir)\StageRecovery.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -64,35 +65,28 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-     <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\Assembly*.dll">
-	   <Private>False</Private>
+    <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\Assembly*.dll">
+      <Private>False</Private>
     </Reference>
     <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine*.dll">
-	   <Private>False</Private>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System" />	
+    <Reference Include="System" />
     <Reference Include="ClickThroughBlocker">
       <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
       <HintPath>$(KSPDIR)\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start /D D:\Users\jbb\github\StageRecovery /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
-
-
-
+    <PostBuildEvent>start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 if $(ConfigurationName) == Release (
-
-
-
-	start /D D:\Users\jbb\github\StageRecovery /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
-
-
-
+	start /D $(SolutionDir) /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
 )</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
