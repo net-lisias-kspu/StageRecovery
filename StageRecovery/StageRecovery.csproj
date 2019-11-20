@@ -84,10 +84,18 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
+    <PostBuildEvent>set KSPDIR=$(KSPDIR)
+IF "%25KSPDIR%25"=="" (
+	ECHO.Configuration error - KSPDIR not specified in project.
+	ECHO.Either set KSPDIR environment variable or edit StageRecovery.Common.props
+	PAUSE
+	GOTO DONE
+)
+start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 if $(ConfigurationName) == Release (
 	start /D $(SolutionDir) /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
-)</PostBuildEvent>
+)
+:DONE</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>"$(DevEnvDir)\texttransform.exe" "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>

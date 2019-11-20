@@ -4,11 +4,11 @@
 rem Put the following text into the Post-build event command line:
 rem without the "rem":
 
-rem start /D D:\Users\jbb\github\IFI-Life-Support /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
+rem start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 rem 
 rem if $(ConfigurationName) == Release (
 rem 
-rem start /D D:\Users\jbb\github\IFI-Life-Support /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
+rem start /D $(SolutionDir) /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
 rem 
 rem )
 
@@ -23,17 +23,34 @@ rem    but not always
 rem LICENSE is the license file
 rem README is the readme file
 
+SETLOCAL enabledelayedexpansion
+
 set GAMEDIR=StageRecovery
 set GAMEDATA="GameData\"
 set VERSIONFILE=%GAMEDIR%.version
 set LICENSE=License.txt
 set README=ReadMe.md
 
-set RELEASEDIR=$~dp0/../release
+set RELEASEDIR="%~dp0\..\release"
 IF NOT EXIST "%RELEASEDIR%" (
 	MKDIR "%RELEASEDIR%"
 )
-set ZIP="c:\Program Files\7-zip\7z.exe"
+set "ZIP=C:\Program Files\7-zip\7z.exe"
+IF NOT EXIST "%ZIP%" (
+	ECHO.Configuration error, could not find 7-Zip executable.
+	ECHO.Please download and install 7-Zip from www.7-zip.org
+	PAUSE
+	GOTO DONE
+)
+REM set JQ="c:\local\jq-win64.exe"
+set "JQ=S:\Personal\KSP\bin\jq-win64.exe"
+IF NOT EXIST "%JQ%" (
+	ECHO.Configuration error, could not find JQ utility.
+	ECHO.Please download JQ from stedolan.github.io/jq/download/ and install into "C:\local"
+	PAUSE
+	GOTO DONE
+)
+
 
 rem Copy files to GameData locations
 
@@ -48,17 +65,18 @@ rem Get Version info
 
 copy %VERSIONFILE% tmp.version
 set VERSIONFILE=tmp.version
+
 rem The following requires the JQ program, available here: https://stedolan.github.io/jq/download/
-c:\local\jq-win64  ".VERSION.MAJOR" %VERSIONFILE% >tmpfile
+"%JQ%" ".VERSION.MAJOR" %VERSIONFILE% >tmpfile
 set /P major=<tmpfile
 
-c:\local\jq-win64  ".VERSION.MINOR"  %VERSIONFILE% >tmpfile
+"%JQ%" ".VERSION.MINOR"  %VERSIONFILE% >tmpfile
 set /P minor=<tmpfile
 
-c:\local\jq-win64  ".VERSION.PATCH"  %VERSIONFILE% >tmpfile
+"%JQ%" ".VERSION.PATCH"  %VERSIONFILE% >tmpfile
 set /P patch=<tmpfile
 
-c:\local\jq-win64  ".VERSION.BUILD"  %VERSIONFILE% >tmpfile
+"%JQ%" ".VERSION.BUILD"  %VERSIONFILE% >tmpfile
 set /P build=<tmpfile
 del tmpfile
 del tmp.version
@@ -73,6 +91,9 @@ cd %GAMEDATA%\..
 
 set FILE="%RELEASEDIR%\%GAMEDIR%-%VERSION%.zip"
 IF EXIST %FILE% del /F %FILE%
-%ZIP% a -tzip %FILE% GameData
+"%ZIP%" a -tzip %FILE% GameData
 
+ECHO.SUCCESS! StageRecovery %VERSION% release created in %FILE%.
 pause
+
+:DONE
