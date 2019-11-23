@@ -20,13 +20,12 @@
 */
 using UnityEngine;
 
+using KSP.Localization;
 using KSP.UI.Screens;
 
 using GUI = KSPe.UI.GUI;
 using GUILayout = KSPe.UI.GUILayout;
-
 using Toolbar = KSPe.UI.Toolbar;
-
 
 namespace StageRecovery
 {
@@ -122,7 +121,7 @@ namespace StageRecovery
         {
             if (flightGUI.showFlightGUI)
             {
-                flightGUI.flightWindowRect = GUILayout.Window(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
+                flightGUI.flightWindowRect = GUILayout.Window(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);//
             }
 
             if (showBlacklist)
@@ -131,11 +130,11 @@ namespace StageRecovery
             }
             if (showWindow)
             {
-                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
+                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);//
             }
             if (editorGUI.showEditorGUI)
             {
-                editorGUI.EditorGUIRect = GUILayout.Window(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
+                editorGUI.EditorGUIRect = GUILayout.Window(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);//
             }
         }
 
@@ -166,24 +165,24 @@ namespace StageRecovery
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Settings are now in the stock settings");
+            GUILayout.Label(Localizer.Format("#StageRecovery_text1"));//"Settings are now in the stock settings"
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("(old settings, if any, were NOT migrated)");
+            GUILayout.Label(Localizer.Format("#StageRecovery_text2"));//"(old settings, if any, were NOT migrated)"
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Close", GUILayout.Width(60)))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Close"), GUILayout.Width(60)))//"Close"
             {
                 showWindow = false;
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+          
             GUILayout.EndVertical();
             GUI.DragWindow();
         }
@@ -197,7 +196,7 @@ namespace StageRecovery
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(s);
-                if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))//
                 {
                     Settings.Instance.BlackList.Remove(s);
                     break;
@@ -207,19 +206,19 @@ namespace StageRecovery
             GUILayout.EndScrollView();
             GUILayout.BeginHorizontal();
             tempListItem = GUILayout.TextField(tempListItem);
-            if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))
+            if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))//
             {
                 Settings.Instance.BlackList.Add(tempListItem);
                 tempListItem = "";
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save"))
+            if (GUILayout.Button("Save"))//
             {
                 Settings.Instance.BlackList.Save();
                 showBlacklist = false;
             }
-            if (GUILayout.Button("Cancel"))
+            if (GUILayout.Button("Cancel"))//
             {
                 Settings.Instance.BlackList.Load();
                 showBlacklist = false;
