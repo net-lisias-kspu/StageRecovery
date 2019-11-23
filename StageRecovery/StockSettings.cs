@@ -27,43 +27,43 @@ namespace StageRecovery
         internal static bool settingsUseDREVelocity = true;
         internal static bool settingsUseDistanceOverride = false;
 
-        [GameParameters.CustomParameterUI("Mod Enabled")]
+        [GameParameters.CustomParameterUI("#StageRecovery_SREnabled")]//Mod Enabled
         public bool SREnabled = true;
 
 
-        [GameParameters.CustomParameterUI("Use Distance Override",
-            toolTip = "Enable Distance Override to use a specified value for distance modification rather than calculating it")]
+        [GameParameters.CustomParameterUI("#StageRecovery_UseDistanceOverride",//Use Distance Override
+            toolTip = "#StageRecovery_UseDistanceOverride_desc")]//Enable Distance Override to use a specified value for distance modification rather than calculating it
         public bool UseDistanceOverride = false;
 
-        [GameParameters.CustomParameterUI("Enable Flat Rate Model",
-            toolTip = "Disabled this to use a Variable Rate Model")]
+        [GameParameters.CustomParameterUI("#StageRecovery_FlatRateModel",//Enable Flat Rate Model
+            toolTip = "#StageRecovery_FlatRateModel_desc")]//Disabled this to use a Variable Rate Model
         public bool FlatRateModel = false;
 
-        [GameParameters.CustomParameterUI("Use the DRE Velocity")]
+        [GameParameters.CustomParameterUI("#StageRecovery_UseDREVelocity")]//Use the DRE Velocity
         public bool UseDREVelocity = true;
 
 
-        [GameParameters.CustomParameterUI("Pre-Recover Vessels",
-            toolTip = "Recover Kerbals before a ship is deleted")]
+        [GameParameters.CustomParameterUI("#StageRecovery_PreRecover",//Pre-Recover Vessels
+            toolTip = "#StageRecovery_PreRecover_desc")]//Recover Kerbals before a ship is deleted
         public bool PreRecover = true;
 
-        [GameParameters.CustomParameterUI("Failure Messages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_ShowFailureMessages")]//Failure Messages
         public bool ShowFailureMessages = true;
 
-        [GameParameters.CustomParameterUI("Success Messages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_ShowSuccessMessages")]//Success Messages
         public bool ShowSuccessMessages = true;
 
-        [GameParameters.CustomParameterUI("Try Powered Recovery")]
+        [GameParameters.CustomParameterUI("#StageRecovery_PoweredRecovery")]//Try Powered Recovery
         public bool PoweredRecovery = true;
 
-        [GameParameters.CustomParameterUI("Recover Clamps")]
+        [GameParameters.CustomParameterUI("#StageRecovery_RecoverClamps")]//Recover Clamps
         public bool RecoverClamps = true;
 
-        [GameParameters.CustomParameterUI("Tie Into Upgrades")]
+        [GameParameters.CustomParameterUI("#StageRecovery_UseUpgrades")]//Tie Into Upgrades
         public bool UseUpgrades = true;
 
-        [GameParameters.CustomParameterUI("Hide the SpaceCenter button",
-            toolTip = "The button merely opens a window directing you to these settings pages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_hideSpaceCenterButton",//Hide the SpaceCenter button
+            toolTip = "#StageRecovery_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
 
 

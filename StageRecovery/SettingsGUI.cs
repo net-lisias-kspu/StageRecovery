@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using ToolbarControl_NS;
 using ClickThroughFix;
+using KSP.Localization;
 
 namespace StageRecovery
 {
@@ -121,7 +122,7 @@ namespace StageRecovery
         {
             if (flightGUI.showFlightGUI)
             {
-                flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
+                flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);//
             }
 
             if (showBlacklist)
@@ -130,11 +131,11 @@ namespace StageRecovery
             }
             if (showWindow)
             {
-                mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
+                mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);//
             }
             if (editorGUI.showEditorGUI)
             {
-                editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
+                editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);//
             }
         }
 
@@ -165,18 +166,18 @@ namespace StageRecovery
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Settings are now in the stock settings");
+            GUILayout.Label(Localizer.Format("#StageRecovery_text1"));//"Settings are now in the stock settings"
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("(old settings, if any, were NOT migrated)");
+            GUILayout.Label(Localizer.Format("#StageRecovery_text2"));//"(old settings, if any, were NOT migrated)"
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Close", GUILayout.Width(60)))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Close"), GUILayout.Width(60)))//"Close"
             {
                 showWindow = false;
             }
@@ -196,7 +197,7 @@ namespace StageRecovery
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(s);
-                if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))//
                 {
                     Settings.Instance.BlackList.Remove(s);
                     break;
@@ -206,19 +207,19 @@ namespace StageRecovery
             GUILayout.EndScrollView();
             GUILayout.BeginHorizontal();
             tempListItem = GUILayout.TextField(tempListItem);
-            if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))
+            if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))//
             {
                 Settings.Instance.BlackList.Add(tempListItem);
                 tempListItem = "";
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save"))
+            if (GUILayout.Button("Save"))//
             {
                 Settings.Instance.BlackList.Save();
                 showBlacklist = false;
             }
-            if (GUILayout.Button("Cancel"))
+            if (GUILayout.Button("Cancel"))//
             {
                 Settings.Instance.BlackList.Load();
                 showBlacklist = false;

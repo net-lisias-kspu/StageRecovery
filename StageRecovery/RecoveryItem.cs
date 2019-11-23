@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
+using KSP.Localization;
 
 namespace StageRecovery
 {
@@ -41,7 +42,7 @@ namespace StageRecovery
         public float FundsOriginal = 0, FundsReturned = 0, DryReturns = 0, FuelReturns = 0;
         public float KSCDistance = 0;
         public float RecoveryPercent = 0, DistancePercent = 0, SpeedPercent = 0;
-        public string ReasonForFailure { get { if (Recovered) { return "SUCCESS"; } if (burnedUp) { return "BURNUP"; } return "SPEED"; } }
+        public string ReasonForFailure { get { if (Recovered) { return Localizer.Format("#StageRecovery_ReasonForFailure1"); } if (burnedUp) { return Localizer.Format("#StageRecovery_ReasonForFailure2"); } return Localizer.Format("#StageRecovery_ReasonForFailure3"); } }//"SUCCESS""BURNUP""SPEED"
         public Dictionary<string, double> fuelUsed = new Dictionary<string, double>();
 
         public double RecoveredTime { get; private set; }
