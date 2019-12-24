@@ -373,142 +373,150 @@ namespace StageRecovery
             }
             catch (Exception e) //If the engine moduleRef is null, this will be fired. But I NEED it to exist to do anything practical.
             {
-                Debug.LogError("[SR] Error occurred while attempting powered speed reduction.");
+                Debug.LogError("[SR] Error occurred while gathering resources for powered speed reduction.");
                 Debug.LogException(e);
             }
 
             //So, I'm not positive jets really need to be done differently. Though they could go further than normal rockets because of gliding (and wouldn't need as much TWR).
-            if (Controlled && hasEngines) //If the stage is controlled and there are engines, we continue.
+            try
             {
-                Log.Info("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
-
-                if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
+                if (Controlled && hasEngines) //If the stage is controlled and there are engines, we continue.
                 {
-                    return finalVelocity;
-                }
-                //Now we determine the netISP by taking the total thrust and dividing by the stuff we calculated earlier.
-                netISP = totalThrust / netISP;
+                    Log.Info("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
 
-                double finalMassRequired = totalMass * Math.Exp(-(1.5 * (finalVelocity - targetSpeed)) / (9.81 * netISP));
-                double massRequired = totalMass - finalMassRequired;
-
-                Log.Info("[SR] Requires " + propsUsed.Count + " fuels. " + string.Join(", ", propsUsed.Keys.ToArray()));
-
-                //If the engine doesn't need fuel (ie, electric engines from firespitter) then we just say you land
-                if (propsUsed.Count == 0)
-                {
-                    finalVelocity = targetSpeed;
-                }
-                //Otherwise we need to use fuel
-                else
-                {
-                    //Setup a dictionary with the fuelName and amount required
-                    Dictionary<string, double> propAmounts = new Dictionary<string, double>();
-                    //We determine something called the DnRnSum, which is the sum of all the densities times the ratio
-                    double DnRnSum = 0;
-                    foreach (KeyValuePair<string, double> entry in propsUsed)
+                    if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
                     {
-                        DnRnSum += entry.Value * PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                        return finalVelocity;
                     }
-                    //Then we determine the amount of each fuel type required (to expell the correct mass) using the DnRnSum and the ratio
-                    foreach (KeyValuePair<string, double> entry in propsUsed)
-                    {
-                        double amt = massRequired * entry.Value / DnRnSum;
-                        propAmounts.Add(entry.Key, amt);                        
-                    }
+                    //Now we determine the netISP by taking the total thrust and dividing by the stuff we calculated earlier.
+                    netISP = totalThrust / netISP;
 
-                    //Assume we have enough fuel until we check
-                    bool enoughFuel = true;
-                    double limiter = 0;
-                    string limitingFuelType = "";
-                    //Check if we have enough fuel and determine which fuel is the limiter if we don't (multiply density times amount missing)
-                    foreach (KeyValuePair<string, double> entry in propAmounts)
+                    double finalMassRequired = totalMass * Math.Exp(-(1.5 * (finalVelocity - targetSpeed)) / (9.81 * netISP));
+                    double massRequired = totalMass - finalMassRequired;
+
+                    Log.Info("[SR] Requires " + propsUsed.Count + " fuels. " + string.Join(", ", propsUsed.Keys.ToArray()));
+
+                    //If the engine doesn't need fuel (ie, electric engines from firespitter) then we just say you land
+                    if (propsUsed.Count == 0)
                     {
-                        double density = PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
-                        propRemaining.Add(entry.Key, Math.Max(0, resources[entry.Key] - entry.Value));
-                        if (!resources.ContainsKey(entry.Key) || (entry.Value > resources[entry.Key] &&
-                            (entry.Value - resources[entry.Key]) * density > limiter))
+                        finalVelocity = targetSpeed;
+                    }
+                    //Otherwise we need to use fuel
+                    else
+                    {
+                        //Setup a dictionary with the fuelName and amount required
+                        Dictionary<string, double> propAmounts = new Dictionary<string, double>();
+                        //We determine something called the DnRnSum, which is the sum of all the densities times the ratio
+                        double DnRnSum = 0;
+                        foreach (KeyValuePair<string, double> entry in propsUsed)
                         {
-                            enoughFuel = false;
-                            limitingFuelType = entry.Key;
-                            if (resources.ContainsKey(entry.Key))
+                            DnRnSum += entry.Value * PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                        }
+                        //Then we determine the amount of each fuel type required (to expell the correct mass) using the DnRnSum and the ratio
+                        foreach (KeyValuePair<string, double> entry in propsUsed)
+                        {
+                            double amt = massRequired * entry.Value / DnRnSum;
+                            propAmounts.Add(entry.Key, amt);                        
+                        }
+
+                        //Assume we have enough fuel until we check
+                        bool enoughFuel = true;
+                        double limiter = 0;
+                        string limitingFuelType = "";
+                        //Check if we have enough fuel and determine which fuel is the limiter if we don't (multiply density times amount missing)
+                        foreach (KeyValuePair<string, double> entry in propAmounts)
+                        {
+                            double density = PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                            propRemaining[entry.Key] = Math.Max(0, resources[entry.Key] - entry.Value); /* MKW : add or override existing entry */
+                            if (!resources.ContainsKey(entry.Key) || (entry.Value > resources[entry.Key] &&
+                                (entry.Value - resources[entry.Key]) * density > limiter))
                             {
-                                limiter = (float)(entry.Value - resources[entry.Key]) * density;
+                                enoughFuel = false;
+                                limitingFuelType = entry.Key;
+                                if (resources.ContainsKey(entry.Key))
+                                {
+                                    limiter = (float)(entry.Value - resources[entry.Key]) * density;
+                                }
+                                else
+                                {
+                                    limiter = (entry.Value) * density;
+                                }
+                            }
+                        }
+
+                        //If we don't have enough fuel, we determine how much we CAN use so that maybe we'll land slow enough for a partial refund
+                        if (!enoughFuel)
+                        {
+                            Log.Info("[SR] Not enough fuel for speed reduction. Attempting partial reduction.");
+                            double limiterAmount = resources.ContainsKey(limitingFuelType) ? resources[limitingFuelType] : 0;
+                            double ratio1 = propsUsed[limitingFuelType];
+                            foreach (KeyValuePair<string, double> entry in new Dictionary<string, double>(propAmounts))
+                            {
+                                propAmounts[entry.Key] = (limiterAmount / ratio1) * propsUsed[entry.Key];
+                            }
+                        }
+
+                        //Set the fuel amounts used for display later
+                        foreach (KeyValuePair<string, double> prop in propAmounts)
+                        {
+                            if (fuelUsed.ContainsKey(prop.Key))
+                            {
+                                fuelUsed[prop.Key] += prop.Value;
                             }
                             else
                             {
-                                limiter = (entry.Value) * density;
+                                fuelUsed.Add(prop.Key, prop.Value);
                             }
                         }
-                    }
-
-                    //If we don't have enough fuel, we determine how much we CAN use so that maybe we'll land slow enough for a partial refund
-                    if (!enoughFuel)
-                    {
-                        Log.Info("[SR] Not enough fuel for speed reduction. Attempting partial reduction.");
-                        double limiterAmount = resources.ContainsKey(limitingFuelType) ? resources[limitingFuelType] : 0;
-                        double ratio1 = propsUsed[limitingFuelType];
-                        foreach (KeyValuePair<string, double> entry in new Dictionary<string, double>(propAmounts))
-                        {
-                            propAmounts[entry.Key] = (limiterAmount / ratio1) * propsUsed[entry.Key];
-                        }
-                    }
-
-                    //Set the fuel amounts used for display later
-                    foreach (KeyValuePair<string, double> prop in propAmounts)
-                    {
-                        if (fuelUsed.ContainsKey(prop.Key))
-                        {
-                            fuelUsed[prop.Key] += prop.Value;
-                        }
-                        else
-                        {
-                            fuelUsed.Add(prop.Key, prop.Value);
-                        }
-                    }
-                    propsConsumed = new Dictionary<string, double>(propAmounts);
+                        propsConsumed = new Dictionary<string, double>(propAmounts);
 
 
-                    //Delta-V is all about mass differences, so we need to know exactly how much we used
-                    double massRemoved = 0;
-                    //Loop over the parts and the resources contained, removing what we need
-                    foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
-                    {
-                        foreach (ProtoPartResourceSnapshot r in p.resources)
+                        //Delta-V is all about mass differences, so we need to know exactly how much we used
+                        double massRemoved = 0;
+                        //Loop over the parts and the resources contained, removing what we need
+                        foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
                         {
-                            if (propsUsed.ContainsKey(r.resourceName))
+                            foreach (ProtoPartResourceSnapshot r in p.resources)
                             {
-                                double density = PartResourceLibrary.Instance.GetDefinition(r.resourceName).density;
-                                double amountInPart = r.amount;
+                                if (propsUsed.ContainsKey(r.resourceName))
+                                {
+                                    double density = PartResourceLibrary.Instance.GetDefinition(r.resourceName).density;
+                                    double amountInPart = r.amount;
 
-                                //If there's more in the part then what we need, reduce what's in the part and set the amount we need to 0
-                                if (amountInPart > propAmounts[r.resourceName])
-                                {
-                                    massRemoved += propAmounts[r.resourceName] * density;
-                                    amountInPart -= propAmounts[r.resourceName];
-                                    propAmounts[r.resourceName] = 0;
-                                }
-                                //If there's less in the part than what we need, drain the part and lower the amount we need by that much
-                                else
-                                {
-                                    massRemoved += (float)amountInPart * density;
-                                    propAmounts[r.resourceName] -= (float)amountInPart;
-                                    amountInPart = 0;
-                                }
-                                //Set the new fuel values in the part (the ONLY time we modify the recovered stage)
-                                r.amount = amountInPart;
-                                if (r.resourceRef != null)
-                                {
-                                    r.resourceRef.amount = amountInPart;
+                                    //If there's more in the part then what we need, reduce what's in the part and set the amount we need to 0
+                                    if (amountInPart > propAmounts[r.resourceName])
+                                    {
+                                        massRemoved += propAmounts[r.resourceName] * density;
+                                        amountInPart -= propAmounts[r.resourceName];
+                                        propAmounts[r.resourceName] = 0;
+                                    }
+                                    //If there's less in the part than what we need, drain the part and lower the amount we need by that much
+                                    else
+                                    {
+                                        massRemoved += (float)amountInPart * density;
+                                        propAmounts[r.resourceName] -= (float)amountInPart;
+                                        amountInPart = 0;
+                                    }
+                                    //Set the new fuel values in the part (the ONLY time we modify the recovered stage)
+                                    r.amount = amountInPart;
+                                    if (r.resourceRef != null)
+                                    {
+                                        r.resourceRef.amount = amountInPart;
+                                    }
                                 }
                             }
                         }
+                        //Calculate the total delta-v expended.
+                        double totaldV = netISP * 9.81 * Math.Log(totalMass / (totalMass - massRemoved));
+                        //Divide that by 1.5 and subtract it from the velocity after parachutes.
+                        finalVelocity -= (float)(totaldV / 1.5);
                     }
-                    //Calculate the total delta-v expended.
-                    double totaldV = netISP * 9.81 * Math.Log(totalMass / (totalMass - massRemoved));
-                    //Divide that by 1.5 and subtract it from the velocity after parachutes.
-                    finalVelocity -= (float)(totaldV / 1.5);
                 }
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("[SR] Error occurred while attempting powered speed reduction.");
+                Debug.LogException(e);
             }
             //Hopefully we removed enough fuel to land!
             Log.Info($"[SR] Target Velocity: {targetSpeed} Final Velocity: {finalVelocity}");
