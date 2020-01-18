@@ -1,7 +1,15 @@
 Changelog:
 
+1.9.2.1
+	Thanks to GitHub user @mwerle for these fixes:
+		 Fix for StageRecovery failing to recover certain stages.
+		 Change a couple of error logs to info logs to stop log spam.
+
 1.9.2
 	Updated for KSP 1.8
+
+1.9.1.4
+	Reorganized code to avoid segfaults on pre-1.7 games due to the new ModuleDecouplerBase being added in 1.7
 
 1.9.1.3
 	Rewrite engine plate code due to an infinite loop which was happening when the top node of an engineplate was attached before the bottom node was

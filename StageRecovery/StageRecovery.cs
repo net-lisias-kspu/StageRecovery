@@ -163,11 +163,11 @@ namespace StageRecovery
         }
         void onVesselRecovered(ProtoVessel pv, bool b)
         {
-            Log.Error("onVesselRecovered: " + pv.vesselName);
+            Log.Info("onVesselRecovered: " + pv.vesselName);
         }
         void onVesselTerminated(ProtoVessel pv)
         {
-            Log.Error("onVesselTerminated: " + pv.vesselName);
+            Log.Info("onVesselTerminated: " + pv.vesselName);
         }
 
         public void ShipModifiedEvent(ShipConstruct sc)
