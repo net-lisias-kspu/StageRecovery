@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
+using KSP.Localization;
 
 namespace StageRecovery
 {
@@ -19,13 +20,13 @@ namespace StageRecovery
                     return false;
                 }
 
-                if (Settings.Instance.FlatRateModel)
+                if (Settings1.Instance.FlatRateModel)
                 {
-                    return Vt < Settings.Instance.CutoffVelocity;
+                    return Vt < Settings2.Instance.CutoffVelocity;
                 }
                 else
                 {
-                    return Vt < Settings.Instance.HighCut;
+                    return Vt < Settings2.Instance.HighCut;
                 }
             }
         }
@@ -41,7 +42,7 @@ namespace StageRecovery
         public float FundsOriginal = 0, FundsReturned = 0, DryReturns = 0, FuelReturns = 0;
         public float KSCDistance = 0;
         public float RecoveryPercent = 0, DistancePercent = 0, SpeedPercent = 0;
-        public string ReasonForFailure { get { if (Recovered) { return "SUCCESS"; } if (burnedUp) { return "BURNUP"; } return "SPEED"; } }
+        public string ReasonForFailure { get { if (Recovered) { return Localizer.Format("#StageRecovery_ReasonForFailure1"); } if (burnedUp) { return Localizer.Format("#StageRecovery_ReasonForFailure2"); } return Localizer.Format("#StageRecovery_ReasonForFailure3"); } }//"SUCCESS""BURNUP""SPEED"
         public Dictionary<string, double> fuelUsed = new Dictionary<string, double>();
 
         public double RecoveredTime { get; private set; }
@@ -58,7 +59,7 @@ namespace StageRecovery
                     bool controlled = vessel.protoVessel.wasControllable;
                     if (!controlled && KerbalsOnboard.Count > 0)
                     {
-                        if (!Settings.Instance.UseUpgrades)
+                        if (!Settings1.Instance.UseUpgrades)
                         {
                             controlled = true;
                         }
@@ -75,24 +76,24 @@ namespace StageRecovery
                         //double check that there aren't any probe cores
                         controlled = vessel.GetVesselCrew().Count > 0 || vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(m => m.moduleName == "ModuleCommand") && pps.partInfo.partPrefab.CrewCapacity == 0);
                     }
-                    if (controlled && Settings.Instance.UseUpgrades)
+                    if (controlled && Settings1.Instance.UseUpgrades)
                     {
                         controlled = vessel.GetVesselCrew().Exists(c => c.experienceTrait.Title == "Pilot") || KerbalsOnboard.Exists(pcm => pcm.CrewMember.experienceTrait.Title == "Pilot");
                         if (controlled)
                         {
-                            Debug.Log("[SR] Found a kerbal pilot!");
+                            Log.Info("[SR] Found a kerbal pilot!");
                         }
                         else
                         {
-                            Debug.Log("[SR] No kerbal pilot found, searching for a probe core...");
+                            Log.Info("[SR] No kerbal pilot found, searching for a probe core...");
                             controlled = vessel.protoVessel.protoPartSnapshots.Exists(p => p.modules.Exists(m => m.moduleName == "ModuleSAS" || m.moduleName == "MechJebCore"));
                             if (controlled)
                             {
-                                Debug.Log("[SR] Found an SAS compatible probe core!");
+                                Log.Info("[SR] Found an SAS compatible probe core!");
                             }
                             else
                             {
-                                Debug.Log("[SR] No probe core with SAS found.");
+                                Log.Info("[SR] No probe core with SAS found.");
                             }
                         }
 
@@ -110,8 +111,10 @@ namespace StageRecovery
             //Pack all the parts. I got this from MCE and everything works so I haven't tried removing it.
             if (!vessel.packed)
             {
-                foreach (Part p in vessel.Parts)
+                for (int i = 0; i < vessel.Parts.Count; i++)
+                //foreach (Part p in vessel.Parts)
                 {
+                    Part p = vessel.Parts[i];
                     p.Pack();
                 }
             }
@@ -121,7 +124,7 @@ namespace StageRecovery
 
         public bool Process(bool preRecover)
         {
-            //Debug.Log("[SR] Altitude: " + vessel.altitude);
+            //Log.Info("[SR] Altitude: " + vessel.altitude);
 
             PreRecovered = preRecover;
             
@@ -133,7 +136,7 @@ namespace StageRecovery
 
             //Try to perform a powered landing, if needed
             double vt_old = Vt;
-            if (Vt > (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.LowCut) && Settings.Instance.PoweredRecovery)
+            if (Vt > (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.LowCut) && Settings1.Instance.PoweredRecovery)
             {
                 Vt = TryPoweredRecovery();
             }
@@ -151,17 +154,22 @@ namespace StageRecovery
             KerbalsOnboard = RecoverKerbals();
             RecoveredTime = Planetarium.GetUniversalTime();
 
-            Debug.Log(string.Format("[SR] Stage was {0}recovered. Distance: {1}km, Altitude: {2}m", 
+            Log.Info(string.Format("[SR] Stage was {0}recovered. Distance: {1}km, Altitude: {2}m", 
                 (Recovered ? "" : "not "), 
                 Math.Round(KSCDistance/1000, 2), 
                 Math.Round(vessel.altitude)));
 
-            Debug.Log(string.Format("[SR] D%: {0}, S%: {1}, Total: {2}. Funds: {3}", 
+            Log.Info(string.Format("[SR] D%: {0}, S%: {1}, Total: {2}. Funds: {3}", 
                 Math.Round(DistancePercent, 3),
                 Math.Round(SpeedPercent, 3), 
                 Math.Round(RecoveryPercent, 3), 
                 Math.Round(FundsReturned, 2)));
-
+#if DEBUG
+            foreach (var r in propRemaining)
+            {
+                Log.Info("Remaining " + r.Key + ": " + r.Value.ToString("N1"));
+            }
+#endif
             return Recovered;
         }
 
@@ -182,7 +190,7 @@ namespace StageRecovery
                                 string[] split2 = split[i + 1].Split('>');
                                 if (!float.TryParse(split2[1], out drag))
                                 {
-                                    Debug.Log("[SR] Failure trying to read parachute data. Assuming 500 drag.");
+                                    Log.Info("[SR] Failure trying to read parachute data. Assuming 500 drag.");
                                     drag = 500;
                                 }
                             }
@@ -204,7 +212,7 @@ namespace StageRecovery
         {
             double v = StageRecovery.ProcessPartList(vessel.protoVessel.protoPartSnapshots);
             ParachuteModule = (vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(ppms => ppms.moduleName == "RealChuteModule")) ? "RealChute" : "Stock");
-            Debug.Log("[SR] Vt: " + v);
+            Log.Info("[SR] Vt: " + v);
             return v;
         }
 
@@ -229,6 +237,8 @@ namespace StageRecovery
             return (float)mass;
         }
 
+        public Dictionary<string, double> propRemaining = new Dictionary<string, double>();
+
         /// <summary>
         /// Attempts to use the engines to reduce the speed to the provided target value
         /// </summary>
@@ -236,7 +246,7 @@ namespace StageRecovery
         /// <returns></returns>
         private double ReduceSpeed_Engines(double initialSpeed, double targetSpeed)
         {
-            Debug.Log($"[SR] Attempting to use engines to reduce speed from {initialSpeed} to {targetSpeed}");
+            Log.Info($"[SR] Attempting to use engines to reduce speed from {initialSpeed} to {targetSpeed}");
             //ISP references: http://forum.kerbalspaceprogram.com/threads/34315-How-Do-I-calculate-Delta-V-on-more-than-one-engine
             //Thanks to Malkuth, of Mission Controller Extended, for the base of this code.
             bool hasEngines = false;
@@ -259,7 +269,7 @@ namespace StageRecovery
             { 
                 if (!Controlled)
                 {
-                    Debug.Log("[SR] Stage not controlled. Can't perform powered speed reduction.");
+                    Log.Info("[SR] Stage not controlled. Can't perform powered speed reduction.");
                     noControl = true;
                     return finalVelocity;
                 }
@@ -364,157 +374,166 @@ namespace StageRecovery
             }
             catch (Exception e) //If the engine moduleRef is null, this will be fired. But I NEED it to exist to do anything practical.
             {
-                Debug.LogError("[SR] Error occurred while attempting powered speed reduction.");
+                Debug.LogError("[SR] Error occurred while gathering resources for powered speed reduction.");
                 Debug.LogException(e);
             }
 
             //So, I'm not positive jets really need to be done differently. Though they could go further than normal rockets because of gliding (and wouldn't need as much TWR).
-            if (Controlled && hasEngines) //If the stage is controlled and there are engines, we continue.
+            try
             {
-                Debug.Log("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
-
-                if (totalThrust < (totalMass * 9.81) * Settings.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
+                if (Controlled && hasEngines) //If the stage is controlled and there are engines, we continue.
                 {
-                    return finalVelocity;
-                }
-                //Now we determine the netISP by taking the total thrust and dividing by the stuff we calculated earlier.
-                netISP = totalThrust / netISP;
+                    Log.Info("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
 
-                double finalMassRequired = totalMass * Math.Exp(-(1.5 * (finalVelocity - targetSpeed)) / (9.81 * netISP));
-                double massRequired = totalMass - finalMassRequired;
-
-                Debug.Log("[SR] Requires " + propsUsed.Count + " fuels. " + string.Join(", ", propsUsed.Keys.ToArray()));
-
-                //If the engine doesn't need fuel (ie, electric engines from firespitter) then we just say you land
-                if (propsUsed.Count == 0)
-                {
-                    finalVelocity = targetSpeed;
-                }
-                //Otherwise we need to use fuel
-                else
-                {
-                    //Setup a dictionary with the fuelName and amount required
-                    Dictionary<string, double> propAmounts = new Dictionary<string, double>();
-                    //We determine something called the DnRnSum, which is the sum of all the densities times the ratio
-                    double DnRnSum = 0;
-                    foreach (KeyValuePair<string, double> entry in propsUsed)
+                    if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
                     {
-                        DnRnSum += entry.Value * PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                        return finalVelocity;
                     }
-                    //Then we determine the amount of each fuel type required (to expell the correct mass) using the DnRnSum and the ratio
-                    foreach (KeyValuePair<string, double> entry in propsUsed)
-                    {
-                        double amt = massRequired * entry.Value / DnRnSum;
-                        propAmounts.Add(entry.Key, amt);
-                    }
+                    //Now we determine the netISP by taking the total thrust and dividing by the stuff we calculated earlier.
+                    netISP = totalThrust / netISP;
 
-                    //Assume we have enough fuel until we check
-                    bool enoughFuel = true;
-                    double limiter = 0;
-                    string limitingFuelType = "";
-                    //Check if we have enough fuel and determine which fuel is the limiter if we don't (multiply density times amount missing)
-                    foreach (KeyValuePair<string, double> entry in propAmounts)
+                    double finalMassRequired = totalMass * Math.Exp(-(1.5 * (finalVelocity - targetSpeed)) / (9.81 * netISP));
+                    double massRequired = totalMass - finalMassRequired;
+
+                    Log.Info("[SR] Requires " + propsUsed.Count + " fuels. " + string.Join(", ", propsUsed.Keys.ToArray()));
+
+                    //If the engine doesn't need fuel (ie, electric engines from firespitter) then we just say you land
+                    if (propsUsed.Count == 0)
                     {
-                        double density = PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
-                        if (!resources.ContainsKey(entry.Key) || (entry.Value > resources[entry.Key] &&
-                            (entry.Value - resources[entry.Key]) * density > limiter))
+                        finalVelocity = targetSpeed;
+                    }
+                    //Otherwise we need to use fuel
+                    else
+                    {
+                        //Setup a dictionary with the fuelName and amount required
+                        Dictionary<string, double> propAmounts = new Dictionary<string, double>();
+                        //We determine something called the DnRnSum, which is the sum of all the densities times the ratio
+                        double DnRnSum = 0;
+                        foreach (KeyValuePair<string, double> entry in propsUsed)
                         {
-                            enoughFuel = false;
-                            limitingFuelType = entry.Key;
-                            if (resources.ContainsKey(entry.Key))
+                            DnRnSum += entry.Value * PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                        }
+                        //Then we determine the amount of each fuel type required (to expell the correct mass) using the DnRnSum and the ratio
+                        foreach (KeyValuePair<string, double> entry in propsUsed)
+                        {
+                            double amt = massRequired * entry.Value / DnRnSum;
+                            propAmounts.Add(entry.Key, amt);                        
+                        }
+
+                        //Assume we have enough fuel until we check
+                        bool enoughFuel = true;
+                        double limiter = 0;
+                        string limitingFuelType = "";
+                        //Check if we have enough fuel and determine which fuel is the limiter if we don't (multiply density times amount missing)
+                        foreach (KeyValuePair<string, double> entry in propAmounts)
+                        {
+                            double density = PartResourceLibrary.Instance.GetDefinition(entry.Key).density;
+                            propRemaining[entry.Key] = Math.Max(0, resources[entry.Key] - entry.Value); /* MKW : add or override existing entry */
+                            if (!resources.ContainsKey(entry.Key) || (entry.Value > resources[entry.Key] &&
+                                (entry.Value - resources[entry.Key]) * density > limiter))
                             {
-                                limiter = (float)(entry.Value - resources[entry.Key]) * density;
+                                enoughFuel = false;
+                                limitingFuelType = entry.Key;
+                                if (resources.ContainsKey(entry.Key))
+                                {
+                                    limiter = (float)(entry.Value - resources[entry.Key]) * density;
+                                }
+                                else
+                                {
+                                    limiter = (entry.Value) * density;
+                                }
+                            }
+                        }
+
+                        //If we don't have enough fuel, we determine how much we CAN use so that maybe we'll land slow enough for a partial refund
+                        if (!enoughFuel)
+                        {
+                            Log.Info("[SR] Not enough fuel for speed reduction. Attempting partial reduction.");
+                            double limiterAmount = resources.ContainsKey(limitingFuelType) ? resources[limitingFuelType] : 0;
+                            double ratio1 = propsUsed[limitingFuelType];
+                            foreach (KeyValuePair<string, double> entry in new Dictionary<string, double>(propAmounts))
+                            {
+                                propAmounts[entry.Key] = (limiterAmount / ratio1) * propsUsed[entry.Key];
+                            }
+                        }
+
+                        //Set the fuel amounts used for display later
+                        foreach (KeyValuePair<string, double> prop in propAmounts)
+                        {
+                            if (fuelUsed.ContainsKey(prop.Key))
+                            {
+                                fuelUsed[prop.Key] += prop.Value;
                             }
                             else
                             {
-                                limiter = (entry.Value) * density;
+                                fuelUsed.Add(prop.Key, prop.Value);
                             }
                         }
-                    }
-
-                    //If we don't have enough fuel, we determine how much we CAN use so that maybe we'll land slow enough for a partial refund
-                    if (!enoughFuel)
-                    {
-                        Debug.Log("[SR] Not enough fuel for speed reduction. Attempting partial reduction.");
-                        double limiterAmount = resources.ContainsKey(limitingFuelType) ? resources[limitingFuelType] : 0;
-                        double ratio1 = propsUsed[limitingFuelType];
-                        foreach (KeyValuePair<string, double> entry in new Dictionary<string, double>(propAmounts))
-                        {
-                            propAmounts[entry.Key] = (limiterAmount / ratio1) * propsUsed[entry.Key];
-                        }
-                    }
-
-                    //Set the fuel amounts used for display later
-                    foreach (KeyValuePair<string, double> prop in propAmounts)
-                    {
-                        if (fuelUsed.ContainsKey(prop.Key))
-                        {
-                            fuelUsed[prop.Key] += prop.Value;
-                        }
-                        else
-                        {
-                            fuelUsed.Add(prop.Key, prop.Value);
-                        }
-                    }
-                    propsConsumed = new Dictionary<string, double>(propAmounts);
+                        propsConsumed = new Dictionary<string, double>(propAmounts);
 
 
-                    //Delta-V is all about mass differences, so we need to know exactly how much we used
-                    double massRemoved = 0;
-                    //Loop over the parts and the resources contained, removing what we need
-                    foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
-                    {
-                        foreach (ProtoPartResourceSnapshot r in p.resources)
+                        //Delta-V is all about mass differences, so we need to know exactly how much we used
+                        double massRemoved = 0;
+                        //Loop over the parts and the resources contained, removing what we need
+                        foreach (ProtoPartSnapshot p in vessel.protoVessel.protoPartSnapshots)
                         {
-                            if (propsUsed.ContainsKey(r.resourceName))
+                            foreach (ProtoPartResourceSnapshot r in p.resources)
                             {
-                                double density = PartResourceLibrary.Instance.GetDefinition(r.resourceName).density;
-                                double amountInPart = r.amount;
+                                if (propsUsed.ContainsKey(r.resourceName))
+                                {
+                                    double density = PartResourceLibrary.Instance.GetDefinition(r.resourceName).density;
+                                    double amountInPart = r.amount;
 
-                                //If there's more in the part then what we need, reduce what's in the part and set the amount we need to 0
-                                if (amountInPart > propAmounts[r.resourceName])
-                                {
-                                    massRemoved += propAmounts[r.resourceName] * density;
-                                    amountInPart -= propAmounts[r.resourceName];
-                                    propAmounts[r.resourceName] = 0;
-                                }
-                                //If there's less in the part than what we need, drain the part and lower the amount we need by that much
-                                else
-                                {
-                                    massRemoved += (float)amountInPart * density;
-                                    propAmounts[r.resourceName] -= (float)amountInPart;
-                                    amountInPart = 0;
-                                }
-                                //Set the new fuel values in the part (the ONLY time we modify the recovered stage)
-                                r.amount = amountInPart;
-                                if (r.resourceRef != null)
-                                {
-                                    r.resourceRef.amount = amountInPart;
+                                    //If there's more in the part then what we need, reduce what's in the part and set the amount we need to 0
+                                    if (amountInPart > propAmounts[r.resourceName])
+                                    {
+                                        massRemoved += propAmounts[r.resourceName] * density;
+                                        amountInPart -= propAmounts[r.resourceName];
+                                        propAmounts[r.resourceName] = 0;
+                                    }
+                                    //If there's less in the part than what we need, drain the part and lower the amount we need by that much
+                                    else
+                                    {
+                                        massRemoved += (float)amountInPart * density;
+                                        propAmounts[r.resourceName] -= (float)amountInPart;
+                                        amountInPart = 0;
+                                    }
+                                    //Set the new fuel values in the part (the ONLY time we modify the recovered stage)
+                                    r.amount = amountInPart;
+                                    if (r.resourceRef != null)
+                                    {
+                                        r.resourceRef.amount = amountInPart;
+                                    }
                                 }
                             }
                         }
+                        //Calculate the total delta-v expended.
+                        double totaldV = netISP * 9.81 * Math.Log(totalMass / (totalMass - massRemoved));
+                        //Divide that by 1.5 and subtract it from the velocity after parachutes.
+                        finalVelocity -= (float)(totaldV / 1.5);
                     }
-                    //Calculate the total delta-v expended.
-                    double totaldV = netISP * 9.81 * Math.Log(totalMass / (totalMass - massRemoved));
-                    //Divide that by 1.5 and subtract it from the velocity after parachutes.
-                    finalVelocity -= (float)(totaldV / 1.5);
                 }
             }
+            catch(Exception e)
+            {
+                Debug.LogError("[SR] Error occurred while attempting powered speed reduction.");
+                Debug.LogException(e);
+            }
             //Hopefully we removed enough fuel to land!
-            Debug.Log($"[SR] Target Velocity: {targetSpeed} Final Velocity: {finalVelocity}");
-            Debug.Log("[SR] Used following propellant amounts: ");
+            Log.Info($"[SR] Target Velocity: {targetSpeed} Final Velocity: {finalVelocity}");
+            Log.Info("[SR] Used following propellant amounts: ");
             foreach (KeyValuePair<string, double> prop in propsConsumed)
             {
-                Debug.Log($"    {prop.Key}: {prop.Value}");
+                Log.Info($"    {prop.Key}: {prop.Value}");
             }
             return finalVelocity;
         }
 
         private double TryPoweredRecovery()
         {
-            Debug.Log("[SR] Trying powered recovery");
+            Log.Info("[SR] Trying powered recovery");
             //Determine the cutoff velocity that we're aiming for. This is dependent on the recovery model used (flat rate vs variable rate)
-            return ReduceSpeed_Engines(Vt, (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.LowCut) - 2);          
+            return ReduceSpeed_Engines(Vt, (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.LowCut) - 2);          
         }
 
 
@@ -534,22 +553,22 @@ namespace StageRecovery
                 //Holder for the chance of burning up in atmosphere (through my non-scientific calculations)
                 float burnChance = 0f;
                 //If DR is installed, the DRMaxVelocity setting is above 0, and the surface speed is above the DRMaxV setting then we calculate the burnChance
-                if (usingOverheat && Settings.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings.Instance.DeadlyReentryMaxVelocity)
+                if (usingOverheat && Settings1.Instance.UseDREVelocity && Settings3.Instance.DeadlyReentryMaxVelocity > 0 && vessel.srfSpeed > Settings3.Instance.DeadlyReentryMaxVelocity)
                 {
                     double srfSpeed = vessel.srfSpeed;
                     //Try to reduce our velocity to a safe level
-                    if (Settings.Instance.PoweredRecovery)
+                    if (Settings1.Instance.PoweredRecovery)
                     {
-                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings.Instance.DeadlyReentryMaxVelocity);
+                        srfSpeed = ReduceSpeed_Engines(srfSpeed, Settings3.Instance.DeadlyReentryMaxVelocity);
                         //Vt = srfSpeed;
                     }
 
                     //the burnChance is 2% per 1% that the surface speed is above the DRMaxV
-                    burnChance = (float)(2 * ((srfSpeed / Settings.Instance.DeadlyReentryMaxVelocity) - 1));
+                    burnChance = (float)(2 * ((srfSpeed / Settings3.Instance.DeadlyReentryMaxVelocity) - 1));
                     //Log a message alerting us to the speed and the burnChance
                     if (burnChance > 0)
                     {
-                        Debug.Log("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
+                        Log.Info("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings3.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
                     }
                 }
 
@@ -578,10 +597,10 @@ namespace StageRecovery
 
                             //For stock 1.0
                             //Determine the amount of shielding remaining
-                            //Debug.Log("[SR] Looking for resource " + ablativeRsc);
+                            //Log.Info("[SR] Looking for resource " + ablativeRsc);
                             if (p.resources.Exists(r => r.resourceName == ablativeRsc))
                             {
-                                //  Debug.Log("[SR] Found resource " + ablativeRsc);
+                                //  Log.Info("[SR] Found resource " + ablativeRsc);
                                 //                                float shieldRemaining = float.Parse(p.resources.Find(r => r.resourceName == ablativeRsc).resourceValues.GetValue("amount"));
 
                                 float shieldRemaining = (float)p.resources.Find(r => r.resourceName == ablativeRsc).amount;
@@ -596,7 +615,7 @@ namespace StageRecovery
                         }
                     }
                 }
-                Debug.Log("[SR] Found " + totalHeatShield + " ablator remaining with " + maxHeatShield + " total.");
+                Log.Info("[SR] Found " + totalHeatShield + " ablator remaining with " + maxHeatShield + " total.");
                 //Assume we're not going to burn up until proven that we will
                 bool burnIt = false;
                 //Well, we can't burn up unless the chance of doing so is greater than 0
@@ -613,13 +632,13 @@ namespace StageRecovery
                     //If that's less than or equal to the chance of burning, then we burn (25% chance = 0.25, random must be below 0.25)
                     burnIt = (choice <= burnChance);
                     //Once again, more log messages to help with debugging of people's issues
-                    Debug.Log("[SR] Burn chance: " + burnChance + " rand: " + choice + " burning? " + burnIt);
+                    Log.Info("[SR] Burn chance: " + burnChance + " rand: " + choice + " burning? " + burnIt);
                 }
                 return burnIt;
             }
             catch (Exception e)
             {
-                Debug.Log("[SR] Exception while calculating burn chance. Assuming not burned up.");
+                Log.Info("[SR] Exception while calculating burn chance. Assuming not burned up.");
                 Debug.LogException(e);
                 return false;
             }
@@ -629,13 +648,13 @@ namespace StageRecovery
         private void SetRecoveryPercentages()
         {
             //If we're using the Flat Rate model then we need to check for control
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
                 //Assume uncontrolled until proven controlled
                 bool stageControllable = vessel.protoVessel.wasControllable;
                 if (!stageControllable && KerbalsOnboard.Count > 0)
                 {
-                    if (!Settings.Instance.UseUpgrades)
+                    if (!Settings1.Instance.UseUpgrades)
                     {
                         stageControllable = true;
                     }
@@ -659,9 +678,9 @@ namespace StageRecovery
                     }
                 }*/
                 //This is a fun trick for one-liners. The SpeedPercent is equal to 1 if stageControllable==true or the RecoveryModifier saved in the settings if that's false.
-                SpeedPercent = stageControllable ? 1.0f : Settings.Instance.RecoveryModifier;
+                SpeedPercent = stageControllable ? 1.0f : (float)Settings2.Instance.RecoveryModifier;
                 //If the speed is too high then we set the recovery due to speed to 0
-                SpeedPercent = Vt < Settings.Instance.CutoffVelocity ? SpeedPercent : 0;
+                SpeedPercent = Vt < Settings2.Instance.CutoffVelocity ? SpeedPercent : 0;
             }
             //If we're not using Flat Rate (thus using Variable Rate) then we have to do a bit more work to get the SpeedPercent
             else
@@ -674,27 +693,21 @@ namespace StageRecovery
             //Calculate the max distance from KSC (half way around a circle the size of Kerbin)
             double maxDist = SpaceCenter.Instance.cb.Radius * Math.PI;
 
-            int TSUpgrades = StageRecovery.BuildingUpgradeLevel(SpaceCenterFacility.TrackingStation);
-            if (TSUpgrades == 0)
-            {
-                maxDist *= (0.5);
-            }
-            else if (TSUpgrades == 1)
-            {
-                maxDist *= (0.75);
-            }
-
             //Get the reduction in returns due to distance (0.98 at KSC, .1 at maxDist)
-            if (Settings.Instance.DistanceOverride < 0)
+            if (!Settings1.Instance.UseDistanceOverride)
             {
-                DistancePercent = Mathf.Lerp(0.98f, 0.1f, (float)(KSCDistance / maxDist));
+                DistancePercent = Mathf.Lerp(
+                    Math.Max(0.0f, Math.Min(1f, 0.98f + ValueModifierQuery.RunQuery("RecoveryMaximumDelta", 1f).GetEffectDelta())),
+                    Math.Max(0.0f, Math.Min(1f, 0.1f + ValueModifierQuery.RunQuery("RecoveryMinimumDelta", 1f).GetEffectDelta())),
+                    (float) (KSCDistance / maxDist)
+                );
             }
             else
             {
-                DistancePercent = Settings.Instance.DistanceOverride;
+                DistancePercent = (float)Settings3.Instance.DistanceOverride;
             }
             //Combine the modifier from the velocity and the modifier from distance together
-            RecoveryPercent = SpeedPercent * DistancePercent * Settings.Instance.GlobalModifier;
+            RecoveryPercent = (float)SpeedPercent * DistancePercent * (float)Settings3.Instance.GlobalModifier;
         }
 
         //This populates the dictionary of Recovered Parts and the dictionary of Costs, along with total funds returns (original, modified, fuel, and dry)
@@ -706,12 +719,13 @@ namespace StageRecovery
                 float dryCost, fuelCost;
                 //Stock function for taking a ProtoPartSnapshot and the corresponding AvailablePart (aka, partInfo) and determining the value 
                 //of the fuel contained and base part. Whole thing returns the combined total, but we'll do that manually
+
+               
                 ShipConstruction.GetPartCosts(pps, pps.partInfo, out dryCost, out fuelCost);
                 //Set the dryCost to 0 if it's less than 0 (also could be done with dryCost = Math.Max(0, dryCost);)
                 dryCost = dryCost < 0 ? 0 : dryCost;
                 //Same for the fuelCost
                 fuelCost = fuelCost < 0 ? 0 : fuelCost;
-
                 //The unmodified returns are just the costs for the part added to the others
                 FundsOriginal += dryCost + fuelCost;
 
@@ -791,7 +805,7 @@ namespace StageRecovery
             {
                 //We've already removed the Kerbals, now we recover them
                 kerbals = KerbalsOnboard;
-                Debug.Log("[SR] Found pre-recovered Kerbals");
+                Log.Info("[SR] Found pre-recovered Kerbals");
             }
             else
             {
@@ -807,7 +821,7 @@ namespace StageRecovery
                 foreach (CrewWithSeat pcmWS in kerbals)
                 {
                     ProtoCrewMember pcm = pcmWS.CrewMember;
-                    Debug.Log("[SR] Recovering " + pcm.name);
+                    Log.Info("[SR] Recovering " + pcm.name);
                     pcm.rosterStatus = ProtoCrewMember.RosterStatus.Available;
 
                     //Way to go Squad, you now kill Kerbals TWICE instead of only once.
@@ -815,7 +829,7 @@ namespace StageRecovery
                         && pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 2].type == "Die");
                     if (TwoDeathEntries)
                     {
-                        Debug.Log("[SR] Squad has decided to kill " + pcm.name + " not once, but TWICE!");
+                        Log.Info("[SR] Squad has decided to kill " + pcm.name + " not once, but TWICE!");
                         FlightLog.Entry deathEntry0 = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];//pcm.careerLog.Entries.Find(e => e.type == "Die");
                         if (deathEntry0 != null && deathEntry0.type == "Die")
                         {
@@ -824,7 +838,7 @@ namespace StageRecovery
                         FlightLog.Entry deathEntry = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];
                         if (deathEntry != null && deathEntry.type == "Die")
                         {
-                            Debug.Log("[SR] Recovered kerbal registered as dead. Attempting to repair.");
+                            Log.Info("[SR] Recovered kerbal registered as dead. Attempting to repair.");
                             int flightNum = deathEntry.flight;
                             pcm.careerLog.Entries.Remove(deathEntry);
                             FlightLog.Entry landing = new FlightLog.Entry(flightNum, FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
@@ -835,11 +849,11 @@ namespace StageRecovery
                     }
                     else if (pcm.careerLog.Entries.Count > 0 && pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1].type == "Die")
                     {
-                        Debug.Log("[SR] Squad has been gracious and has only killed " + pcm.name + " once, instead of twice.");
+                        Log.Info("[SR] Squad has been gracious and has only killed " + pcm.name + " once, instead of twice.");
                         FlightLog.Entry deathEntry = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];
                         if (deathEntry != null && deathEntry.type == "Die")
                         {
-                            Debug.Log("[SR] Recovered kerbal registered as dead. Attempting to repair.");
+                            Log.Info("[SR] Recovered kerbal registered as dead. Attempting to repair.");
                             int flightNum = deathEntry.flight;
                             pcm.careerLog.Entries.Remove(deathEntry);
                             FlightLog.Entry landing = new FlightLog.Entry(flightNum, FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
@@ -850,7 +864,7 @@ namespace StageRecovery
                     }
                     else
                     {
-                        Debug.Log("[SR] No death entry added, but we'll add a successful recovery anyway.");
+                        Log.Info("[SR] No death entry added, but we'll add a successful recovery anyway.");
                         pcm.flightLog.AddEntry(FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
                         pcm.flightLog.AddEntryUnique(FlightLog.EntryType.Recover);
                         pcm.ArchiveFlightLog();
@@ -888,7 +902,7 @@ namespace StageRecovery
         public void PreRecoverKerbals()
         {
             //if we're not supposed to pre-recover, then we shouldn't be here at all
-            if (!Settings.Instance.PreRecover)
+            if (!Settings1.Instance.PreRecover)
             {
                 return;
             }
@@ -907,11 +921,11 @@ namespace StageRecovery
                     crewedPart.RemoveCrewmember(pcm);
 
                     KerbalsOnboard.Add(new CrewWithSeat(pcm, crewedPart.protoPartSnapshot));
-                    Debug.Log("[SR] Pre-recovered " + pcm.name);
+                    Log.Info("[SR] Pre-recovered " + pcm.name);
                 }
                 else
                 {
-                    Debug.Log("[SR] Can't find the part housing " + pcm.name);
+                    Log.Info("[SR] Can't find the part housing " + pcm.name);
                 }
             }
         }
@@ -981,14 +995,14 @@ namespace StageRecovery
         public void PostStockMessage()
         {
             string fundSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Funds\" tint=1>";
-            string sciSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Science\" tint=0>";
+            //string sciSymbol = "<sprite=\"CurrencySpriteAsset\" name=\"Science\" tint=0>";
             string green = "<color=#B4D455>";
             string blue = "<color=#6DCFF6>";
             string endC = "</color>";
 
 
             StringBuilder msg = new StringBuilder();
-            if (Recovered && Settings.Instance.ShowSuccessMessages)
+            if (Recovered && Settings1.Instance.ShowSuccessMessages)
             {
                 //Start adding some in-game display messages about the return
                 msg.AppendLine("<color=#8BED8B>Stage '" + StageName + "' recovered " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
@@ -999,11 +1013,20 @@ namespace StageRecovery
                 msg.AppendLine("Recovery percentage: <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");
                 msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> distance");
                 msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> speed");
-                if (Settings.Instance.GlobalModifier != 1.0f)
+                if (Settings3.Instance.GlobalModifier != 1.0f)
                 {
-                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings.Instance.GlobalModifier, 1) + "%</color> global modifier");
+                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> global modifier");
                 }
                 msg.AppendLine("");
+                if (propRemaining.Count > 0)
+                {
+                    msg.AppendLine("Remaining Fuel");
+                    foreach (var r in propRemaining)
+                    {
+                        msg.AppendLine(r.Key + ": " + r.Value.ToString("N1"));
+                    }
+                    msg.AppendLine("");
+                }
                 //List the total refunds for parts, fuel, and the combined total
                 msg.AppendLine($"Total refunds: {fundSymbol} {green}{(FundsReturned).ToString("N0")}{endC}");
                 msg.AppendLine($"Total refunded for parts: {fundSymbol} {green}{(DryReturns).ToString("N0")}{endC}");
@@ -1031,13 +1054,13 @@ namespace StageRecovery
                 //Display which module was used for recovery
                 msg.AppendLine(ParachuteModule + " Module used.");
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                if (Settings.Instance.FlatRateModel)
+                if (Settings1.Instance.FlatRateModel)
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings.Instance.CutoffVelocity + " needed)");
+                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.CutoffVelocity + " needed)");
                 }
                 else
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings.Instance.HighCut + " needed)");
+                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.HighCut + " needed)");
                 }
 
                 if (poweredRecovery)
@@ -1055,7 +1078,7 @@ namespace StageRecovery
                 MessageSystem.Message m = new MessageSystem.Message("Stage Recovered", msg.ToString(), MessageSystemButton.MessageButtonColor.BLUE, MessageSystemButton.ButtonIcons.MESSAGE);
                 MessageSystem.Instance.AddMessage(m);
             }
-            else if (!Recovered && Settings.Instance.ShowFailureMessages)
+            else if (!Recovered && Settings1.Instance.ShowFailureMessages)
             {
                 msg.AppendLine("<color=#FF9900>Stage '" + StageName + "' destroyed " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
                 
@@ -1079,7 +1102,7 @@ namespace StageRecovery
                 //Display which module was used for recovery
                 msg.AppendLine(ParachuteModule + " Module used.");
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings.Instance.FlatRateModel ? Settings.Instance.CutoffVelocity : Settings.Instance.HighCut) + " needed)");
+                msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.HighCut) + " needed)");
                 
                 //If it failed because of burning up (can be in addition to speed) then we'll let you know
                 if (burnedUp)
@@ -1116,8 +1139,8 @@ namespace StageRecovery
             //We're following ax^2+bx+c=recovery
             //We know that -b/2a=LowCut since that's the only location where the derivative of the quadratic is 0 (the max)
             //Starting conditions: x=lowCut y=100, x=highCut y=0. Combined with the above info, we can calculate everything
-            float x0 = Settings.Instance.LowCut;
-            float x1 = Settings.Instance.HighCut;
+            float x0 = (float)Settings2.Instance.LowCut;
+            float x1 = (float)Settings2.Instance.HighCut;
             //If we're below the low cut, then return 1 (100%)
             if (v < x0)
             {

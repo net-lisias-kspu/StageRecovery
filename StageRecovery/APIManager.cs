@@ -34,7 +34,7 @@ namespace StageRecovery
         {
             get
             {
-                return Settings.Instance.SREnabled;
+                return Settings1.Instance.SREnabled;
             }
         }
 

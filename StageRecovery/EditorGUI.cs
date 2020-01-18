@@ -3,22 +3,30 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
+using KSP.Localization;
 
 
 namespace StageRecovery
 {
     public class EditorGUI
     {
+        static internal EditorGUI Instance;
+
         public List<EditorStatItem> stages = new List<EditorStatItem>();
         public bool showEditorGUI = false;
         bool highLight = false, tanksDry = true;
         public Rect EditorGUIRect = new Rect(Screen.width / 3, Screen.height / 3, 250, 1);
 
+        public EditorGUI()
+        {
+            Instance = this;
+        }
+
         public void DrawEditorGUI(int windowID)
         {
             GUILayout.BeginVertical();
             //provide toggles to turn highlighting on/off
-            if (GUILayout.Button("Toggle Vessel Highlighting"))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Highlight")))//"Toggle Vessel Highlighting"
             {
                 highLight = !highLight;
                 if (highLight)
@@ -31,7 +39,7 @@ namespace StageRecovery
                 }
             }
 
-            if (GUILayout.Button("Tanks: "+(tanksDry? "Empty":"Full")))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_TanksDry", (tanksDry ? Localizer.Format("#StageRecovery_TanksEmpty") :Localizer.Format("#StageRecovery_TanksFull")))))//"Tanks: " + "Empty" : "Full"
             {
                 tanksDry = !tanksDry;
                 if (highLight)
@@ -41,15 +49,18 @@ namespace StageRecovery
             }
 
             //list each stage, with info for each
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
+
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Stage " + stage.stageNumber);
+                GUILayout.Label(Localizer.Format("",stage.stageNumber));//"Stage " + 
                 double vel = tanksDry ? stage.EmptyVelocity : stage.FullVelocity;
-                GUILayout.Label(vel.ToString("N1")+" m/s");
+                GUILayout.Label(vel.ToString("N1") + " m/s");
                 GUILayout.Label(stage.GetRecoveryPercent(tanksDry) + "%");
-            //    GUILayout.Label("("+stage.FullVelocity.ToString("N1") + ")");
-                if (GUILayout.Button("Highlight"))
+                //    GUILayout.Label("("+stage.FullVelocity.ToString("N1") + ")");
+                if (GUILayout.Button(Localizer.Format("#StageRecovery_Highlight2")))//"Highlight"
                 {
                     //highlight this stage and unhighlight all others
                     bool status = stage.Highlighted;
@@ -65,8 +76,10 @@ namespace StageRecovery
             }
 
 
-            if (GUILayout.Button("Recalculate"))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Recalculate")))//"Recalculate"
             {
+                Recalculate();
+#if false
                 BreakShipIntoStages();
                 if (highLight)
                 {
@@ -74,14 +87,15 @@ namespace StageRecovery
                 }
 
                 EditorGUIRect.height = 1; //reset the height so it is the smallest size it needs to be 
+#endif
             }
             GUILayout.EndVertical();
 
-           /* if (GUI.Button(new Rect(EditorGUIRect.xMax-10, EditorGUIRect.yMin, 10, 10), "X"))
-            {
-                UnHighlightAll();
-                showEditorGUI = false;
-            }*/
+            /* if (GUI.Button(new Rect(EditorGUIRect.xMax-10, EditorGUIRect.yMin, 10, 10), "X"))
+             {
+                 UnHighlightAll();
+                 showEditorGUI = false;
+             }*/
 
             //Make it draggable
             if (!Input.GetMouseButtonDown(1) && !Input.GetMouseButtonDown(2))
@@ -90,11 +104,24 @@ namespace StageRecovery
             }
         }
 
+        internal void Recalculate()
+        {
+            BreakShipIntoStages();
+            if (highLight)
+            {
+                HighlightAll();
+            }
+
+            EditorGUIRect.height = 1; //reset the height so it is the smallest size it needs to be 
+        }
+
         public void UnHighlightAll()
         {
             highLight = false;
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
                 stage.UnHighlight();
             }
         }
@@ -102,8 +129,10 @@ namespace StageRecovery
         public void HighlightAll()
         {
             highLight = true;
-            foreach (EditorStatItem stage in stages)
+            for (int i = 0; i < stages.Count; i++)
+            //foreach (EditorStatItem stage in stages)
             {
+                EditorStatItem stage = stages[i];
                 stage.Highlight(tanksDry);
             }
         }
@@ -117,7 +146,23 @@ namespace StageRecovery
             int stageNum = 0;
 
             StageParts stage = new StageParts();
-            List<Part> RemainingDecouplers = new List<Part>() { parts[0] };
+            List<Part> RemainingDecouplers = null; // = new List<Part>() { parts[0] };
+
+            for (int i = 0; i < parts.Count; i++)
+            //foreach (var p in parts)
+            {
+                Part p = parts[i];
+                if (p.parent == null)
+                {
+                    RemainingDecouplers = new List<Part>() { p };
+                    break;
+                }
+            }
+            if (RemainingDecouplers == null)
+            {
+                Log.Error("No parent part found");
+                return;
+            }
             while (RemainingDecouplers.Count > 0)
             {
                 //determine stages from the decouplers
@@ -129,6 +174,9 @@ namespace StageRecovery
                     stageNumber = stageNum++,
                     parts = stage.parts
                 };
+                Log.Info("Parent part: " + parent.partInfo.title);
+                foreach (var d in stage.decouplers)
+                    Log.Info("Child decouplers: " + d.partInfo.title);
                 RemainingDecouplers.AddRange(stage.decouplers);
 
                 //compute properties
@@ -144,23 +192,79 @@ namespace StageRecovery
             }
 
             ConsolidateStages();
-            Debug.Log("[SR] Found " + stages.Count + " stages!");
+            Log.Info("[SR] Found " + stages.Count + " stages!");
+        }
+        PartModule pm = null;
+        bool CheckForEnginePlate(Part parent, Part checking)
+        {
+            // The following code is designed to deal with the new engine plates in MakingHistory, which have embedded
+            // decouplers which work on the stage below
+            ModuleDecouple md = null;
+
+            // First, if this is an engineplate, do not treat it as a decoupler
+            if (checking.Modules.Contains("ModuleDynamicNodes") && checking.Modules.Contains("ModuleDecouple"))
+            {
+                md = checking.Modules.GetModule<ModuleDecouple>();
+
+                if (md.isEnginePlate)
+                {
+                    // If the parent IS an engineplate, get the module and use it later
+                    if (parent.Modules.Contains("ModuleDynamicNodes") && parent.Modules.Contains("ModuleDecouple"))
+                        pm = parent.Modules.GetModule<ModuleDecouple>();
+                    else
+                        pm = null;
+                }
+
+                return md.isEnginePlate;
+            }
+            return false;
         }
 
+        bool CheckForParentEnginePlate(Part part)
+        {
+            // If the parent IS an engineplate, and this part is NOT a decoupler, then treat it as if it WAS 
+            // a decoupler and add it to the list
+            if (pm != null && ((ModuleDecouple)pm).isEnginePlate && part.FindModulesImplementing<IStageSeparator>().Count == 0)
+            {
+                return true;
+            }
+            return false;
+        }
         StageParts DetermineStage(Part parent)
         {
+            Log.Info("DetermineStage 1 parent: " + parent.partInfo.title);
             StageParts stage = new StageParts();
             List<Part> toCheck = new List<Part>() { parent };
             while (toCheck.Count > 0) //should instead search through the children, stopping when finding a decoupler, then switch to it's children
             {
                 Part checking = toCheck[0];
                 toCheck.RemoveAt(0);
+                bool isEnginePlate = false;
+                if (Versioning.version_major == 1 && Versioning.version_minor >= 7)
+                {
+                    isEnginePlate = CheckForEnginePlate(parent, checking);
+                }
+
                 stage.parts.Add(checking);
 
-                foreach (Part part in checking.children)
+                for (int i = 0; i < checking.children.Count; i++)
+                //foreach (Part part in checking.children)
                 {
+                    Part part = checking.children[i];
+
                     //search for decouplers
                     //if (part.Modules.Contains("ModuleDecouple") || part.Modules.Contains("ModuleAnchoredDecoupler"))
+
+                    if (Versioning.version_major == 1 && Versioning.version_minor >= 7 && isEnginePlate)
+                    {
+                        if (CheckForParentEnginePlate(part))
+                        {
+                            stage.decouplers.Add(part);
+                            continue;
+                        }
+                    }
+
+                    // If this part is a decoupler, add it to the list
                     if (part.FindModulesImplementing<IStageSeparator>().Count > 0)
                     {
                         stage.decouplers.Add(part);
@@ -181,13 +285,13 @@ namespace StageRecovery
 
             EditorStatItem compareItem = null;
 
-            for (int i=0; i<stages.Count; i++)
+            for (int i = 0; i < stages.Count; i++)
             {
                 EditorStatItem stage = stages[i];
-              //  if (compareItem == null)
+                //  if (compareItem == null)
                 compareItem = stage;
 
-                int j = i+1;
+                int j = i + 1;
                 while (j < stages.Count)
                 {
                     if (stages[j].parts.Count != compareItem.parts.Count || stages[j].mass != compareItem.mass || stages[j].chuteArea != compareItem.chuteArea)
@@ -198,12 +302,12 @@ namespace StageRecovery
                     j++;
                 }
 
-                if (j > i+1)
+                if (j > i + 1)
                 {
-                    Debug.Log("[SR] Found " + (j - i) + " identical stages");
+                    Log.Info("[SR] Found " + (j - i) + " identical stages");
                     //some stages are the same (up to j)
                     //merge the stages
-                    for (int k = j-1; k>i; k--)
+                    for (int k = j - 1; k > i; k--)
                     {
                         //add the parts from k to i
                         stages[i].parts.AddRange(stages[k].parts);
@@ -223,8 +327,8 @@ namespace StageRecovery
 
     public class EditorStatItem
     {
-        public int stageNumber=0;
-        public double dryMass=0, mass=0, chuteArea=0;
+        public int stageNumber = 0;
+        public double dryMass = 0, mass = 0, chuteArea = 0;
         private double _FullVelocity = -1, _DryVelocity = -1;
         private bool _highlighted = false;
 
@@ -273,7 +377,7 @@ namespace StageRecovery
             chuteArea = ChuteArea;
         }
 
-        private double GetVelocity(bool dry=true)
+        private double GetVelocity(bool dry = true)
         {
             if (dry)
             {
@@ -285,17 +389,17 @@ namespace StageRecovery
             }
         }
 
-        public double GetRecoveryPercent(bool dry=true)
+        public double GetRecoveryPercent(bool dry = true)
         {
             double Vt = GetVelocity(dry);
             bool recovered = false;
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
-                recovered = Vt < Settings.Instance.CutoffVelocity;
+                recovered = Vt < Settings2.Instance.CutoffVelocity;
             }
             else
             {
-                recovered = Vt < Settings.Instance.HighCut;
+                recovered = Vt < Settings2.Instance.HighCut;
             }
 
             if (!recovered)
@@ -304,11 +408,11 @@ namespace StageRecovery
             }
 
             double recoveryPercent = 0;
-            if (recovered && Settings.Instance.FlatRateModel)
+            if (recovered && Settings1.Instance.FlatRateModel)
             {
                 recoveryPercent = 1;
             }
-            else if (recovered && !Settings.Instance.FlatRateModel)
+            else if (recovered && !Settings1.Instance.FlatRateModel)
             {
                 recoveryPercent = RecoveryItem.GetVariableRecoveryValue(Vt);
             }
@@ -316,16 +420,16 @@ namespace StageRecovery
             return Math.Round(100 * recoveryPercent, 2);
         }
 
-        public void Highlight(bool dry=true)
+        public void Highlight(bool dry = true)
         {
             double vel = dry ? EmptyVelocity : FullVelocity;
             UnityEngine.Color stageColor = UnityEngine.Color.red;
-            if (vel < Settings.Instance.HighCut)
+            if (vel < Settings2.Instance.HighCut)
             {
                 stageColor = UnityEngine.Color.yellow;
             }
 
-            if (vel < Settings.Instance.LowCut)
+            if (vel < Settings2.Instance.LowCut)
             {
                 stageColor = UnityEngine.Color.green;
             }

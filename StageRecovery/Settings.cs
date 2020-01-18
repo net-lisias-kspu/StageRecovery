@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,11 +20,6 @@ namespace StageRecovery
         //The path for the settings file (Config.txt)
         private string filePath = "";
 
-        //The persistent values are saved to the file and read in by them. They are saved as Name = Value and separated by new lines
-        [Persistent]
-        public float RecoveryModifier, DeadlyReentryMaxVelocity, CutoffVelocity, LowCut, HighCut, MinTWR, DistanceOverride, GlobalModifier;
-        [Persistent]
-        public bool SREnabled, ShowFailureMessages, ShowSuccessMessages, FlatRateModel, PoweredRecovery, RecoverClamps, UseUpgrades, UseToolbarMod, HideButton, PreRecover;
 
         public bool Clicked = false;
         public List<RecoveryItem> RecoveredStages, DestroyedStages;
@@ -33,27 +29,6 @@ namespace StageRecovery
         private Settings()
         {
             filePath = pluginDataPath + "/Config.txt";
-
-            SREnabled = true;
-            RecoveryModifier = 0.75f;
-            ShowFailureMessages = true;
-            ShowSuccessMessages = true;
-            DeadlyReentryMaxVelocity = 2000f;
-            CutoffVelocity = 10f;
-            FlatRateModel = false;
-            LowCut = 6f;
-            HighCut = 12f;
-            PoweredRecovery = true;
-            RecoverClamps = true;
-            MinTWR = 1.0f;
-            UseUpgrades = true;
-            PreRecover = true;
-            UseToolbarMod = true;
-            DistanceOverride = -1.0f;
-            GlobalModifier = 1.0f;
-
-
-            HideButton = false;
 
             RecoveredStages = new List<RecoveryItem>();
             DestroyedStages = new List<RecoveryItem>();
@@ -65,25 +40,6 @@ namespace StageRecovery
             {
                 return instance;
             }
-        }
-
-        //Loads the settings from the file
-        public void Load()
-        {
-            if (System.IO.File.Exists(filePath))
-            {
-                ConfigNode cnToLoad = ConfigNode.Load(filePath);
-                ConfigNode.LoadObjectFromConfig(this, cnToLoad);
-            }
-        }
-
-        //Saves the settings to the file
-        public void Save()
-        {
-            ConfigNode cnTemp = ConfigNode.CreateConfigFromObject(this, new ConfigNode());
-            //create the file path if needed
-            System.IO.Directory.CreateDirectory(pluginDataPath);
-            cnTemp.Save(filePath);
         }
 
         public void ClearStageLists()
@@ -139,7 +95,7 @@ namespace StageRecovery
         }
     }
 
-}             
+}
 /*
 Copyright (C) 2018  Michael Marvin
 
@@ -156,3 +112,4 @@ Copyright (C) 2018  Michael Marvin
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
