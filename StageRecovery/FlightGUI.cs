@@ -183,12 +183,12 @@ namespace StageRecovery
                 GUILayout.BeginVertical(HighLogic.Skin.textArea);
                 //Show a toolbar with options for specific data, defaulting to the Parts list
                 if (selectedStage.propRemaining.Count > 0)
-                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info", "Fuel" });
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { Localizer.Format("#StageRecovery_InfoBar_Parts"), Localizer.Format("#StageRecovery_InfoBar_Crew"), Localizer.Format("#StageRecovery_InfoBar_Science"), Localizer.Format("#StageRecovery_InfoBar_Info"), Localizer.Format("#StageRecovery_InfoBar_Fuel") });//"Parts""Crew""Science""Info""Fuel"
                 else
                 {
                     if (infoBarIndex == 4)
                         infoBarIndex = 3;
-                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { Localizer.Format("#StageRecovery_InfoBar_Parts"), Localizer.Format("#StageRecovery_InfoBar_Crew"), Localizer.Format("#StageRecovery_InfoBar_Science"), Localizer.Format("#StageRecovery_InfoBar_Info") });//"Parts", "Crew", "Science", "Info"
                 }
                 //List the stage name and whether it was recovered or destroyed
                 GUILayout.Label(Localizer.Format("#StageRecovery_StagesName", selectedStage.StageName));//"Stage name: " + 
