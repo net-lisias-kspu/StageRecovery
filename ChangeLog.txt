@@ -1,5 +1,8 @@
 Changelog:
 
+1.9.2.2 (unreleased)
+	Removed duplicated code in SettingsGUI.cs
+
 1.9.2.1
 	Thanks to GitHub user @mwerle for these fixes:
 		 Fix for StageRecovery failing to recover certain stages.

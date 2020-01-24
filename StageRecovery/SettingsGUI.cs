@@ -106,14 +106,6 @@ namespace StageRecovery
                     showWindow = true;
                     break;
             }
-            if (HighLogic.LoadedSceneIsFlight)
-            {
-                flightGUI.showFlightGUI = true;
-            }
-            else if (HighLogic.LoadedSceneIsEditor)
-            {
-                EditorCalc();
-            }
         }
 
         //Does stuff to draw the window.
