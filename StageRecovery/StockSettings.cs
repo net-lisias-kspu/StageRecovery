@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using KSP.Localization;
 
 
 
@@ -27,43 +28,43 @@ namespace StageRecovery
         internal static bool settingsUseDREVelocity = true;
         internal static bool settingsUseDistanceOverride = false;
 
-        [GameParameters.CustomParameterUI("Mod Enabled")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_ModEnabled")]//Mod Enabled
         public bool SREnabled = true;
 
 
-        [GameParameters.CustomParameterUI("Use Distance Override",
-            toolTip = "Enable Distance Override to use a specified value for distance modification rather than calculating it")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseDistanceOverride",//Use Distance Override
+            toolTip = "#StageRecovery_StockSettings_UseDistanceOverride_desc")]//Enable Distance Override to use a specified value for distance modification rather than calculating it
         public bool UseDistanceOverride = false;
 
-        [GameParameters.CustomParameterUI("Enable Flat Rate Model",
-            toolTip = "Disabled this to use a Variable Rate Model")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_FlatRateModel",//Enable Flat Rate Model
+            toolTip = "#StageRecovery_StockSettings_FlatRateModel_desc")]//Disabled this to use a Variable Rate Model
         public bool FlatRateModel = false;
 
-        [GameParameters.CustomParameterUI("Use the DRE Velocity")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseDREVelocity")]//Use the DRE Velocity
         public bool UseDREVelocity = true;
 
 
-        [GameParameters.CustomParameterUI("Pre-Recover Vessels",
-            toolTip = "Recover Kerbals before a ship is deleted")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_PreRecover",//Pre-Recover Vessels
+            toolTip = "#StageRecovery_StockSettings_PreRecover_desc")]//Recover Kerbals before a ship is deleted
         public bool PreRecover = true;
 
-        [GameParameters.CustomParameterUI("Failure Messages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_ShowFailureMessages")]//Failure Messages
         public bool ShowFailureMessages = true;
 
-        [GameParameters.CustomParameterUI("Success Messages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_ShowSuccessMessages")]//Success Messages
         public bool ShowSuccessMessages = true;
 
-        [GameParameters.CustomParameterUI("Try Powered Recovery")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_PoweredRecovery")]//Try Powered Recovery
         public bool PoweredRecovery = true;
 
-        [GameParameters.CustomParameterUI("Recover Clamps")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_RecoverClamps")]//Recover Clamps
         public bool RecoverClamps = true;
 
-        [GameParameters.CustomParameterUI("Tie Into Upgrades")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseUpgrades")]//Tie Into Upgrades
         public bool UseUpgrades = true;
 
-        [GameParameters.CustomParameterUI("Hide the SpaceCenter button",
-            toolTip = "The button merely opens a window directing you to these settings pages")]
+        [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_hideSpaceCenterButton",//Hide the SpaceCenter button
+            toolTip = "#StageRecovery_StockSettings_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
 
 
@@ -89,7 +90,7 @@ namespace StageRecovery
 
     public class SR2 : GameParameters.CustomParameterNode
     {
-        public override string Title { get { return "Rate Model Settings"; } }
+        public override string Title { get { return "Rate Model Settings"; } }//Localizer.Format("")
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Stage Recovery"; } }
         public override string DisplaySection { get { return "Stage Recovery"; } }
@@ -100,8 +101,8 @@ namespace StageRecovery
         // RecoveryModifier
         /// ///////////////
         public float recoveryModifier = 0.75f;
-        [GameParameters.CustomFloatParameterUI("Flat Rate: Recovery Modifier (%)", minValue = 0.0f, maxValue = 100.0f,
-         toolTip = "Modifies recovery payout by this percentage")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_RecoveryModifier", minValue = 0.0f, maxValue = 100.0f,
+         toolTip = "#StageRecovery_StockSettings_RecoveryModifier_desc")]//Flat Rate: Recovery Modifier (%)""Modifies recovery payout by this percentage
         public float RecoveryMod
         {
             get { return recoveryModifier * 100; }
@@ -117,17 +118,17 @@ namespace StageRecovery
 
 
 
-        [GameParameters.CustomFloatParameterUI("Flat Rate: Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for recovery")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_CutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
+         toolTip = "#StageRecovery_StockSettings_CutoffVelocity_desc")]//Flat Rate: Cutoff Velocity""Maximum velocity for recovery
         public double CutoffVelocity = 10f;
 
 
-        [GameParameters.CustomFloatParameterUI("Variable Rate: High Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for recovery")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_HighCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
+         toolTip = "#StageRecovery_StockSettings_HighCutoffVelocity_desc")]//Variable Rate: High Cutoff Velocity""Maximum velocity for recovery
         public double HighCut = 12f;
 
-        [GameParameters.CustomFloatParameterUI("Variable Rate: Low Cutoff Velocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
-         toolTip = "Maximum velocity for total recovery")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_LowCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
+         toolTip = "#StageRecovery_StockSettings_LowCutoffVelocity_desc")]//Variable Rate: Low Cutoff Velocity""Maximum velocity for total recovery
         public double LowCut = 6f;
 
 
@@ -181,8 +182,8 @@ namespace StageRecovery
         // GlobalModifier
         /// /////////////
         public float globalModifier = 1.0f;
-        [GameParameters.CustomFloatParameterUI("Global Modifier (%)", minValue = 0.0f, maxValue = 100.0f,
-         toolTip = "Modifies final payout by this percentage")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_GlobalModifier", minValue = 0.0f, maxValue = 100.0f,
+         toolTip = "#StageRecovery_StockSettings_GlobalModifier_desc")]//Global Modifier (%)""Modifies final payout by this percentage
         public float GlobalMod
         {
             get { return globalModifier * 100; }
@@ -198,8 +199,8 @@ namespace StageRecovery
         // DistanceOverride
         /// ///////////////
         public float distanceOverride = 0.01f;
-        [GameParameters.CustomFloatParameterUI("Distance Override (%)", minValue = 1f, maxValue = 100.0f,
-                 toolTip = "If >= 0, will use this as a distance modifier instead of calculating it")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_DistanceOverride", minValue = 1f, maxValue = 100.0f,
+                 toolTip = "#StageRecovery_StockSettings_DistanceOverride_desc")]//Distance Override (%)""If >= 0, will use this as a distance modifier instead of calculating it
         public float DistanceOver
         {
             get { return distanceOverride * 100; }
@@ -216,8 +217,8 @@ namespace StageRecovery
         // DeadlyReentrymaxVelocity
         /// ///////////////////////
         public float DeadlyReentryMaxVelocity = 2000f;
-        [GameParameters.CustomIntParameterUI("DRE Velocity 2", minValue = 0, maxValue = 6000, stepSize = 200,
-                 toolTip = "If >= 0, will use this as a distance modifier instead of calculating it")]
+        [GameParameters.CustomIntParameterUI("#StageRecovery_StockSettings_DREVelocity2", minValue = 0, maxValue = 6000, stepSize = 200,//DRE Velocity 2
+                 toolTip = "#StageRecovery_StockSettings_DREVelocity2_desc")]//If >= 0, will use this as a distance modifier instead of calculating it
         public int DreVelocity
         {
             get { return (int)DeadlyReentryMaxVelocity; }
@@ -225,8 +226,8 @@ namespace StageRecovery
         }
 
 
-        [GameParameters.CustomFloatParameterUI("Powered TWR", minValue = 1.0f, maxValue = 12.0f, stepCount = 111, displayFormat = "F1",
-        toolTip = "Minimum TWR needed for a powered recovery")]
+        [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_PoweredTWR", minValue = 1.0f, maxValue = 12.0f, stepCount = 111, displayFormat = "F1",//Powered TWR
+        toolTip = "#StageRecovery_StockSettings_PoweredTWR_desc")]//Minimum TWR needed for a powered recovery
         public double MinTWR = 1.0f;
 
 

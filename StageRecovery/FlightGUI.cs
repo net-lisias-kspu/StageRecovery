@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using KSP.Localization;
 
 namespace StageRecovery
 {
@@ -29,7 +30,7 @@ namespace StageRecovery
             int temp = firstToolbarIndex;
             //firstToolbarIndex = GUILayout.Toolbar(firstToolbarIndex, new string[] { "Recovered", "Destroyed" });
             GUILayout.BeginHorizontal();
-            bool active = GUILayout.Toggle(firstToolbarIndex == 0, "Recovered" + (Settings.Instance.RecoveredStages.Count > 0 ? " ("+Settings.Instance.RecoveredStages.Count+")" : ""), GUI.skin.button);
+            bool active = GUILayout.Toggle(firstToolbarIndex == 0, Localizer.Format("#StageRecovery_Recovered") + (Settings.Instance.RecoveredStages.Count > 0 ? " ("+Settings.Instance.RecoveredStages.Count+")" : ""), GUI.skin.button);//"Recovered"
             if (!active && firstToolbarIndex == 0)
             {
                 firstToolbarIndex = -1;
@@ -39,7 +40,7 @@ namespace StageRecovery
                 firstToolbarIndex = 0;
             }
 
-            active = GUILayout.Toggle(firstToolbarIndex == 1, "Destroyed" + (Settings.Instance.DestroyedStages.Count > 0 ? " (" + Settings.Instance.DestroyedStages.Count + ")" : ""), GUI.skin.button);
+            active = GUILayout.Toggle(firstToolbarIndex == 1, Localizer.Format("#StageRecovery_Destroyed") + (Settings.Instance.DestroyedStages.Count > 0 ? " (" + Settings.Instance.DestroyedStages.Count + ")" : ""), GUI.skin.button);//"Destroyed"
             if (!active && firstToolbarIndex == 1)
             {
                 firstToolbarIndex = -1;
@@ -69,7 +70,7 @@ namespace StageRecovery
             if (firstToolbarIndex >= 0)
             {
                 //Begin listing the recovered/destryoed stages in a scroll view (so you can scroll if it's too long)
-                GUILayout.Label((firstToolbarIndex == 0 ? "Recovered" : "Destroyed") + " Stages:");
+                GUILayout.Label((firstToolbarIndex == 0 ? Localizer.Format("#StageRecovery_Recovered") : Localizer.Format("#StageRecovery_Destroyed")) + Localizer.Format("#StageRecovery_Stages"));//"Recovered""Destroyed"" Stages:"
                 stagesScroll = GUILayout.BeginScrollView(stagesScroll, HighLogic.Skin.textArea);
 
                 RecoveryItem deleteThis = null;
@@ -182,16 +183,16 @@ namespace StageRecovery
                 GUILayout.BeginVertical(HighLogic.Skin.textArea);
                 //Show a toolbar with options for specific data, defaulting to the Parts list
                 if (selectedStage.propRemaining.Count > 0)
-                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info", "Fuel" });
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { Localizer.Format("#StageRecovery_InfoBar_Parts"), Localizer.Format("#StageRecovery_InfoBar_Crew"), Localizer.Format("#StageRecovery_InfoBar_Science"), Localizer.Format("#StageRecovery_InfoBar_Info"), Localizer.Format("#StageRecovery_InfoBar_Fuel") });//"Parts""Crew""Science""Info""Fuel"
                 else
                 {
                     if (infoBarIndex == 4)
                         infoBarIndex = 3;
-                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { Localizer.Format("#StageRecovery_InfoBar_Parts"), Localizer.Format("#StageRecovery_InfoBar_Crew"), Localizer.Format("#StageRecovery_InfoBar_Science"), Localizer.Format("#StageRecovery_InfoBar_Info") });//"Parts", "Crew", "Science", "Info"
                 }
                 //List the stage name and whether it was recovered or destroyed
-                GUILayout.Label("Stage name: " + selectedStage.StageName);
-                GUILayout.Label("Status: " + (selectedStage.Recovered ? "RECOVERED" : "DESTROYED"));
+                GUILayout.Label(Localizer.Format("#StageRecovery_StagesName", selectedStage.StageName));//"Stage name: " + 
+                GUILayout.Label(Localizer.Format("#StageRecovery_Status", (selectedStage.Recovered ? Localizer.Format("#StageRecovery_Recovered") : Localizer.Format("#StageRecovery_Destroyed"))));//"Status: " + "RECOVERED""DESTROYED"
                 //Put everything in a scroll view in case it is too much data for the window to display
                 infoScroll = GUILayout.BeginScrollView(infoScroll);                
 
@@ -239,7 +240,7 @@ namespace StageRecovery
         private void DrawPartsInfo()
         {
             //List all of the parts and their recovered costs (or value if destroyed)
-            GUILayout.Label("Parts on Stage:");
+            GUILayout.Label(Localizer.Format("#StageRecovery_PartsonStage"));//"Parts on Stage:"
             for (int i=0; i<selectedStage.PartsRecovered.Count; i++)
             {
                 string name = selectedStage.PartsRecovered.Keys.ElementAt(i);
@@ -252,15 +253,15 @@ namespace StageRecovery
             //If the stage was recovered, list the refunds for parts, fuel, and total, along with the overall percentage
             if (selectedStage.Recovered)
             {
-                GUILayout.Label("\nTotal refunded for parts: " + Math.Round(selectedStage.DryReturns, 2));
-                GUILayout.Label("Total refunded for fuel: " + Math.Round(selectedStage.FuelReturns, 2));
-                GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
-                GUILayout.Label("Percent refunded: " + Math.Round(100 * selectedStage.RecoveryPercent, 2) + "%");
-                GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
+                GUILayout.Label(Localizer.Format("#StageRecovery_TotalPartsrefunded", Math.Round(selectedStage.DryReturns, 2)));//"\nTotal refunded for parts: " + 
+                GUILayout.Label(Localizer.Format("#StageRecovery_TotalFuelrefunded", Math.Round(selectedStage.FuelReturns, 2)));//"Total refunded for fuel: " + 
+                GUILayout.Label(Localizer.Format("#StageRecovery_Totalrefunded", Math.Round(selectedStage.FundsReturned, 2)));//"Total refunds: " + 
+                GUILayout.Label(Localizer.Format("#StageRecovery_Percentrefunded", Math.Round(100 * selectedStage.RecoveryPercent, 2)));//"Percent refunded: " +  + "%"
+                GUILayout.Label(Localizer.Format("#StageRecovery_Totalvalue", Math.Round(selectedStage.FundsOriginal, 2)));//"Total value: " + 
             }
             else //Otherwise just display the total value of the parts
             {
-                GUILayout.Label("\nTotal Part Value: " + Math.Round(selectedStage.FundsOriginal, 2));
+                GUILayout.Label(Localizer.Format("#StageRecovery_TotaPartlvalue", Math.Round(selectedStage.FundsOriginal, 2)));//"\nTotal Part Value: " + 
             }
         }
 
@@ -268,7 +269,7 @@ namespace StageRecovery
         private void DrawFuelInfo()
         {
             //List all of the parts and their recovered costs (or value if destroyed)
-            GUILayout.Label("Remaining Fuel:\n");
+            GUILayout.Label(Localizer.Format("#StageRecovery_RemainingFuel"));//"Remaining Fuel:\n"
 
             //If the stage was recovered, list the remaining fuel, if any
             if (selectedStage.Recovered)
@@ -285,10 +286,10 @@ namespace StageRecovery
         //This displays what crew members were onboard the stage, if any (recovered or not)
         private void DrawCrewInfo()
         {
-            GUILayout.Label("Crew Onboard:");
+            GUILayout.Label(Localizer.Format("#StageRecovery_CrewOnboard"));//"Crew Onboard:"
             if (selectedStage.KerbalsOnboard.Count == 0)
             {
-                GUILayout.Label("None");
+                GUILayout.Label(Localizer.Format("#StageRecovery_None"));//"None"
             }
             else
             {
@@ -310,7 +311,7 @@ namespace StageRecovery
             if (selectedStage.ScienceExperiments.Count != 0)
             {
                 //List all of the experiments recovered (including data amounts and titles)
-                GUILayout.Label("Experiments:");
+                GUILayout.Label(Localizer.Format("#StageRecovery_Experiments"));//"Experiments:"
                 for (int i = 0; i < selectedStage.ScienceExperiments.Count; i++)
                 //foreach (string experiment in selectedStage.ScienceExperiments)
                 {
@@ -324,53 +325,53 @@ namespace StageRecovery
         private void DrawAdvancedInfo()
         {
             //Display distance, module used, and terminal velocity
-            GUILayout.Label("Distance from KSC: " + Math.Round(selectedStage.KSCDistance/1000, 2) + "km");
-            GUILayout.Label("Parachute Module used: " + selectedStage.ParachuteModule);
-            GUILayout.Label("Terminal velocity: "+selectedStage.Vt + " m/s");
+            GUILayout.Label(Localizer.Format("#StageRecovery_KSCDistance", Math.Round(selectedStage.KSCDistance/1000, 2)));//"Distance from KSC: " +  + "km"
+            GUILayout.Label(Localizer.Format("#StageRecovery_ParachuteModule", selectedStage.ParachuteModule));//"Parachute Module used: " + 
+            GUILayout.Label(Localizer.Format("#StageRecovery_Terminalvelocity", selectedStage.Vt));//"Terminal velocity: "+ + " m/s"
             //List the Vt required for maximal/partial recovery
             if (Settings1.Instance.FlatRateModel)
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.CutoffVelocity + " m/s");
+                GUILayout.Label(Localizer.Format("#StageRecovery_CutoffVelocity", Settings2.Instance.CutoffVelocity));//"Maximum velocity for recovery: " +  + " m/s"
             }
             else
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.HighCut + " m/s");
-                GUILayout.Label("Maximum velocity for total recovery: " + Settings2.Instance.LowCut + " m/s");
+                GUILayout.Label(Localizer.Format("#StageRecovery_HighCut", Settings2.Instance.HighCut));//"Maximum velocity for recovery: " +  + " m/s"
+                GUILayout.Label(Localizer.Format("#StageRecovery_LowCut", Settings2.Instance.LowCut));//"Maximum velocity for total recovery: " +  + " m/s"
             }
 
             //List the percent refunded, broken down into distance and speed amounts
-            GUILayout.Label("\nPercent refunded: "+ Math.Round(100*selectedStage.RecoveryPercent, 2) + "%");
-            GUILayout.Label("    --Distance: " + Math.Round(100 * selectedStage.DistancePercent, 2) + "%");
-            GUILayout.Label("    --Speed: " + Math.Round(100 * selectedStage.SpeedPercent, 2) + "%");
+            GUILayout.Label(Localizer.Format("#StageRecovery_RecoveryPercent", Math.Round(100*selectedStage.RecoveryPercent, 2)));//"\nPercent refunded: "+  + "%"
+            GUILayout.Label(Localizer.Format("#StageRecovery_DistancePercent", Math.Round(100 * selectedStage.DistancePercent, 2)));//"    --Distance: " +  + "%"
+            GUILayout.Label(Localizer.Format("#StageRecovery_SpeedPercent", Math.Round(100 * selectedStage.SpeedPercent, 2)));//"    --Speed: " +  + "%"
             if (Settings3.Instance.GlobalModifier != 1.0F)
             {
-                GUILayout.Label("    --Global: " + Math.Round(100 * Settings3.Instance.GlobalModifier, 2) + "%");
+                GUILayout.Label(Localizer.Format("#StageRecovery_GlobalModifier", Math.Round(100 * Settings3.Instance.GlobalModifier, 2)));//"    --Global: " +  + "%"
             }
-            GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
-            GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
-
+            GUILayout.Label(Localizer.Format("#StageRecovery_FundsReturned", Math.Round(selectedStage.FundsReturned, 2)));//"Total refunds: " + 
+            GUILayout.Label(Localizer.Format("#StageRecovery_FundsOriginal", Math.Round(selectedStage.FundsOriginal, 2)));//"Total value: " + 
+            
             //If the stage was burned up, display this and the velocity it was going
             if (selectedStage.burnedUp)
             {
-                GUILayout.Label("\nStage burned up on reentry!");
-                GUILayout.Label("Surface Speed: " + selectedStage.vessel.srfSpeed);
+                GUILayout.Label(Localizer.Format("#StageRecovery_burnedUp"));//"\nStage burned up on reentry!"
+                GUILayout.Label(Localizer.Format("#StageRecovery_srfSpeed", selectedStage.vessel.srfSpeed));//"Surface Speed: " + 
             }
 
             //If powered recovery was attempted (and fuel was used) then display that and the fuel amounts consumed
             if (selectedStage.poweredRecovery)
             {
-                GUILayout.Label("\nPowered recovery was attempted.");
-                GUILayout.Label("Fuel consumed:");
+                GUILayout.Label(Localizer.Format("#StageRecovery_poweredRecovery"));//"\nPowered recovery was attempted."
+                GUILayout.Label(Localizer.Format("#StageRecovery_poweredRecovery2"));//"Fuel consumed:"
                 foreach (KeyValuePair<string, double> fuel in selectedStage.fuelUsed)
                 {
-                    GUILayout.Label(fuel.Key + " : " + fuel.Value + " units");
+                    GUILayout.Label(Localizer.Format("#StageRecovery_fuelUsed", fuel.Key,fuel.Value));//// + " : " +  + " units"
                 }
             }
 
             if (selectedStage.noControl)
             {
-                GUILayout.Label("\nPowered recovery was attempted but no form of control was found.");
-                GUILayout.Label("Include a pilot or probe with SAS to use powered recovery.");
+                GUILayout.Label(Localizer.Format("#StageRecovery_noControl"));//"\nPowered recovery was attempted but no form of control was found."
+                GUILayout.Label(Localizer.Format("#StageRecovery_noControl2"));//"Include a pilot or probe with SAS to use powered recovery."
 
             }
         }

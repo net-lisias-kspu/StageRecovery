@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
+using KSP.Localization;
 
 
 namespace StageRecovery
@@ -25,7 +26,7 @@ namespace StageRecovery
         {
             GUILayout.BeginVertical();
             //provide toggles to turn highlighting on/off
-            if (GUILayout.Button("Toggle Vessel Highlighting"))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Highlight")))//"Toggle Vessel Highlighting"
             {
                 highLight = !highLight;
                 if (highLight)
@@ -38,7 +39,7 @@ namespace StageRecovery
                 }
             }
 
-            if (GUILayout.Button("Tanks: " + (tanksDry ? "Empty" : "Full")))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_TanksDry", (tanksDry ? Localizer.Format("#StageRecovery_TanksEmpty") :Localizer.Format("#StageRecovery_TanksFull")))))//"Tanks: " + "Empty" : "Full"
             {
                 tanksDry = !tanksDry;
                 if (highLight)
@@ -54,12 +55,12 @@ namespace StageRecovery
                 EditorStatItem stage = stages[i];
 
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Stage " + stage.stageNumber);
+                GUILayout.Label(Localizer.Format("",stage.stageNumber));//"Stage " + 
                 double vel = tanksDry ? stage.EmptyVelocity : stage.FullVelocity;
                 GUILayout.Label(vel.ToString("N1") + " m/s");
                 GUILayout.Label(stage.GetRecoveryPercent(tanksDry) + "%");
                 //    GUILayout.Label("("+stage.FullVelocity.ToString("N1") + ")");
-                if (GUILayout.Button("Highlight"))
+                if (GUILayout.Button(Localizer.Format("#StageRecovery_Highlight2")))//"Highlight"
                 {
                     //highlight this stage and unhighlight all others
                     bool status = stage.Highlighted;
@@ -75,7 +76,7 @@ namespace StageRecovery
             }
 
 
-            if (GUILayout.Button("Recalculate"))
+            if (GUILayout.Button(Localizer.Format("#StageRecovery_Recalculate")))//"Recalculate"
             {
                 Recalculate();
 #if false
