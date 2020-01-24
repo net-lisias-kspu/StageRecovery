@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KSP.UI.Screens;
+using KSP.Localization;
 
 namespace StageRecovery
 {
@@ -41,7 +42,7 @@ namespace StageRecovery
         public float FundsOriginal = 0, FundsReturned = 0, DryReturns = 0, FuelReturns = 0;
         public float KSCDistance = 0;
         public float RecoveryPercent = 0, DistancePercent = 0, SpeedPercent = 0;
-        public string ReasonForFailure { get { if (Recovered) { return "SUCCESS"; } if (burnedUp) { return "BURNUP"; } return "SPEED"; } }
+        public string ReasonForFailure { get { if (Recovered) { return Localizer.Format("#StageRecovery_ReasonForFailure1"); } if (burnedUp) { return Localizer.Format("#StageRecovery_ReasonForFailure2"); } return Localizer.Format("#StageRecovery_ReasonForFailure3"); } }//"SUCCESS""BURNUP""SPEED"
         public Dictionary<string, double> fuelUsed = new Dictionary<string, double>();
 
         public double RecoveredTime { get; private set; }
@@ -210,7 +211,7 @@ namespace StageRecovery
         private double DetermineTerminalVelocity()
         {
             double v = StageRecovery.ProcessPartList(vessel.protoVessel.protoPartSnapshots);
-            ParachuteModule = (vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(ppms => ppms.moduleName == "RealChuteModule")) ? "RealChute" : "Stock");
+            ParachuteModule = (vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(ppms => ppms.moduleName == "RealChuteModule")) ? Localizer.Format("#StageRecovery_ParachuteModule_RealChute") : Localizer.Format("#StageRecovery_ParachuteModule_Stock"));//"RealChute""Stock"
             Log.Info("[SR] Vt: " + v);
             return v;
         }
@@ -1004,22 +1005,22 @@ namespace StageRecovery
             if (Recovered && Settings1.Instance.ShowSuccessMessages)
             {
                 //Start adding some in-game display messages about the return
-                msg.AppendLine("<color=#8BED8B>Stage '" + StageName + "' recovered " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
+                msg.AppendLine("<color=#8BED8B>"+Localizer.Format("#StageRecovery_SuccessMessages", StageName,(KSCDistance / 1000).ToString("N2"))+"</color>");//Stage '" +  + "' recovered " +  + " km from KSC
 
 
                 //msg.AppendLine("\n");
                 //List the percent returned and break it down into distance and speed percentages
-                msg.AppendLine("Recovery percentage: <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");
-                msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> distance");
-                msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> speed");
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Recoverypercent") +" <color=#8BED8B>" + (100 * RecoveryPercent).ToString("N1") + "%</color>");//Recovery percentage:
+                msg.AppendLine("<color=#8BED8B>" + (100 * DistancePercent).ToString("N1") + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_distance"));//distance
+                msg.AppendLine("<color=#8BED8B>" + (100 * SpeedPercent).ToString("N1") + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_speed"));//speed
                 if (Settings3.Instance.GlobalModifier != 1.0f)
                 {
-                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> global modifier");
+                    msg.AppendLine("<color=#8BED8B>" + Math.Round(100 * Settings3.Instance.GlobalModifier, 1) + "%</color> "+Localizer.Format("#StageRecovery_SuccessMessages_globalmodifier"));//global modifier
                 }
                 msg.AppendLine("");
                 if (propRemaining.Count > 0)
                 {
-                    msg.AppendLine("Remaining Fuel");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_RemainingFuel"));//"Remaining Fuel"
                     foreach (var r in propRemaining)
                     {
                         msg.AppendLine(r.Key + ": " + r.Value.ToString("N1"));
@@ -1027,14 +1028,14 @@ namespace StageRecovery
                     msg.AppendLine("");
                 }
                 //List the total refunds for parts, fuel, and the combined total
-                msg.AppendLine($"Total refunds: {fundSymbol} {green}{(FundsReturned).ToString("N0")}{endC}");
-                msg.AppendLine($"Total refunded for parts: {fundSymbol} {green}{(DryReturns).ToString("N0")}{endC}");
-                msg.AppendLine($"Total refunded for fuel: {fundSymbol} {green}{(FuelReturns).ToString("N0")}{endC}");
-                msg.AppendLine($"Stage value: {fundSymbol} {green}{(FundsOriginal).ToString("N0")}{endC}");
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Totalrefunds") + $" {fundSymbol} {green}{(FundsReturned).ToString("N0")}{endC}");//Total refunds:
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Totalrefunds2") + $" {fundSymbol} {green}{(DryReturns).ToString("N0")}{endC}");//Total refunded for parts:
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Totalrefunds3") +$" {fundSymbol} {green}{(FuelReturns).ToString("N0")}{endC}");//Total refunded for fuel:
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_Totalrefunds4") +$" {fundSymbol} {green}{(FundsOriginal).ToString("N0")}{endC}");//Stage value:
 
                 if (KerbalsOnboard.Count > 0)
                 {
-                    msg.AppendLine("\nKerbals recovered:");
+                    msg.AppendLine("\n"+Localizer.Format("#StageRecovery_SuccessMessages_Kerbalsrecovered"));//Kerbals recovered:
                     foreach (CrewWithSeat kerbal in KerbalsOnboard)
                     {
                         msg.AppendLine("<color=#E0D503>" + kerbal.CrewMember.name + "</color>");
@@ -1049,37 +1050,37 @@ namespace StageRecovery
                 }
 
                 //By this point all the real work is done. Now we just display a bit of information
-                msg.AppendLine("\nAdditional Information:");
+                msg.AppendLine("\n" + Localizer.Format("#StageRecovery_SuccessMessages_AdditionalInformation"));//Additional Information:
                 //Display which module was used for recovery
-                msg.AppendLine(ParachuteModule + " Module used.");
+                msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_ParachuteModuleUsed", ParachuteModule));// + " Module used."
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
                 if (Settings1.Instance.FlatRateModel)
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.CutoffVelocity + " needed)");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_TerminalVelocityForPart", "<color=#8BED8B>" + Math.Round(Vt, 2) + "</color>", Settings2.Instance.CutoffVelocity));//"Terminal velocity of <<1>> (less than " +  + " needed)"
                 }
                 else
                 {
-                    msg.AppendLine("Terminal velocity of <color=#8BED8B>" + Math.Round(Vt, 2) + "</color> (less than " + Settings2.Instance.HighCut + " needed)");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_TerminalVelocityForPart", "<color=#8BED8B>" + Math.Round(Vt, 2) + "</color>",Settings2.Instance.HighCut));//"Terminal velocity of <<1>> (less than <<2>> needed)"
                 }
 
                 if (poweredRecovery)
                 {
-                    msg.AppendLine("Propulsive landing. Check SR Flight GUI for information about amount of propellant consumed.");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_SuccessMessages_PoweredRecovery"));//"Propulsive landing. Check SR Flight GUI for information about amount of propellant consumed."
                 }
 
-                msg.AppendLine("\nStage contained the following parts:");
+                msg.AppendLine("\n" + Localizer.Format("#StageRecovery_SuccessMessages_StagePartContained"));//Stage contained the following parts:
                 for (int i = 0; i < PartsRecovered.Count; i++)
                 {
                     msg.AppendLine($"{PartsRecovered.Values.ElementAt(i)} x {PartsRecovered.Keys.ElementAt(i)}: {fundSymbol} {green}{Math.Round(PartsRecovered.Values.ElementAt(i) * Costs.Values.ElementAt(i) * RecoveryPercent, 2)}</color>");
                 }
 
                 //Setup and then post the message
-                MessageSystem.Message m = new MessageSystem.Message("Stage Recovered", msg.ToString(), MessageSystemButton.MessageButtonColor.BLUE, MessageSystemButton.ButtonIcons.MESSAGE);
+                MessageSystem.Message m = new MessageSystem.Message(Localizer.Format("#StageRecovery_SuccessMessages_MessageTitle"), msg.ToString(), MessageSystemButton.MessageButtonColor.BLUE, MessageSystemButton.ButtonIcons.MESSAGE);//"Stage Recovered"
                 MessageSystem.Instance.AddMessage(m);
             }
             else if (!Recovered && Settings1.Instance.ShowFailureMessages)
             {
-                msg.AppendLine("<color=#FF9900>Stage '" + StageName + "' destroyed " + (KSCDistance / 1000).ToString("N2") + " km from KSC</color>");
+                msg.AppendLine("<color=#FF9900>"+Localizer.Format("#StageRecovery_FailureMessages",StageName,(KSCDistance / 1000).ToString("N2")) +"</color>");//Stage '" +  + "' destroyed " +  + " km from KSC
                 
                 //If we're career mode (MONEY!) then we also let you know the (why do I say 'we'? It's only me working on this) total cost of the parts
                 if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER)
@@ -1093,40 +1094,40 @@ namespace StageRecovery
                         totalCost += Math.Max(ShipConstruction.GetPartCosts(pps, pps.partInfo, out dry, out wet), 0);
                     }
                     //Alert the user to what the total value was (without modifiers)
-                    msg.AppendLine($"It was valued at <color=#FF9900>{fundSymbol} {(totalCost).ToString("N0")}</color>"); //ED0B0B
+                    msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_Totalvalue") + $" <color=#FF9900>{fundSymbol} {(totalCost).ToString("N0")}</color>"); //ED0B0B//"It was valued at"
                 }
 
                 //By this point all the real work is done. Now we just display a bit of information
-                msg.AppendLine("\nAdditional Information:");
+                msg.AppendLine("\n" + Localizer.Format("#StageRecovery_FailureMessages_AdditionalInformation"));//Additional Information:
                 //Display which module was used for recovery
-                msg.AppendLine(ParachuteModule + " Module used.");
+                msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_ParachuteModuleUsed", ParachuteModule));// + " Module used."
                 //Display the terminal velocity (Vt) and what is needed to have any recovery
-                msg.AppendLine("Terminal velocity of <color=#FF9900>" + Math.Round(Vt, 2) + "</color> (less than " + (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.HighCut) + " needed)");
+                msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_TerminalVelocityForPart", "<color=#FF9900>" + Math.Round(Vt, 2) + "</color>)", (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.HighCut)));//"Terminal velocity of <<1>> (less than " +  + " needed)"
                 
                 //If it failed because of burning up (can be in addition to speed) then we'll let you know
                 if (burnedUp)
                 {
-                    msg.AppendLine("The stage burned up in the atmosphere! It was traveling at " + vessel.srfSpeed + " m/s.");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_StageBurnedUp", vessel.srfSpeed));//"The stage burned up in the atmosphere! It was traveling at " +  + " m/s."
                 }
 
                 if (poweredRecovery && !burnedUp)
                 {
-                    msg.AppendLine("Attempted propulsive landing but could not reduce velocity enough for safe touchdown. Check the SR Flight GUI for additional info.");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_PoweredRecovery"));//"Attempted propulsive landing but could not reduce velocity enough for safe touchdown. Check the SR Flight GUI for additional info."
                 }
 
                 if (noControl)
                 {
-                    msg.AppendLine("Attempted propulsive landing but could not find a point of control. Add a pilot or probe core with SAS for propulsive landings.");
+                    msg.AppendLine(Localizer.Format("#StageRecovery_FailureMessages_NoControl"));//"Attempted propulsive landing but could not find a point of control. Add a pilot or probe core with SAS for propulsive landings."
                 }
 
-                msg.AppendLine("\nStage contained the following parts:");
+                msg.AppendLine("\n" + Localizer.Format("#StageRecovery_FailureMessages_StageContained"));//Stage contained the following parts:
                 for (int i = 0; i < PartsRecovered.Count; i++)
                 {
                     msg.AppendLine(PartsRecovered.Values.ElementAt(i) + " x " + PartsRecovered.Keys.ElementAt(i));
                 }
 
                 //Now we actually create and post the message
-                MessageSystem.Message m = new MessageSystem.Message("Stage Destroyed", msg.ToString(), MessageSystemButton.MessageButtonColor.RED, MessageSystemButton.ButtonIcons.MESSAGE);
+                MessageSystem.Message m = new MessageSystem.Message(Localizer.Format("#StageRecovery_FailureMessages_MessageTitle"), msg.ToString(), MessageSystemButton.MessageButtonColor.RED, MessageSystemButton.ButtonIcons.MESSAGE);//"Stage Destroyed"
                 MessageSystem.Instance.AddMessage(m);
             }
         }
