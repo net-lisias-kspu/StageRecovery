@@ -1,7 +1,9 @@
 Changelog:
 
-1.9.2.2 (unreleased)
+1.9.2.2
 	Removed duplicated code in SettingsGUI.cs
+	Thanks to github user @tinygrox for this:
+		Localization implemented, currently only en-us available
 
 1.9.2.1
 	Thanks to GitHub user @mwerle for these fixes:
