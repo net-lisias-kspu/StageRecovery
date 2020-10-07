@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2019-0124: 1.9.0.7 (LinuxGuruGamer) for KSP 1.6.1
+	+ Fixed registration with the RecoveryController by moving initialization OUT of the Log.Info line
 * 2019-0124: 1.9.0.6 (LinuxGuruGamer) for KSP 1.6.1
 	+ Changed startup from AllGameScenes to FlightEditorAndKSC
 	+ Fixed Nullref when going into settings before any game is loaded
