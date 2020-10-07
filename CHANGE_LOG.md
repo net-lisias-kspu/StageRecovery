@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2019-0206: 1.9.1 (LinuxGuruGamer) for KSP 1.6.1
+	+ Added display of remaining fuel after recovery
+	+ Added "Fuel" section to the SR window, only if there was any leftover fuel
 * 2019-0124: 1.9.0.7 (LinuxGuruGamer) for KSP 1.6.1
 	+ Fixed registration with the RecoveryController by moving initialization OUT of the Log.Info line
 * 2019-0124: 1.9.0.6 (LinuxGuruGamer) for KSP 1.6.1
