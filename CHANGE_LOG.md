@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2019-0827: 1.9.1.3 (LinuxGuruGamer) for KSP 1.7.3
+	+ Rewrite engine plate code due to an infinite loop which was happening when the top node of an engineplate was attached before the bottom node was
 * 2019-0820: 1.9.1.2 (LinuxGuruGamer) for KSP 1.7.3
 	+ Thanks to forum user @aerospike for this:
 		- Fix issue with stock engine plates being in wrong stage
