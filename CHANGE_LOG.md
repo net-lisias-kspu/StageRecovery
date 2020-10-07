@@ -1,5 +1,11 @@
 # Stage Recovery :: Change log
 
+* 2018-1126: 1.9.0.1 (LinuxGuruGamer) for KSP 1.5.1
+	+ Changed license to MIT
+	+ Moved all settings into stock settings page, both to reduce code and to have the settings persist on a per-save basis
+		- Note:  Existing settings are not migrated
+	+ Replaced all Debug.Log with new Log.Info to reduce log spam
+	+ Added code to remove events when mod is destroyed (ie: scene change)
 * 2018-1026: 1.9.0 (linuxgurugamer) for KSP 1.5.1
 	+ Adoption by Linuxgurugamer
 	+ Replaced toolbar code with the ToolbarController
