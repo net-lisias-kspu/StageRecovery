@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2019-0820: 1.9.1.2 (LinuxGuruGamer) for KSP 1.7.3
+	+ Thanks to forum user @aerospike for this:
+		- Fix issue with stock engine plates being in wrong stage
 * 2019-0724: 1.9.1.1 (LinuxGuruGamer) for KSP 1.7.3
 	+ Fixed issue with showing remaining fuel on one stage and another stage not having liquid fuel (ie: solid), was getting GUI errors
 	+ Moved RegisterToolbar into it's own file
