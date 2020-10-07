@@ -1,5 +1,9 @@
 # Stage Recovery :: Change log
 
+* 2020-0124: 1.9.2.2 (LinuxGuruGamer) for KSP 1.10.1
+	+ Removed duplicated code in SettingsGUI.cs
+	+ Thanks to github user @tinygrox for this:
+		- Localization implemented, currently only en-us available
 * 2019-1224: 1.9.2.1 (LinuxGuruGamer) for KSP 1.8.1
 	+ Thanks to GitHub user @mwerle for these fixes:
 		- Fix for StageRecovery failing to recover certain stages.
