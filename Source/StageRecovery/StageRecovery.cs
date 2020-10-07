@@ -23,9 +23,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
-using KSP.UI.Screens;
-using ToolbarControl_NS;
+
 
 namespace StageRecovery
 {
@@ -54,7 +54,7 @@ namespace StageRecovery
         //Fired when the mod loads each scene
         public void Awake()
         {
-            Log.Info("[SR] Awake Start");
+            Log.info("Awake Start");
             instance = this;
 
             //If we're in the MainMenu, don't do anything
@@ -97,7 +97,7 @@ namespace StageRecovery
         //Fired when the mod loads each scene
         public void Start()
         {
-            Log.Info("[SR] Start start");
+            Log.info("Start start");
             if (Settings.Instance != null)
             {
                 Settings.Instance.gui.hideAll();
@@ -131,11 +131,11 @@ namespace StageRecovery
 
 
                 cutoffAlt = ComputeCutoffAlt(Planetarium.fetch.Home) + 1000;
-                Log.Info("[SR] Determined cutoff altitude to be " + cutoffAlt);
+                Log.info("Determined cutoff altitude to be ", cutoffAlt);
 
                 //Register with the RecoveryController (do we only do this once?)
                 var s = RecoveryControllerWrapper.RegisterModWithRecoveryController("StageRecovery");
-                Log.Info("[SR] RecoveryController registration success: " + s);
+                Log.info("RecoveryController registration success: ", s);
 
                 //Set the eventAdded flag to true so this code doesn't run again
                 //eventAdded = true;
@@ -185,11 +185,11 @@ namespace StageRecovery
         }
         void onVesselRecovered(ProtoVessel pv, bool b)
         {
-            Log.Info("onVesselRecovered: " + pv.vesselName);
+            Log.info("onVesselRecovered: ", pv.vesselName);
         }
         void onVesselTerminated(ProtoVessel pv)
         {
-            Log.Info("onVesselTerminated: " + pv.vesselName);
+            Log.info("onVesselTerminated: ", pv.vesselName);
         }
 
         public void ShipModifiedEvent(ShipConstruct sc)
@@ -238,7 +238,7 @@ namespace StageRecovery
                 if (pv.protoPartSnapshots.Count > 0 && pv.protoPartSnapshots[0].modules.Exists(m => m.moduleName == "LaunchClamp"))
                 {
                     //We look for the launchclamp module, which will hopefully cover FASA and stock.
-                    Log.Info("[SR] Recovering a clamp!");
+                    Log.info("Recovering a clamp!");
                     //Add it to the recovered clamps list so we don't try to recover it again
                     clampsRecovered.Add(vessel);
                     float totalRefund = 0;
@@ -269,7 +269,7 @@ namespace StageRecovery
                     && pv.situation != Vessel.Situations.LANDED && vessel.altitude < cutoffAlt && vessel.altitude > 0
                     && (FlightGlobals.ActiveVessel.transform.position - vessel.transform.position).sqrMagnitude > Math.Pow(vessel.vesselRanges.GetSituationRanges(Vessel.Situations.FLYING).pack, 2) - 250)
                 {
-                    Log.Info("[SR] Vessel " + pv.vesselName + " is going to be destroyed. Pre-recovering!"); //Kerbal death should be handled by SR instead
+                    Log.info("Vessel {0} is going to be destroyed. Pre-recovering!", pv.vesselName); //Kerbal death should be handled by SR instead
 
                     RecoverVessel(vessel, true);
                 }
@@ -310,7 +310,7 @@ namespace StageRecovery
                         StageWatchList.Remove(id);
                         continue;
                     }
-                    Log.Info($"[SR] Vessel {vessel.vesselName} ({id}) is about to be destroyed at altitude {vessel.altitude}. Pre-recovering vessel.");
+                    Log.info("Vessel {0} ({1}) is about to be destroyed at altitude {2}. Pre-recovering vessel.", vessel.vesselName, id, vessel.altitude);
 
                     RecoverVessel(vessel, true);
 
@@ -357,7 +357,7 @@ namespace StageRecovery
                 }
 
                 instance.StageWatchList.Add(ves.id);
-                Log.Info("[SR] Added vessel " + ves.vesselName + " (" + ves.id + ") to watchlist.");
+                Log.info("Added vessel {0} ({1}) to watchlist.", ves.vesselName, ves.id);
                 return true;
             }
 
@@ -374,7 +374,7 @@ namespace StageRecovery
             }
 
             Funding.Instance.AddFunds(toAdd, TransactionReasons.VesselRecovery);
-            Log.Info("[SR] Adding funds: " + toAdd + ", New total: " + Funding.Instance.Funds);
+            Log.info("Adding funds: {0}, New total: {1}", toAdd, Funding.Instance.Funds);
             return (Funding.Instance.Funds);
         }
 
@@ -481,38 +481,38 @@ namespace StageRecovery
         //The main show. The VesselDestroyEvent is activated whenever KSP destroys a vessel. We only care about it in a specific set of circumstances
         private void VesselDestroyEvent(Vessel v)
         {
-            Log.Info("[SR]  VesselDestroyEvent");
+            Log.info("VesselDestroyEvent");
             //If we're disabled, just return
             if (!Settings1.Instance.SREnabled)
             {
-                Log.Info("[SR]  not enabled");
+                Log.info("not enabled");
                 return;
             }
 
             if (!sceneChangeComplete)
             {
-                Log.Info("[SR]  sceneChangeComplete is false");
+                Log.info("sceneChangeComplete is false");
                 return;
             }
 
             //If FlightGlobals is null, just return. We can't do anything
             if (FlightGlobals.fetch == null)
             {
-                Log.Info("[SR] , flightGlobals is null");
+                Log.info("flightGlobals is null");
                 return;
             }
 
             //If the protoVessel is null, we can't do anything so just return
             if (v.protoVessel == null)
             {
-                Log.Info("[SR]  v.protoVessel is null");
+                Log.info("v.protoVessel is null");
                 return;
             }
 
             //Check if we should even recover it
             if (!SRShouldRecover(v))
             {
-                Log.Info("[SR] , SRShouldRecover is false");
+                Log.info("SRShouldRecover is false");
                 return;
             }
 
@@ -521,12 +521,12 @@ namespace StageRecovery
             if (v != null && !RecoverAttemptLog.ContainsKey(v.id) && !(HighLogic.LoadedSceneIsFlight && v.isActiveVessel) && (v.mainBody == Planetarium.fetch.Home) && (!v.loaded || v.packed) && (v.altitude < v.mainBody.atmosphereDepth) &&
                (v.situation == Vessel.Situations.FLYING || v.situation == Vessel.Situations.SUB_ORBITAL || v.situation == Vessel.Situations.ORBITING) && !v.isEVA)
             {
-                Log.Info("[SR] Recovering vessel");
+                Log.info("Recovering vessel");
                 RecoverVessel(v, false);
             }
             else
-                Log.Info("[SR] ");
-            Log.Info(" Not recovering vessel");
+                Log.info("");
+            Log.info("Not recovering vessel");
         }
 
         private static void RecoverVessel(Vessel v, bool preRecovery)
@@ -552,13 +552,13 @@ namespace StageRecovery
             APIManager.instance.OnRecoveryProcessingStart.Fire(v);
 
             //Create a new RecoveryItem. Calling this calculates everything regarding the success or failure of the recovery. We need it for display purposes in the main gui
-            Log.Info("[SR] Searching in RecoveryQueue (" + instance.RecoveryQueue.Count + ") for " + v.id);
+            Log.info("Searching in RecoveryQueue ({0}) for {1}", instance.RecoveryQueue.Count, v.id);
             RecoveryItem Stage;
             if (instance.RecoveryQueue.Count > 0 && instance.RecoveryQueue.Exists(ri => ri.vessel.id == v.id))
             {
                 Stage = instance.RecoveryQueue.Find(ri => ri.vessel.id == v.id);
                 instance.RecoveryQueue.Remove(Stage);
-                Log.Info("[SR] Found vessel in the RecoveryQueue.");
+                Log.info("Found vessel in the RecoveryQueue.");
             }
             else
             {
@@ -645,27 +645,27 @@ namespace StageRecovery
                             try
                             {
                                 diameter = realChute.moduleRef.Fields.GetValue<float>("deployedDiameter");
-                                Log.Info($"[SR] Diameter is {diameter}.");
+                                Log.info("Diameter is {0}.", diameter);
                             }
                             catch (Exception e)
                             {
-                                Debug.LogError("[SR] Exception while finding deployedDiameter for RealChuteFAR module on moduleRef.");
+                                Debug.LogError("Exception while finding deployedDiameter for RealChuteFAR module on moduleRef.");
                                 Debug.LogException(e);
                             }
                         }
                         else
                         {
 
-                            Log.Info("[SR] moduleRef is null, attempting workaround to find diameter.");
+                            Log.info("moduleRef is null, attempting workaround to find diameter.");
                             object dDefault = p.partInfo.partPrefab.Modules["RealChuteFAR"]?.Fields?.GetValue("deployedDiameter"); //requires C# 6
                             if (dDefault != null)
                             {
                                 diameter = Convert.ToSingle(dDefault);
-                                Log.Info($"[SR] Workaround gave a diameter of {diameter}.");
+                                Log.info("Workaround gave a diameter of {0}.", diameter);
                             }
                             else
                             {
-                                Log.Info("[SR] Couldn't get default value, setting to 0 and calling it a day.");
+                                Log.info("Couldn't get default value, setting to 0 and calling it a day.");
                                 diameter = 0.0F;
                             }
 
@@ -714,7 +714,7 @@ namespace StageRecovery
             }
             catch (Exception e)
             {
-                Debug.LogError("[SR] Error occured while trying to determine total chute area.");
+                Debug.LogError("Error occured while trying to determine total chute area.");
                 Debug.LogException(e);
             }
             return RCParameter;
@@ -772,27 +772,27 @@ namespace StageRecovery
                             try
                             {
                                 diameter = realChute.Fields.GetValue<float>("deployedDiameter");
-                                Log.Info($"[SR] Diameter is {diameter}.");
+                                Log.info("Diameter is {}.", diameter);
                             }
                             catch (Exception e)
                             {
-                                Debug.LogError("[SR] Exception while finding deployedDiameter for RealChuteFAR module on module.");
+                                Debug.LogError("Exception while finding deployedDiameter for RealChuteFAR module on module.");
                                 Debug.LogException(e);
                             }
                         }
                         else
                         {
 
-                            Log.Info("[SR] moduleRef is null, attempting workaround to find diameter.");
+                            Log.info("moduleRef is null, attempting workaround to find diameter.");
                             object dDefault = p.partInfo.partPrefab.Modules["RealChuteFAR"]?.Fields?.GetValue("deployedDiameter"); //requires C# 6
                             if (dDefault != null)
                             {
                                 diameter = Convert.ToSingle(dDefault);
-                                Log.Info($"[SR] Workaround gave a diameter of {diameter}.");
+                                Log.info("Workaround gave a diameter of {0}.", diameter);
                             }
                             else
                             {
-                                Log.Info("[SR] Couldn't get default value, setting to 0 and calling it a day.");
+                                Log.info("Couldn't get default value, setting to 0 and calling it a day.");
                                 diameter = 0.0F;
                             }
 
@@ -838,7 +838,7 @@ namespace StageRecovery
                         catch (Exception e)
                         {
                             //Debug.LogException(e);
-                            Log.Info("[SR] The expected excpetion is still present. " + e.Message);
+                            Log.info("The expected excpetion is still present. {0}", e.Message);
                         }
                         dragCubes.SetDrag(dir, 0.03f); //mach 0.03, or about 10m/s
 
@@ -850,7 +850,7 @@ namespace StageRecovery
             }
             catch (Exception e)
             {
-                Debug.LogError("[SR] Error occured while trying to determine total chute area.");
+                Debug.LogError("Error occured while trying to determine total chute area.");
                 Debug.LogException(e);
             }
             return RCParameter;
@@ -923,44 +923,44 @@ namespace StageRecovery
         {
             //Check if the stage was claimed by another mod
             string controllingMod = RecoveryControllerWrapper.ControllingMod(vessel);
-            Log.Info("[SR] Controlling mod is " + (controllingMod ?? "null"));
+            Log.info("Controlling mod is {0}", (controllingMod ?? "null"));
             if (HighLogic.LoadedSceneIsFlight) //outside of the flight scene we're gonna handle everything
             {
                 if (string.IsNullOrEmpty(controllingMod) || string.Equals(controllingMod, "auto", StringComparison.OrdinalIgnoreCase))
                 {
                     if (FMRS_Enabled(false))
                     { //FMRS is installed and is active, but we aren't sure if they're handling chutes yet
-                        Log.Info("[SR] FMRS is active...");
+                        Log.info("FMRS is active...");
                         if (!FMRS_Enabled(true))
                         { //FMRS is active, but isn't handling parachutes or deferred it to us. So if there isn't crew or a form of control, then we handle it
-                            Log.Info("[SR] But FMRS isn't handling chutes...");
+                            Log.info("But FMRS isn't handling chutes...");
                             if ((vessel.protoVessel.wasControllable) || vessel.protoVessel.GetVesselCrew().Count > 0)
                             { //crewed or was controlled, so FMRS will get it
-                                Log.Info("[SR] But this stage has control/kerbals, so have fun FMRS!");
+                                Log.info("But this stage has control/kerbals, so have fun FMRS!");
                                 return false;
                             }
-                            Log.Info("[SR] So we've got this stage! Maybe next time FMRS.");
+                            Log.info("So we've got this stage! Maybe next time FMRS.");
                             // if we've gotten here, FMRS probably isn't handling the craft and we should instead.
                         }
                         else
                         { //FRMS is active, is handling chutes, and hasn't deferred it to us. We aren't gonna handle this case at all
-                            Log.Info("[SR] And FMRS is handling everything, have fun!");
+                            Log.info("And FMRS is handling everything, have fun!");
                             return false;
                         }
                     }
                     else
                     {
-                        Log.Info("[SR] FMRS is not active.");
+                        Log.info("FMRS is not active.");
                     }
                 }
                 else if (string.Equals(controllingMod, "StageRecovery", StringComparison.OrdinalIgnoreCase))
                 {
-                    Log.Info("[SR] Vessel specified StageRecovery as its processor.");
+                    Log.info("Vessel specified StageRecovery as its processor.");
                     return true;
                 }
                 else //another mod has requested full control over recovery of the vessel
                 {
-                    Log.Info($"[SR] Vessel specified '{controllingMod}' as its processor.");
+                    Log.info("Vessel specified '{0}' as its processor.", controllingMod);
                     return false;
                 }
             }

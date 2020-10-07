@@ -22,8 +22,7 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
+
 using UnityEngine;
 
 
@@ -181,7 +180,7 @@ namespace StageRecovery
             }
             if (RemainingDecouplers == null)
             {
-                Log.Error("No parent part found");
+                Log.error("No parent part found");
                 return;
             }
             while (RemainingDecouplers.Count > 0)
@@ -195,9 +194,9 @@ namespace StageRecovery
                     stageNumber = stageNum++,
                     parts = stage.parts
                 };
-                Log.Info("Parent part: " + parent.partInfo.title);
+                Log.info("Parent part: {0}", parent.partInfo.title);
                 foreach (var d in stage.decouplers)
-                    Log.Info("Child decouplers: " + d.partInfo.title);
+                    Log.info("Child decouplers: {0}", d.partInfo.title);
                 RemainingDecouplers.AddRange(stage.decouplers);
 
                 //compute properties
@@ -213,7 +212,7 @@ namespace StageRecovery
             }
 
             ConsolidateStages();
-            Log.Info("[SR] Found " + stages.Count + " stages!");
+            Log.info("Found {0} stages!", stages.Count);
         }
         PartModule pm = null;
         bool CheckForEnginePlate(Part parent, Part checking)
@@ -253,7 +252,7 @@ namespace StageRecovery
         }
         StageParts DetermineStage(Part parent)
         {
-            Log.Info("DetermineStage 1 parent: " + parent.partInfo.title);
+            Log.info("DetermineStage 1 parent: {0}", parent.partInfo.title);
             StageParts stage = new StageParts();
             List<Part> toCheck = new List<Part>() { parent };
             while (toCheck.Count > 0) //should instead search through the children, stopping when finding a decoupler, then switch to it's children
@@ -325,7 +324,7 @@ namespace StageRecovery
 
                 if (j > i + 1)
                 {
-                    Log.Info("[SR] Found " + (j - i) + " identical stages");
+                    Log.info("Found {0} identical stages", (j - i));
                     //some stages are the same (up to j)
                     //merge the stages
                     for (int k = j - 1; k > i; k--)

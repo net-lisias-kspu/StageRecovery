@@ -24,8 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using UnityEngine;
+
 using KSP.UI.Screens;
+
 
 namespace StageRecovery
 {
@@ -102,19 +105,19 @@ namespace StageRecovery
                         controlled = vessel.GetVesselCrew().Exists(c => c.experienceTrait.Title == "Pilot") || KerbalsOnboard.Exists(pcm => pcm.CrewMember.experienceTrait.Title == "Pilot");
                         if (controlled)
                         {
-                            Log.Info("[SR] Found a kerbal pilot!");
+                            Log.info("Found a kerbal pilot!");
                         }
                         else
                         {
-                            Log.Info("[SR] No kerbal pilot found, searching for a probe core...");
+                            Log.info("No kerbal pilot found, searching for a probe core...");
                             controlled = vessel.protoVessel.protoPartSnapshots.Exists(p => p.modules.Exists(m => m.moduleName == "ModuleSAS" || m.moduleName == "MechJebCore"));
                             if (controlled)
                             {
-                                Log.Info("[SR] Found an SAS compatible probe core!");
+                                Log.info("Found an SAS compatible probe core!");
                             }
                             else
                             {
-                                Log.Info("[SR] No probe core with SAS found.");
+                                Log.info("No probe core with SAS found.");
                             }
                         }
 
@@ -175,20 +178,22 @@ namespace StageRecovery
             KerbalsOnboard = RecoverKerbals();
             RecoveredTime = Planetarium.GetUniversalTime();
 
-            Log.Info(string.Format("[SR] Stage was {0}recovered. Distance: {1}km, Altitude: {2}m", 
-                (Recovered ? "" : "not "), 
-                Math.Round(KSCDistance/1000, 2), 
-                Math.Round(vessel.altitude)));
+            Log.info("Stage was {0}recovered. Distance: {1}km, Altitude: {2}m"
+                , (Recovered ? "" : "not ")
+                , Math.Round(KSCDistance/1000, 2)
+                , Math.Round(vessel.altitude)
+            );
 
-            Log.Info(string.Format("[SR] D%: {0}, S%: {1}, Total: {2}. Funds: {3}", 
-                Math.Round(DistancePercent, 3),
-                Math.Round(SpeedPercent, 3), 
-                Math.Round(RecoveryPercent, 3), 
-                Math.Round(FundsReturned, 2)));
+            Log.info("D%: {0}, S%: {1}, Total: {2}. Funds: {3}" 
+                , Math.Round(DistancePercent, 3)
+                , Math.Round(SpeedPercent, 3) 
+                , Math.Round(RecoveryPercent, 3) 
+                , Math.Round(FundsReturned, 2)
+            );
 #if DEBUG
             foreach (var r in propRemaining)
             {
-                Log.Info("Remaining " + r.Key + ": " + r.Value.ToString("N1"));
+                Log.info("Remaining {0}: {1:0.0}", r.Key, r.Value.ToString("N1"));
             }
 #endif
             return Recovered;
@@ -233,7 +238,7 @@ namespace StageRecovery
         {
             double v = StageRecovery.ProcessPartList(vessel.protoVessel.protoPartSnapshots);
             ParachuteModule = (vessel.protoVessel.protoPartSnapshots.Exists(pps => pps.modules.Exists(ppms => ppms.moduleName == "RealChuteModule")) ? "RealChute" : "Stock");
-            Log.Info("[SR] Vt: " + v);
+            Log.info("Vt: {0}", v);
             return v;
         }
 
@@ -267,7 +272,7 @@ namespace StageRecovery
         /// <returns></returns>
         private double ReduceSpeed_Engines(double initialSpeed, double targetSpeed)
         {
-            Log.Info($"[SR] Attempting to use engines to reduce speed from {initialSpeed} to {targetSpeed}");
+            Log.info("Attempting to use engines to reduce speed from {0} to {1}", initialSpeed, targetSpeed);
             //ISP references: http://forum.kerbalspaceprogram.com/threads/34315-How-Do-I-calculate-Delta-V-on-more-than-one-engine
             //Thanks to Malkuth, of Mission Controller Extended, for the base of this code.
             bool hasEngines = false;
@@ -290,7 +295,7 @@ namespace StageRecovery
             { 
                 if (!Controlled)
                 {
-                    Log.Info("[SR] Stage not controlled. Can't perform powered speed reduction.");
+                    Log.info("Stage not controlled. Can't perform powered speed reduction.");
                     noControl = true;
                     return finalVelocity;
                 }
@@ -404,7 +409,7 @@ namespace StageRecovery
             {
                 if (Controlled && hasEngines) //If the stage is controlled and there are engines, we continue.
                 {
-                    Log.Info("[SR] Controlled and has engines. TWR: " + (totalThrust / (9.81 * totalMass)));
+                    Log.info("Controlled and has engines. TWR: {0}", (totalThrust / (9.81 * totalMass)));
 
                     if (totalThrust < (totalMass * 9.81) * Settings3.Instance.MinTWR) //Need greater than 1 TWR to land. Planes would be different, but we ignore them. This isn't quite true with parachutes, btw.
                     {
@@ -416,7 +421,7 @@ namespace StageRecovery
                     double finalMassRequired = totalMass * Math.Exp(-(1.5 * (finalVelocity - targetSpeed)) / (9.81 * netISP));
                     double massRequired = totalMass - finalMassRequired;
 
-                    Log.Info("[SR] Requires " + propsUsed.Count + " fuels. " + string.Join(", ", propsUsed.Keys.ToArray()));
+                    Log.info("Requires {0} fuels. {1}", propsUsed.Count, string.Join(", ", propsUsed.Keys.ToArray()));
 
                     //If the engine doesn't need fuel (ie, electric engines from firespitter) then we just say you land
                     if (propsUsed.Count == 0)
@@ -469,7 +474,7 @@ namespace StageRecovery
                         //If we don't have enough fuel, we determine how much we CAN use so that maybe we'll land slow enough for a partial refund
                         if (!enoughFuel)
                         {
-                            Log.Info("[SR] Not enough fuel for speed reduction. Attempting partial reduction.");
+                            Log.info("Not enough fuel for speed reduction. Attempting partial reduction.");
                             double limiterAmount = resources.ContainsKey(limitingFuelType) ? resources[limitingFuelType] : 0;
                             double ratio1 = propsUsed[limitingFuelType];
                             foreach (KeyValuePair<string, double> entry in new Dictionary<string, double>(propAmounts))
@@ -541,18 +546,18 @@ namespace StageRecovery
                 Debug.LogException(e);
             }
             //Hopefully we removed enough fuel to land!
-            Log.Info($"[SR] Target Velocity: {targetSpeed} Final Velocity: {finalVelocity}");
-            Log.Info("[SR] Used following propellant amounts: ");
+            Log.info("Target Velocity: {0} Final Velocity: {1}", targetSpeed, finalVelocity);
+            Log.info("Used following propellant amounts: ");
             foreach (KeyValuePair<string, double> prop in propsConsumed)
             {
-                Log.Info($"    {prop.Key}: {prop.Value}");
+                Log.info("    {0}: {1}", prop.Key, prop.Value);
             }
             return finalVelocity;
         }
 
         private double TryPoweredRecovery()
         {
-            Log.Info("[SR] Trying powered recovery");
+            Log.info("Trying powered recovery");
             //Determine the cutoff velocity that we're aiming for. This is dependent on the recovery model used (flat rate vs variable rate)
             return ReduceSpeed_Engines(Vt, (Settings1.Instance.FlatRateModel ? Settings2.Instance.CutoffVelocity : Settings2.Instance.LowCut) - 2);          
         }
@@ -589,7 +594,7 @@ namespace StageRecovery
                     //Log a message alerting us to the speed and the burnChance
                     if (burnChance > 0)
                     {
-                        Log.Info("[SR] Overheat velocity exceeded (" + srfSpeed + "/" + Settings3.Instance.DeadlyReentryMaxVelocity + ") Chance of burning up: " + burnChance);
+                        Log.info("Overheat velocity exceeded ({0}/{1}) Chance of burning up: {2}", srfSpeed, Settings3.Instance.DeadlyReentryMaxVelocity, burnChance);
                     }
                 }
 
@@ -636,7 +641,7 @@ namespace StageRecovery
                         }
                     }
                 }
-                Log.Info("[SR] Found " + totalHeatShield + " ablator remaining with " + maxHeatShield + " total.");
+                Log.info("Found {0} ablator remaining with {1} total.", totalHeatShield, maxHeatShield);
                 //Assume we're not going to burn up until proven that we will
                 bool burnIt = false;
                 //Well, we can't burn up unless the chance of doing so is greater than 0
@@ -653,13 +658,13 @@ namespace StageRecovery
                     //If that's less than or equal to the chance of burning, then we burn (25% chance = 0.25, random must be below 0.25)
                     burnIt = (choice <= burnChance);
                     //Once again, more log messages to help with debugging of people's issues
-                    Log.Info("[SR] Burn chance: " + burnChance + " rand: " + choice + " burning? " + burnIt);
+                    Log.info("Burn chance: {0} rand: {1} burning? {2}", burnChance, choice, burnIt);
                 }
                 return burnIt;
             }
             catch (Exception e)
             {
-                Log.Info("[SR] Exception while calculating burn chance. Assuming not burned up.");
+                Log.info("Exception while calculating burn chance. Assuming not burned up.");
                 Debug.LogException(e);
                 return false;
             }
@@ -826,7 +831,7 @@ namespace StageRecovery
             {
                 //We've already removed the Kerbals, now we recover them
                 kerbals = KerbalsOnboard;
-                Log.Info("[SR] Found pre-recovered Kerbals");
+                Log.info("Found pre-recovered Kerbals");
             }
             else
             {
@@ -842,7 +847,7 @@ namespace StageRecovery
                 foreach (CrewWithSeat pcmWS in kerbals)
                 {
                     ProtoCrewMember pcm = pcmWS.CrewMember;
-                    Log.Info("[SR] Recovering " + pcm.name);
+                    Log.info("Recovering " + pcm.name);
                     pcm.rosterStatus = ProtoCrewMember.RosterStatus.Available;
 
                     //Way to go Squad, you now kill Kerbals TWICE instead of only once.
@@ -850,7 +855,7 @@ namespace StageRecovery
                         && pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 2].type == "Die");
                     if (TwoDeathEntries)
                     {
-                        Log.Info("[SR] Squad has decided to kill " + pcm.name + " not once, but TWICE!");
+                        Log.info("Squad has decided to kill {0} not once, but TWICE!", pcm.name);
                         FlightLog.Entry deathEntry0 = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];//pcm.careerLog.Entries.Find(e => e.type == "Die");
                         if (deathEntry0 != null && deathEntry0.type == "Die")
                         {
@@ -859,7 +864,7 @@ namespace StageRecovery
                         FlightLog.Entry deathEntry = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];
                         if (deathEntry != null && deathEntry.type == "Die")
                         {
-                            Log.Info("[SR] Recovered kerbal registered as dead. Attempting to repair.");
+                            Log.info("Recovered kerbal registered as dead. Attempting to repair.");
                             int flightNum = deathEntry.flight;
                             pcm.careerLog.Entries.Remove(deathEntry);
                             FlightLog.Entry landing = new FlightLog.Entry(flightNum, FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
@@ -870,11 +875,11 @@ namespace StageRecovery
                     }
                     else if (pcm.careerLog.Entries.Count > 0 && pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1].type == "Die")
                     {
-                        Log.Info("[SR] Squad has been gracious and has only killed " + pcm.name + " once, instead of twice.");
+                        Log.info("Squad has been gracious and has only killed {0} once, instead of twice.", pcm.name);
                         FlightLog.Entry deathEntry = pcm.careerLog.Entries[pcm.careerLog.Entries.Count - 1];
                         if (deathEntry != null && deathEntry.type == "Die")
                         {
-                            Log.Info("[SR] Recovered kerbal registered as dead. Attempting to repair.");
+                            Log.info("Recovered kerbal registered as dead. Attempting to repair.");
                             int flightNum = deathEntry.flight;
                             pcm.careerLog.Entries.Remove(deathEntry);
                             FlightLog.Entry landing = new FlightLog.Entry(flightNum, FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
@@ -885,7 +890,7 @@ namespace StageRecovery
                     }
                     else
                     {
-                        Log.Info("[SR] No death entry added, but we'll add a successful recovery anyway.");
+                        Log.info("No death entry added, but we'll add a successful recovery anyway.");
                         pcm.flightLog.AddEntry(FlightLog.EntryType.Land, Planetarium.fetch.Home.bodyName);
                         pcm.flightLog.AddEntryUnique(FlightLog.EntryType.Recover);
                         pcm.ArchiveFlightLog();
@@ -942,11 +947,11 @@ namespace StageRecovery
                     crewedPart.RemoveCrewmember(pcm);
 
                     KerbalsOnboard.Add(new CrewWithSeat(pcm, crewedPart.protoPartSnapshot));
-                    Log.Info("[SR] Pre-recovered " + pcm.name);
+                    Log.info("Pre-recovered {0}", pcm.name);
                 }
                 else
                 {
-                    Log.Info("[SR] Can't find the part housing " + pcm.name);
+                    Log.info("Can't find the part housing ", pcm.name);
                 }
             }
         }

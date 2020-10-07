@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+
 //Change this to your mod's namespace!
 namespace StageRecovery
 {

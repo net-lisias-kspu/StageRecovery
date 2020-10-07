@@ -20,11 +20,15 @@
  * Contains code licensed under the MIT
  * © 2018-2020 LinuxGuruGamer
 */
-using KSP.UI.Screens;
-using System;
 using UnityEngine;
+
+using KSP.UI.Screens;
+
+using GUILayout = KSPe.UI.GUILayout;
+using File = KSPe.IO.File<StageRecovery.Startup>;
+
 using ToolbarControl_NS;
-using ClickThroughFix;
+
 
 namespace StageRecovery
 {
@@ -50,21 +54,18 @@ namespace StageRecovery
         private Vector2 scrollPos;
 
         static internal ToolbarControl toolbarControl;
-        internal const string MODID = "StageRecovery_NS";
-        internal const string MODNAME = "Stage Recovery";
 
-        const string ButtonLoc = "StageRecovery/PluginData/icon";
         internal void InitializeToolbar(GameObject go)
         {
             ApplicationLauncher.AppScenes spaceCenter = 0;
 
-               Log.Info("[SR]  InitializeToolbar");
+            Log.info("InitializeToolbar");
             if (toolbarControl == null)
             {
                 if (!Settings1.Instance.hideSpaceCenterButton)
                     spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
-                toolbarControl = go.AddComponent<ToolbarControl>();
-                toolbarControl.AddToAllToolbars(
+                    toolbarControl = go.AddComponent<ToolbarControl>();
+                    toolbarControl.AddToAllToolbars(
                     ShowWindow,
                     hideAll,
                     OnHoverOn,
@@ -72,20 +73,20 @@ namespace StageRecovery
                     null,
                     null,
                     (
-                    spaceCenter | 
+                    spaceCenter |
                     ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
-                    MODID,
+                    RegisterToolbar.MODID,
                     "stageControlButton",
-                    ButtonLoc + "-38",
-                    ButtonLoc + "-24",
-                    MODNAME
+                    File.Asset.Solve("icon-38"),
+                    File.Asset.Solve("icon-24"),
+                    RegisterToolbar.MODNAME
                 );
 
             }
         }
         internal void DoOnDestroy()
         {
-            Log.Info("[SR] StageRecovery.SettingsGUI.OnDestroy");
+            Log.info("StageRecovery.SettingsGUI.OnDestroy");
             if (toolbarControl != null)
             {
                 toolbarControl.OnDestroy();
@@ -143,20 +144,20 @@ namespace StageRecovery
         {
             if (flightGUI.showFlightGUI)
             {
-                flightGUI.flightWindowRect = ClickThruBlocker.GUILayoutWindow(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
+                flightGUI.flightWindowRect = GUILayout.Window(8940, flightGUI.flightWindowRect, flightGUI.DrawFlightGUI, "StageRecovery", HighLogic.Skin.window);
             }
 
             if (showBlacklist)
             {
-                blacklistRect = ClickThruBlocker.GUILayoutWindow(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);
+                blacklistRect = GUILayout.Window(8941, blacklistRect, DrawBlacklistGUI, "Ignore List", HighLogic.Skin.window);
             }
             if (showWindow)
             {
-                mainWindowRect = ClickThruBlocker.GUILayoutWindow(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
+                mainWindowRect = GUILayout.Window(8940, mainWindowRect, DrawSettingsGUI, "StageRecovery", HighLogic.Skin.window);
             }
             if (editorGUI.showEditorGUI)
             {
-                editorGUI.EditorGUIRect = ClickThruBlocker.GUILayoutWindow(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
+                editorGUI.EditorGUIRect = GUILayout.Window(8940, editorGUI.EditorGUIRect, editorGUI.DrawEditorGUI, "StageRecovery", HighLogic.Skin.window);
             }
         }
 
@@ -204,7 +205,7 @@ namespace StageRecovery
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-          
+
             GUILayout.EndVertical();
             GUI.DragWindow();
         }

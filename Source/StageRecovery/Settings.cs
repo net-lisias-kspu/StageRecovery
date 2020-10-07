@@ -20,11 +20,9 @@
  * Contains code licensed under the MIT
  * © 2018-2020 LinuxGuruGamer
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using KSP.UI.Screens;
+
 
 namespace StageRecovery
 {

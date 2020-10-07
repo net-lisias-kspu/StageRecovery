@@ -16,25 +16,27 @@
     You should have received a copy of the GNU General Public License 3.0
     along with Stage Recovery /L. If not, see <https://www.gnu.org/licenses/>.
 */
-/*
- * Contains code licensed under the MIT
- * © 2018-2020 LinuxGuruGamer
-*/
 using UnityEngine;
-
-using ToolbarControl_NS;
 
 
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        internal const string MODID = "StageRecovery_NS";
-        internal const string MODNAME = "Stage Recovery";
-        void Start()
+    [KSPAddon(KSPAddon.Startup.Instantly, true)]
+    internal class Startup : MonoBehaviour
+	{
+        private void Start()
         {
-            ToolbarControl.RegisterMod(MODID, MODNAME);
+            Log.force("Version {0}", Version.Text);
+
+            try
+            {
+                KSPe.Util.Installation.Check<Startup>(typeof(Version));
+            }
+            catch (KSPe.Util.InstallmentException e)
+            {
+                Log.error(e.ToShortMessage());
+                KSPe.Common.Dialogs.ShowStopperAlertBox.Show(e);
+            }
         }
-    }
+	}
 }

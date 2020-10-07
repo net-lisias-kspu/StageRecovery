@@ -21,12 +21,10 @@
  * © 2018-2020 LinuxGuruGamer
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
+
 using UnityEngine;
-using KSP.UI.Screens;
 
 //
 // RecoveryControllerWrapper
@@ -77,7 +75,7 @@ namespace StageRecovery
         {
             get
             {
-                Log.Info("RecoveryControllerAvailable");
+                Log.info("RecoveryControllerAvailable");
                 if (recoveryControllerAvailable == null)
                 {
                     recoveryControllerAvailable = AssemblyLoader.loadedAssemblies.Any(a => a.assembly.GetName().Name == "RecoveryController");
@@ -86,7 +84,7 @@ namespace StageRecovery
                         calledType = Type.GetType("RecoveryController.RecoveryController,RecoveryController");
                     }
                     else
-                        Log.Info("RecoveryController NOT available");
+                        Log.info("RecoveryController NOT available");
                 }
                 return recoveryControllerAvailable.GetValueOrDefault();
             }
@@ -98,22 +96,22 @@ namespace StageRecovery
             {
                 return null;
             }
-            Log.Info("CallRecoveryController, func: " + func);
+            Log.info("CallRecoveryController, func: {0}", func);
             try
             {
                  
                 if (calledType != null)
                 {
-                    Log.Info("calledtype not null: " + calledType.ToString());
+                    Log.info("calledtype not null: {0}", calledType);
                     MonoBehaviour rcRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class Historian exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
                     if (rcRef != null)
                     {
-                        Log.Info("rcRef not null");
+                        Log.info("rcRef not null");
                         MethodInfo myMethod = calledType.GetMethod(func, BindingFlags.Instance | BindingFlags.Public);
 
                         if (myMethod != null)
                         {
-                            Log.Info("myMethod not null");
+                            Log.info("myMethod not null");
                             object magicValue;
                             if (modName != null)
                             {
@@ -128,35 +126,35 @@ namespace StageRecovery
                         }
                         else
                         {
-                            Log.Info("[SR] " + func + " not available in RecoveryController");                           
+                            Log.info("{0} not available in RecoveryController", func); 
                         }
                     }
                     else
                     {
-                        Log.Info("[SR] " + func + "  failed");
+                        Log.info("{0} failed", func);
                         return null;
                     }
                 }
-                Log.Info("calledtype failed");
+                Log.info("calledtype failed");
                 return null;
             }
             catch (Exception e)
             {
-                Log.Info("[SR] Error calling type: " + e);
+                Log.info("Error calling type: {0}", e);
                 return null;
             }
         }
 
         public static  bool RegisterModWithRecoveryController(string modName)
         {
-            Log.Info("RegisterModWithRecoveryController");
+            Log.info("RegisterModWithRecoveryController");
             var s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
-                Log.Info("RegisterMod, CallRecoveryController returned null");
+                Log.info("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
-            Log.Info("RegisterMod returning: " + ((bool)s).ToString());
+            Log.info("RegisterMod returning: {0}" + ((bool)s));
             return (bool)s;
         }
 
