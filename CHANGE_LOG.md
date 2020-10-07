@@ -1,5 +1,10 @@
 # Stage Recovery :: Change log
 
+* 2019-0724: 1.9.1.1 (LinuxGuruGamer) for KSP 1.7.3
+	+ Fixed issue with showing remaining fuel on one stage and another stage not having liquid fuel (ie: solid), was getting GUI errors
+	+ Moved RegisterToolbar into it's own file
+	+ Added InstallChecker
+	+ Updated AssemblyVersion.tt
 * 2019-0206: 1.9.1 (LinuxGuruGamer) for KSP 1.6.1
 	+ Added display of remaining fuel after recovery
 	+ Added "Fuel" section to the SR window, only if there was any leftover fuel
