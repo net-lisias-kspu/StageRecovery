@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2019-0828: 1.9.1.4 (LinuxGuruGamer) for KSP 1.7.3
+	+ Reorganized code to avoid segfaults on pre-1.7 games due to the new ModuleDecouplerBase being added in 1.7
 * 2019-0827: 1.9.1.3 (LinuxGuruGamer) for KSP 1.7.3
 	+ Rewrite engine plate code due to an infinite loop which was happening when the top node of an engineplate was attached before the bottom node was
 * 2019-0820: 1.9.1.2 (LinuxGuruGamer) for KSP 1.7.3
