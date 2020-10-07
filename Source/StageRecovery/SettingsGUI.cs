@@ -1,4 +1,21 @@
-﻿using KSP.UI.Screens;
+﻿/*
+    This file is part of StageRecovery
+    © 2014-2018 magico13
+
+    StageRecovery licensed as follows:
+
+    * GPL 3.0 : https://www.gnu.org/licenses/gpl-3.0.txt
+
+    And you are allowed to choose the License that better suit your needs.
+
+    StageRecovery is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    You should have received a copy of the GNU General Public License 3.0
+    along with StageRecovery If not, see <https://www.gnu.org/licenses/>.
+*/
+using KSP.UI.Screens;
 using System;
 using UnityEngine;
 
