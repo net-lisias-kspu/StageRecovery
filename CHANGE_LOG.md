@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2019-1111: 1.9.2 (LinuxGuruGamer) for KSP 1.8.1
+	+ Updated for KSP 1.8
 * 2019-0828: 1.9.1.4 (LinuxGuruGamer) for KSP 1.7.3
 	+ Reorganized code to avoid segfaults on pre-1.7 games due to the new ModuleDecouplerBase being added in 1.7
 * 2019-0827: 1.9.1.3 (LinuxGuruGamer) for KSP 1.7.3
