@@ -1,5 +1,53 @@
 # Stage Recovery :: Change log
 
+* 2020-0124: 1.9.2.2 (LinuxGuruGamer) for KSP 1.10.1
+	+ Removed duplicated code in SettingsGUI.cs
+	+ Thanks to github user @tinygrox for this:
+		- Localization implemented, currently only en-us available
+* 2019-1224: 1.9.2.1 (LinuxGuruGamer) for KSP 1.8.1
+	+ Thanks to GitHub user @mwerle for these fixes:
+		- Fix for StageRecovery failing to recover certain stages.
+		- Change a couple of error logs to info logs to stop log spam.
+* 2019-1111: 1.9.2 (LinuxGuruGamer) for KSP 1.8.1
+	+ Updated for KSP 1.8
+* 2019-0828: 1.9.1.4 (LinuxGuruGamer) for KSP 1.7.3
+	+ Reorganized code to avoid segfaults on pre-1.7 games due to the new ModuleDecouplerBase being added in 1.7
+* 2019-0827: 1.9.1.3 (LinuxGuruGamer) for KSP 1.7.3
+	+ Rewrite engine plate code due to an infinite loop which was happening when the top node of an engineplate was attached before the bottom node was
+* 2019-0820: 1.9.1.2 (LinuxGuruGamer) for KSP 1.7.3
+	+ Thanks to forum user @aerospike for this:
+		- Fix issue with stock engine plates being in wrong stage
+* 2019-0724: 1.9.1.1 (LinuxGuruGamer) for KSP 1.7.3
+	+ Fixed issue with showing remaining fuel on one stage and another stage not having liquid fuel (ie: solid), was getting GUI errors
+	+ Moved RegisterToolbar into it's own file
+	+ Added InstallChecker
+	+ Updated AssemblyVersion.tt
+* 2019-0206: 1.9.1 (LinuxGuruGamer) for KSP 1.6.1
+	+ Added display of remaining fuel after recovery
+	+ Added "Fuel" section to the SR window, only if there was any leftover fuel
+* 2019-0124: 1.9.0.7 (LinuxGuruGamer) for KSP 1.6.1
+	+ Fixed registration with the RecoveryController by moving initialization OUT of the Log.Info line
+* 2019-0124: 1.9.0.6 (LinuxGuruGamer) for KSP 1.6.1
+	+ Changed startup from AllGameScenes to FlightEditorAndKSC
+	+ Fixed Nullref when going into settings before any game is loaded
+* 2019-0106: 1.9.0.4 (LinuxGuruGamer) for KSP 1.6.0
+	+ Fixed recalculation, needed for 1.6 where root part wasn't part[0] anymore, added search for part with no parent
+	+ Added new event to recalculate automatically when ship is modified.  Does not recalculate when ship is deleted
+	+ Updated windows with support for ClickThroughBlocker
+* 2018-1128: 1.9.0.3 (LinuxGuruGamer) for KSP 1.5.1
+	+ Fixed .version file
+* 2018-1128: 1.9.0.2 (LinuxGuruGamer) for KSP 1.5.1
+	+ Removed old, unused code, and code obsoleted by the ToolbarController
+	+ Changed default for UseDistanceOverride from true to false
+	+ Removed some unnecessary window calls
+	+ Added back button on Spacecenter screen, opens window to direct people to Stock Settings pages
+	+ Added option to disable the button on spacecenter scene
+* 2018-1126: 1.9.0.1 (LinuxGuruGamer) for KSP 1.5.1
+	+ Changed license to MIT
+	+ Moved all settings into stock settings page, both to reduce code and to have the settings persist on a per-save basis
+		- Note:  Existing settings are not migrated
+	+ Replaced all Debug.Log with new Log.Info to reduce log spam
+	+ Added code to remove events when mod is destroyed (ie: scene change)
 * 2018-1026: 1.9.0 (linuxgurugamer) for KSP 1.5.1
 	+ Adoption by Linuxgurugamer
 	+ Replaced toolbar code with the ToolbarController
