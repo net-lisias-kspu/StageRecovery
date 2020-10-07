@@ -73,6 +73,7 @@ namespace StageRecovery
         {
             get
             {
+                Log.Info("RecoveryControllerAvailable");
                 if (recoveryControllerAvailable == null)
                 {
                     recoveryControllerAvailable = AssemblyLoader.loadedAssemblies.Any(a => a.assembly.GetName().Name == "RecoveryController");
@@ -80,6 +81,8 @@ namespace StageRecovery
                     {
                         calledType = Type.GetType("RecoveryController.RecoveryController,RecoveryController");
                     }
+                    else
+                        Log.Info("RecoveryController NOT available");
                 }
                 return recoveryControllerAvailable.GetValueOrDefault();
             }
@@ -91,19 +94,22 @@ namespace StageRecovery
             {
                 return null;
             }
-
+            Log.Info("CallRecoveryController, func: " + func);
             try
             {
                  
                 if (calledType != null)
                 {
+                    Log.Info("calledtype not null: " + calledType.ToString());
                     MonoBehaviour rcRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class Historian exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
                     if (rcRef != null)
                     {
+                        Log.Info("rcRef not null");
                         MethodInfo myMethod = calledType.GetMethod(func, BindingFlags.Instance | BindingFlags.Public);
 
                         if (myMethod != null)
                         {
+                            Log.Info("myMethod not null");
                             object magicValue;
                             if (modName != null)
                             {
@@ -118,33 +124,35 @@ namespace StageRecovery
                         }
                         else
                         {
-                            Debug.Log(func + " not available in RecoveryController");                           
+                            Log.Info("[SR] " + func + " not available in RecoveryController");                           
                         }
                     }
                     else
                     {
-                        Debug.Log(func + "  failed");
+                        Log.Info("[SR] " + func + "  failed");
                         return null;
                     }
                 }
-                Debug.Log("calledtype failed");
+                Log.Info("calledtype failed");
                 return null;
             }
             catch (Exception e)
             {
-                Debug.Log("Error calling type: " + e);
+                Log.Info("[SR] Error calling type: " + e);
                 return null;
             }
         }
 
-        public static  bool RegisterMod(string modName)
+        public static  bool RegisterModWithRecoveryController(string modName)
         {
+            Log.Info("RegisterModWithRecoveryController");
             var s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
+                Log.Info("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
-
+            Log.Info("RegisterMod returning: " + ((bool)s).ToString());
             return (bool)s;
         }
 

@@ -48,8 +48,9 @@ namespace StageRecovery
             {
                 if (StageRecoveryAvailable)
                 {
-                    object SREnabledObject = GetMemberInfoValue(SRType.GetMember("SREnabled")[0], Instance);
-                    return (bool)SREnabledObject;
+                    return Settings1.Instance.SREnabled;
+                    //object SREnabledObject = GetMemberInfoValue(SRType.GetMember("SREnabled")[0], Instance);
+                    //return (bool)SREnabledObject;
                 }
                 else
                 {

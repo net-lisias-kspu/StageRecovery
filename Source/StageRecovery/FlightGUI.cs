@@ -94,8 +94,10 @@ namespace StageRecovery
                 //List all recovered stages
                 if (firstToolbarIndex == 0)
                 {
-                    foreach (RecoveryItem stage in Settings.Instance.RecoveredStages)
+                    for (int i = 0; i < Settings.Instance.RecoveredStages.Count; i++)
+                    //foreach (RecoveryItem stage in Settings.Instance.RecoveredStages)
                     {
+                        RecoveryItem stage = Settings.Instance.RecoveredStages[i];
                         string buttonText = stage.StageName;
                         if (stage == selectedStage)
                         {
@@ -127,8 +129,10 @@ namespace StageRecovery
                 //List all destroyed stages
                 else if (firstToolbarIndex == 1)
                 {
-                    foreach (RecoveryItem stage in Settings.Instance.DestroyedStages)
+                    for (int i = 0; i < Settings.Instance.DestroyedStages.Count; i++)
+                    //foreach (RecoveryItem stage in Settings.Instance.DestroyedStages)
                     {
+                        RecoveryItem stage = Settings.Instance.DestroyedStages[i];
                         string buttonText = stage.StageName;
                         if (stage == selectedStage)
                         {
@@ -195,12 +199,20 @@ namespace StageRecovery
 
                 GUILayout.BeginVertical(HighLogic.Skin.textArea);
                 //Show a toolbar with options for specific data, defaulting to the Parts list
-                infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                if (selectedStage.propRemaining.Count > 0)
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info", "Fuel" });
+                else
+                {
+                    if (infoBarIndex == 4)
+                        infoBarIndex = 3;
+                    infoBarIndex = GUILayout.Toolbar(infoBarIndex, new string[] { "Parts", "Crew", "Science", "Info" });
+                }
                 //List the stage name and whether it was recovered or destroyed
                 GUILayout.Label("Stage name: " + selectedStage.StageName);
                 GUILayout.Label("Status: " + (selectedStage.Recovered ? "RECOVERED" : "DESTROYED"));
                 //Put everything in a scroll view in case it is too much data for the window to display
-                infoScroll = GUILayout.BeginScrollView(infoScroll);
+                infoScroll = GUILayout.BeginScrollView(infoScroll);                
+
                 //Depending on the selected data view we display different things (split into different functions for ease)
                 switch (infoBarIndex)
                 {
@@ -208,6 +220,7 @@ namespace StageRecovery
                     case 1: DrawCrewInfo(); break;
                     case 2: DrawScienceInfo(); break;
                     case 3: DrawAdvancedInfo(); break;
+                    case 4: DrawFuelInfo(); break;
                 }
                 GUILayout.EndScrollView();
                 GUILayout.EndVertical();
@@ -269,6 +282,24 @@ namespace StageRecovery
             }
         }
 
+        //Draw all the info for recovered/destroyed parts
+        private void DrawFuelInfo()
+        {
+            //List all of the parts and their recovered costs (or value if destroyed)
+            GUILayout.Label("Remaining Fuel:\n");
+
+            //If the stage was recovered, list the remaining fuel, if any
+            if (selectedStage.Recovered)
+            {
+                if (selectedStage.propRemaining.Count > 0)
+                {
+                    foreach (var r in selectedStage.propRemaining)
+                    {
+                        GUILayout.Label(r.Key + ": " + r.Value.ToString("N1"));
+                    }
+                }
+            }
+        }
         //This displays what crew members were onboard the stage, if any (recovered or not)
         private void DrawCrewInfo()
         {
@@ -279,8 +310,10 @@ namespace StageRecovery
             }
             else
             {
-                foreach (CrewWithSeat kerbal in selectedStage.KerbalsOnboard)
+                for (int i = 0; i < selectedStage.KerbalsOnboard.Count; i++)
+                //foreach (CrewWithSeat kerbal in selectedStage.KerbalsOnboard)
                 {
+                    CrewWithSeat kerbal = selectedStage.KerbalsOnboard[i];
                     GUILayout.Label(kerbal.CrewMember.name);
                 }
             }
@@ -296,8 +329,10 @@ namespace StageRecovery
             {
                 //List all of the experiments recovered (including data amounts and titles)
                 GUILayout.Label("Experiments:");
-                foreach (string experiment in selectedStage.ScienceExperiments)
+                for (int i = 0; i < selectedStage.ScienceExperiments.Count; i++)
+                //foreach (string experiment in selectedStage.ScienceExperiments)
                 {
+                    string experiment = selectedStage.ScienceExperiments[i];
                     GUILayout.Label(experiment);
                 }
             }
@@ -311,23 +346,23 @@ namespace StageRecovery
             GUILayout.Label("Parachute Module used: " + selectedStage.ParachuteModule);
             GUILayout.Label("Terminal velocity: "+selectedStage.Vt + " m/s");
             //List the Vt required for maximal/partial recovery
-            if (Settings.Instance.FlatRateModel)
+            if (Settings1.Instance.FlatRateModel)
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.CutoffVelocity + " m/s");
+                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.CutoffVelocity + " m/s");
             }
             else
             {
-                GUILayout.Label("Maximum velocity for recovery: " + Settings.Instance.HighCut + " m/s");
-                GUILayout.Label("Maximum velocity for total recovery: " + Settings.Instance.LowCut + " m/s");
+                GUILayout.Label("Maximum velocity for recovery: " + Settings2.Instance.HighCut + " m/s");
+                GUILayout.Label("Maximum velocity for total recovery: " + Settings2.Instance.LowCut + " m/s");
             }
 
             //List the percent refunded, broken down into distance and speed amounts
             GUILayout.Label("\nPercent refunded: "+ Math.Round(100*selectedStage.RecoveryPercent, 2) + "%");
             GUILayout.Label("    --Distance: " + Math.Round(100 * selectedStage.DistancePercent, 2) + "%");
             GUILayout.Label("    --Speed: " + Math.Round(100 * selectedStage.SpeedPercent, 2) + "%");
-            if (Settings.Instance.GlobalModifier != 1.0F)
+            if (Settings3.Instance.GlobalModifier != 1.0F)
             {
-                GUILayout.Label("    --Global: " + Math.Round(100 * Settings.Instance.GlobalModifier, 2) + "%");
+                GUILayout.Label("    --Global: " + Math.Round(100 * Settings3.Instance.GlobalModifier, 2) + "%");
             }
             GUILayout.Label("Total refunds: " + Math.Round(selectedStage.FundsReturned, 2));
             GUILayout.Label("Total value: " + Math.Round(selectedStage.FundsOriginal, 2));
