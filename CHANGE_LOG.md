@@ -1,5 +1,8 @@
 # Stage Recovery :: Change log
 
+* 2019-0124: 1.9.0.6 (LinuxGuruGamer) for KSP 1.6.1
+	+ Changed startup from AllGameScenes to FlightEditorAndKSC
+	+ Fixed Nullref when going into settings before any game is loaded
 * 2019-0106: 1.9.0.4 (LinuxGuruGamer) for KSP 1.6.0
 	+ Fixed recalculation, needed for 1.6 where root part wasn't part[0] anymore, added search for part with no parent
 	+ Added new event to recalculate automatically when ship is modified.  Does not recalculate when ship is deleted
