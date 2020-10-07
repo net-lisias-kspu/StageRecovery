@@ -1,5 +1,9 @@
 # Stage Recovery :: Change log
 
+* 2019-0106: 1.9.0.4 (LinuxGuruGamer) for KSP 1.6.0
+	+ Fixed recalculation, needed for 1.6 where root part wasn't part[0] anymore, added search for part with no parent
+	+ Added new event to recalculate automatically when ship is modified.  Does not recalculate when ship is deleted
+	+ Updated windows with support for ClickThroughBlocker
 * 2018-1128: 1.9.0.3 (LinuxGuruGamer) for KSP 1.5.1
 	+ Fixed .version file
 * 2018-1128: 1.9.0.2 (LinuxGuruGamer) for KSP 1.5.1
