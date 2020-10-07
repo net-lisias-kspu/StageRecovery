@@ -1,5 +1,11 @@
 # Stage Recovery :: Change log
 
+* 2018-1128: 1.9.0.2 (LinuxGuruGamer) for KSP 1.5.1
+	+ Removed old, unused code, and code obsoleted by the ToolbarController
+	+ Changed default for UseDistanceOverride from true to false
+	+ Removed some unnecessary window calls
+	+ Added back button on Spacecenter screen, opens window to direct people to Stock Settings pages
+	+ Added option to disable the button on spacecenter scene
 * 2018-1126: 1.9.0.1 (LinuxGuruGamer) for KSP 1.5.1
 	+ Changed license to MIT
 	+ Moved all settings into stock settings page, both to reduce code and to have the settings persist on a per-save basis
