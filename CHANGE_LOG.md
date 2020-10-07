@@ -1,5 +1,9 @@
 # Stage Recovery :: Change log
 
+* 2019-1224: 1.9.2.1 (LinuxGuruGamer) for KSP 1.8.1
+	+ Thanks to GitHub user @mwerle for these fixes:
+		- Fix for StageRecovery failing to recover certain stages.
+		- Change a couple of error logs to info logs to stop log spam.
 * 2019-1111: 1.9.2 (LinuxGuruGamer) for KSP 1.8.1
 	+ Updated for KSP 1.8
 * 2019-0828: 1.9.1.4 (LinuxGuruGamer) for KSP 1.7.3
