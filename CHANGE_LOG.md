@@ -1,5 +1,7 @@
 # Stage Recovery :: Change log
 
+* 2018-1128: 1.9.0.3 (LinuxGuruGamer) for KSP 1.5.1
+	+ Fixed .version file
 * 2018-1128: 1.9.0.2 (LinuxGuruGamer) for KSP 1.5.1
 	+ Removed old, unused code, and code obsoleted by the ToolbarController
 	+ Changed default for UseDistanceOverride from true to false
