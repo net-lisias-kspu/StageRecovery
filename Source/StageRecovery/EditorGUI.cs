@@ -16,6 +16,10 @@
     You should have received a copy of the GNU General Public License 3.0
     along with Stage Recovery /L. If not, see <https://www.gnu.org/licenses/>.
 */
+/*
+ * Contains code licensed under the MIT 
+ * © 2018-2020 LinuxGuruGamer
+*/
 using System;
 using System.Collections.Generic;
 using System.Text;
