@@ -77,8 +77,8 @@ namespace StageRecovery
                     ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
                     RegisterToolbar.MODID,
                     "stageControlButton",
-                    File.Asset.Solve("icon-38"),
-                    File.Asset.Solve("icon-24"),
+                    File.Asset.Solve("Icons", "icon-38"),
+                    File.Asset.Solve("Icons", "icon-24"),
                     RegisterToolbar.MODNAME
                 );
 
