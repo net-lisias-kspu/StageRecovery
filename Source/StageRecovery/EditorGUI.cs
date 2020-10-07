@@ -214,7 +214,9 @@ namespace StageRecovery
             ConsolidateStages();
             Log.info("Found {0} stages!", stages.Count);
         }
+
         PartModule pm = null;
+#if KSP170
         bool CheckForEnginePlate(Part parent, Part checking)
         {
             // The following code is designed to deal with the new engine plates in MakingHistory, which have embedded
@@ -250,6 +252,50 @@ namespace StageRecovery
             }
             return false;
         }
+#else
+        bool CheckForEnginePlate(Part parent, Part checking)
+        {
+            // The following code is designed to deal with the new engine plates in MakingHistory, which have embedded
+            // decouplers which work on the stage below
+            ModuleDecouple md = null;
+
+            // First, if this is an engineplate, do not treat it as a decoupler
+            if (checking.Modules.Contains("ModuleDynamicNodes") && checking.Modules.Contains("ModuleDecouple"))
+            {
+                md = checking.Modules.GetModule<ModuleDecouple>();
+
+                if (this.IsEnginePlate(md))
+                {
+                    // If the parent IS an engineplate, get the module and use it later
+                    if (parent.Modules.Contains("ModuleDynamicNodes") && parent.Modules.Contains("ModuleDecouple"))
+                        pm = parent.Modules.GetModule<ModuleDecouple>();
+                    else
+                        pm = null;
+                }
+
+                return this.IsEnginePlate(md);
+            }
+            return false;
+        }
+
+        bool CheckForParentEnginePlate(Part part)
+        {
+            // If the parent IS an engineplate, and this part is NOT a decoupler, then treat it as if it WAS 
+            // a decoupler and add it to the list
+            if (pm != null && this.IsEnginePlate(pm) && part.FindModulesImplementing<IStageSeparator>().Count == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        bool IsEnginePlate(PartModule pm)
+        {
+            System.Reflection.PropertyInfo pInfo = pm.GetType().GetProperty("isEnginePlate");
+            return (null != pInfo) && (bool)pInfo.GetValue(pm, null);
+        }
+#endif
+
         StageParts DetermineStage(Part parent)
         {
             Log.info("DetermineStage 1 parent: {0}", parent.partInfo.title);
