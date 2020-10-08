@@ -400,8 +400,7 @@ namespace StageRecovery
             }
             catch (Exception e) //If the engine moduleRef is null, this will be fired. But I NEED it to exist to do anything practical.
             {
-                Debug.LogError("[SR] Error occurred while gathering resources for powered speed reduction.");
-                Debug.LogException(e);
+                Log.error(e, "Error occurred while gathering resources for powered speed reduction.");
             }
 
             //So, I'm not positive jets really need to be done differently. Though they could go further than normal rockets because of gliding (and wouldn't need as much TWR).
@@ -542,8 +541,7 @@ namespace StageRecovery
             }
             catch(Exception e)
             {
-                Debug.LogError("[SR] Error occurred while attempting powered speed reduction.");
-                Debug.LogException(e);
+                Log.error(e, "Error occurred while attempting powered speed reduction.");
             }
             //Hopefully we removed enough fuel to land!
             Log.info("Target Velocity: {0} Final Velocity: {1}", targetSpeed, finalVelocity);
@@ -664,8 +662,7 @@ namespace StageRecovery
             }
             catch (Exception e)
             {
-                Log.info("Exception while calculating burn chance. Assuming not burned up.");
-                Debug.LogException(e);
+                Log.error(e, "Exception while calculating burn chance. Assuming not burned up.");
                 return false;
             }
         }

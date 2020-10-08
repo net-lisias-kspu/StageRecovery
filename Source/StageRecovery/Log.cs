@@ -54,6 +54,11 @@ namespace StageRecovery
 			log.error(offended, e);
 		}
 
+		internal static void error(Exception e, string msg, params object[] @params)
+		{
+			log.error(e, msg, @params);
+		}
+
 		internal static void error(string msg, params object[] @params)
 		{
 			log.error(msg, @params);

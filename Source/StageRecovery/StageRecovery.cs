@@ -473,7 +473,7 @@ namespace StageRecovery
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                Log.error(ex, "");
                 return false;
             }
         }
@@ -649,8 +649,7 @@ namespace StageRecovery
                             }
                             catch (Exception e)
                             {
-                                Debug.LogError("Exception while finding deployedDiameter for RealChuteFAR module on moduleRef.");
-                                Debug.LogException(e);
+                                Log.error(e, "Exception while finding deployedDiameter for RealChuteFAR module on moduleRef.");
                             }
                         }
                         else
@@ -714,8 +713,7 @@ namespace StageRecovery
             }
             catch (Exception e)
             {
-                Debug.LogError("Error occured while trying to determine total chute area.");
-                Debug.LogException(e);
+                Log.error(e, "Error occured while trying to determine total chute area.");
             }
             return RCParameter;
         }
@@ -776,8 +774,7 @@ namespace StageRecovery
                             }
                             catch (Exception e)
                             {
-                                Debug.LogError("Exception while finding deployedDiameter for RealChuteFAR module on module.");
-                                Debug.LogException(e);
+                                Log.error(e, "Exception while finding deployedDiameter for RealChuteFAR module on module.");
                             }
                         }
                         else
@@ -818,7 +815,7 @@ namespace StageRecovery
                         }
                         catch (Exception e)
                         {
-                            Debug.LogException(e);
+                            Log.error(e, "");
                         }
                         dragCubes.SetDragVectorRotation(rotation);
                     }
@@ -837,8 +834,7 @@ namespace StageRecovery
                         }
                         catch (Exception e)
                         {
-                            //Debug.LogException(e);
-                            Log.info("The expected excpetion is still present. {0}", e.Message);
+                            Log.error(e, "The expected excpetion is still present. {0}", e.Message);
                         }
                         dragCubes.SetDrag(dir, 0.03f); //mach 0.03, or about 10m/s
 
@@ -850,8 +846,7 @@ namespace StageRecovery
             }
             catch (Exception e)
             {
-                Debug.LogError("Error occured while trying to determine total chute area.");
-                Debug.LogException(e);
+                Log.error(e, "Error occured while trying to determine total chute area.");
             }
             return RCParameter;
         }
