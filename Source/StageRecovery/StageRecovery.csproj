@@ -68,6 +68,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="StockSettings.cs" />
     <Compile Include="RegisterToolbar.cs" />
+    <Compile Include="ModuleManagerSupport.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Version.tt">
