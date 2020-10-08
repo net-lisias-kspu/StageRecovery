@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using File = KSPe.IO.File<StageRecovery.Startup>;
 
 namespace StageRecovery
 {
@@ -35,7 +36,6 @@ namespace StageRecovery
         //This is the instance of the SettingsGUI, where we can change settings in game. This is how we interact with that class.
         public SettingsGUI gui = new SettingsGUI();
 
-        private string pluginDataPath = KSPUtil.ApplicationRootPath + "GameData/StageRecovery/PluginData";
         //The path for the settings file (Config.txt)
         private string filePath = "";
 
@@ -47,7 +47,10 @@ namespace StageRecovery
         //The constructor for the settings class. It sets the values to default (which are then replaced when Load() is called)
         private Settings()
         {
-            filePath = pluginDataPath + "/Config.txt";
+            filePath = File.Data.Solve("Config.txt");
+            string dir = System.IO.Path.GetDirectoryName(filePath);
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
 
             RecoveredStages = new List<RecoveryItem>();
             DestroyedStages = new List<RecoveryItem>();
@@ -73,7 +76,15 @@ namespace StageRecovery
     {
         //Set the default ignore items (fairings, escape systems, flags, and asteroids (which are referred to as potatoroids))
         public List<string> ignore = new List<string> { "fairing", "escape system", "flag", "potato" };
-        string filePath = KSPUtil.ApplicationRootPath + "GameData/StageRecovery/ignore.txt";
+        string filePath = File.Data.Solve("ignore.txt");
+
+        public IgnoreList()
+        {
+            string dir = System.IO.Path.GetDirectoryName(filePath);
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+        }
+
         public void Load()
         {
             if (System.IO.File.Exists(filePath))
