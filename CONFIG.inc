@@ -5,7 +5,7 @@ TARGETDIR="net.lisias.ksp/$PACKAGE/"
 TARGETBINDIR="$TARGETDIR"
 PROJECTSDIR="$PACKAGE/"
 
-DLLS="AnyRes"
+DLLS="StageRecovery"
 
 PROJECT_BRANCH=`git branch | grep \* | cut -d ' ' -f2`
 if [ "$PROJECT_BRANCH" == "master" ] ; then
