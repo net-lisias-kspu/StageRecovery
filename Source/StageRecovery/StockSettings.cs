@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using KSP.Localization;
 
 
 namespace StageRecovery
@@ -30,7 +31,7 @@ namespace StageRecovery
 
     public class SR1 : GameParameters.CustomParameterNode
     {
-        public override string Title { get { return ""; } }
+        public override string Title { get { return Localizer.Format("#StageRecovery_StockSettings_TitleGeneral"); } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Stage Recovery"; } }
         public override string DisplaySection { get { return "Stage Recovery"; } }
@@ -56,7 +57,6 @@ namespace StageRecovery
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_UseDREVelocity")]//Use the DRE Velocity
         public bool UseDREVelocity = true;
 
-
         [GameParameters.CustomParameterUI("#StageRecovery_StockSettings_PreRecover",//Pre-Recover Vessels
             toolTip = "#StageRecovery_StockSettings_PreRecover_desc")]//Recover Kerbals before a ship is deleted
         public bool PreRecover = true;
@@ -80,40 +80,52 @@ namespace StageRecovery
             toolTip = "#StageRecovery_StockSettings_hideSpaceCenterButton_desc")]//The button merely opens a window directing you to these settings pages
         public bool hideSpaceCenterButton = false;
 
+        #region AutoCalc delay
 
+        public int autocalcDelayMs = 1000;
 
+        [GameParameters.CustomIntParameterUI("#StageRecovery_StockSettings_AutoCalcDelay", minValue = 0, maxValue = 10,
+                 toolTip = "#StageRecovery_StockSettings_AutoCalcDelay_desc")]
+        public int autocalcDelaySec
+        {
+            get { return autocalcDelayMs / 1000; }
+            set { autocalcDelayMs = value * 1000; }
+        }
+
+        #endregion AutoCalc delay
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
-
             settingsFlatRateModel = FlatRateModel;
             settingsUseDREVelocity = UseDREVelocity;
             settingsUseDistanceOverride = UseDistanceOverride;
 
             return true;
         }
+
         public override IList ValidValues(MemberInfo member)
         {
             return null;
         }
     }
+
     /// <summary>
     ///
     /// </summary>
 
     public class SR2 : GameParameters.CustomParameterNode
     {
-        public override string Title { get { return "Rate Model Settings"; } }//Localizer.Format("")
+        public override string Title { get { return Localizer.Format("#StageRecovery_StockSettings_TitleRateModel"); } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "Stage Recovery"; } }
         public override string DisplaySection { get { return "Stage Recovery"; } }
         public override int SectionOrder { get { return 2; } }
         public override bool HasPresets { get { return false; } }
 
-        /// ///////////////
-        // RecoveryModifier
-        /// ///////////////
+        #region RecoveryModifier
+
         public float recoveryModifier = 0.75f;
+
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_RecoveryModifier", minValue = 0.0f, maxValue = 100.0f,
          toolTip = "#StageRecovery_StockSettings_RecoveryModifier_desc")]//Flat Rate: Recovery Modifier (%)""Modifies recovery payout by this percentage
         public float RecoveryMod
@@ -121,80 +133,41 @@ namespace StageRecovery
             get { return recoveryModifier * 100; }
             set { recoveryModifier = value / 100.0f; }
         }
+
         public float RecoveryModifier
         {
             get { return recoveryModifier; }
             set { recoveryModifier = value; }
         }
-        /// ///////////////
 
-
-
+        #endregion RecoveryModifier
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_CutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_CutoffVelocity_desc")]//Flat Rate: Cutoff Velocity""Maximum velocity for recovery
         public double CutoffVelocity = 10f;
 
+        #region HighCut
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_HighCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_HighCutoffVelocity_desc")]//Variable Rate: High Cutoff Velocity""Maximum velocity for recovery
-        public double HighCut = 12f;
+        public double HighCutField = 12f;
+
+        public double HighCut
+        {
+            get { return (float)Math.Max(Math.Round(HighCutField, 1), LowCut + 0.1); }
+            set { HighCutField = value; }
+        }
+
+        #endregion HighCut
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_LowCutoffVelocity", minValue = 2.0f, maxValue = 12.0f, displayFormat = "F1",
          toolTip = "#StageRecovery_StockSettings_LowCutoffVelocity_desc")]//Variable Rate: Low Cutoff Velocity""Maximum velocity for total recovery
         public double LowCut = 6f;
 
+        #region GlobalModifier
 
-
-        public override bool Enabled(MemberInfo member, GameParameters parameters)
-        {
-            HighCut = (float)Math.Max(Math.Round(HighCut, 1), LowCut + 0.1);
-
-            return true; //otherwise return true
-        }
-
-        public override bool Interactible(MemberInfo member, GameParameters parameters)
-        {
-            //if (HighLogic.CurrentGame == null || HighLogic.CurrentGame.Parameters == null)
-            //    return true;
-
-            if (SR1.settingsFlatRateModel)
-            {
-                if (member.Name == "HighCut" ||
-                    member.Name == "LowCut")
-                    return false;
-            }
-            else
-            {
-                if (member.Name == "RecoveryMod" ||
-                    member.Name == "CutoffVelocity")
-                    return false;
-
-            }
-            return true;
-        }
-        public override IList ValidValues(MemberInfo member)
-        {
-            return null;
-        }
-    }
-
-    /////
-    /////
-
-    public class SR3 : GameParameters.CustomParameterNode
-    {
-        public override string Title { get { return ""; } } // column heading
-        public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
-        public override string Section { get { return "Stage Recovery"; } }
-        public override string DisplaySection { get { return "Stage Recovery"; } }
-        public override int SectionOrder { get { return 3; } }
-        public override bool HasPresets { get { return false; } }
-
-        /// /////////////
-        // GlobalModifier
-        /// /////////////
         public float globalModifier = 1.0f;
+
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_GlobalModifier", minValue = 0.0f, maxValue = 100.0f,
          toolTip = "#StageRecovery_StockSettings_GlobalModifier_desc")]//Global Modifier (%)""Modifies final payout by this percentage
         public float GlobalMod
@@ -202,16 +175,19 @@ namespace StageRecovery
             get { return globalModifier * 100; }
             set { globalModifier = value / 100.0f; }
         }
+
         public float GlobalModifier
         {
             get { return globalModifier; }
             set { globalModifier = value; }
         }
 
-        /// ///////////////
-        // DistanceOverride
-        /// ///////////////
+        #endregion GlobalModifier
+
+        #region DistanceOverride
+
         public float distanceOverride = 0.01f;
+
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_DistanceOverride", minValue = 1f, maxValue = 100.0f,
                  toolTip = "#StageRecovery_StockSettings_DistanceOverride_desc")]//Distance Override (%)""If >= 0, will use this as a distance modifier instead of calculating it
         public float DistanceOver
@@ -219,17 +195,19 @@ namespace StageRecovery
             get { return distanceOverride * 100; }
             set { distanceOverride = value / 100.0f; }
         }
+
         public float DistanceOverride
         {
             get { return distanceOverride; }
             set { distanceOverride = value; }
         }
 
+        #endregion DistanceOverride
 
-        /// ///////////////////////
-        // DeadlyReentrymaxVelocity
-        /// ///////////////////////
+        #region DeadlyReentryMaxVelocity
+
         public float DeadlyReentryMaxVelocity = 2000f;
+
         [GameParameters.CustomIntParameterUI("#StageRecovery_StockSettings_DREVelocity2", minValue = 0, maxValue = 6000, stepSize = 200,//DRE Velocity 2
                  toolTip = "#StageRecovery_StockSettings_DREVelocity2_desc")]//If >= 0, will use this as a distance modifier instead of calculating it
         public int DreVelocity
@@ -238,26 +216,40 @@ namespace StageRecovery
             set { DeadlyReentryMaxVelocity = (float)value; }
         }
 
+        #endregion DeadlyReentryMaxVelocity
 
         [GameParameters.CustomFloatParameterUI("#StageRecovery_StockSettings_PoweredTWR", minValue = 1.0f, maxValue = 12.0f, stepCount = 111, displayFormat = "F1",//Powered TWR
         toolTip = "#StageRecovery_StockSettings_PoweredTWR_desc")]//Minimum TWR needed for a powered recovery
         public double MinTWR = 1.0f;
 
-
         public override bool Enabled(MemberInfo member, GameParameters parameters)
         {
-            return true; //otherwise return true
+            return true;
         }
 
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
-            //if (HighLogic.CurrentGame == null || HighLogic.CurrentGame.Parameters == null)
-            //    return true;
+            switch (member.Name)
+            {
+                case nameof(HighCut):
+                case nameof(LowCut):
+                    if (SR1.settingsFlatRateModel)
+                        return false;
+                    break;
 
-            if (member.Name == "DreVelocity")
-                return SR1.settingsUseDREVelocity;
-            if (member.Name == "DistanceOver")
-                return SR1.settingsUseDistanceOverride;
+                case nameof(RecoveryMod):
+                case nameof(CutoffVelocity):
+                    if (!SR1.settingsFlatRateModel)
+                        return false;
+                    break;
+
+                case nameof(DreVelocity):
+                    return SR1.settingsUseDREVelocity;
+
+                case nameof(DistanceOver):
+                    return SR1.settingsUseDistanceOverride;
+            }
+
             return true;
         }
 
@@ -266,9 +258,6 @@ namespace StageRecovery
             return null;
         }
     }
-
-
-
 
     public sealed class Settings1
     {
@@ -288,17 +277,6 @@ namespace StageRecovery
             get
             {
                 return HighLogic.CurrentGame.Parameters.CustomParams<SR2>();
-            }
-        }
-    }
-
-    public sealed class Settings3
-    {
-        public static SR3 Instance
-        {
-            get
-            {
-                return HighLogic.CurrentGame.Parameters.CustomParams<SR3>();
             }
         }
     }
