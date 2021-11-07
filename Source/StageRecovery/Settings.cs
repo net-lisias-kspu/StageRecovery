@@ -21,6 +21,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using GUI = KSPe.UI.GUI;
+using GUILayout = KSPe.UI.GUILayout;
+
 using File = KSPe.IO.File<StageRecovery.Startup>;
 
 namespace StageRecovery

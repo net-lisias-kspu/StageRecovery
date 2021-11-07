@@ -22,6 +22,7 @@ using UnityEngine;
 
 using KSP.UI.Screens;
 
+using GUI = KSPe.UI.GUI;
 using GUILayout = KSPe.UI.GUILayout;
 
 using Toolbar = KSPe.UI.Toolbar;
