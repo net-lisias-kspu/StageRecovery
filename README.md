@@ -1,8 +1,8 @@
-# Stage Recovery /L Unofficial
+# Stage Recovery /L Unleashed
 
 This mod allows funds to be recovered, at a reduced rate, from dropped stages so long as they have parachutes attached (not necessarily deployed).
 
-Unofficial fork by Lisias.
+[Unleashed](https://ksp.lisias.net/add-ons-unleashed/) fork by Lisias.
 
 
 ## In a Hurry
@@ -93,9 +93,11 @@ This work is licensed as follows:
         - You recognise and respect any trademarks
         - You don't impersonate the authors, neither redistribute a derivative that could be misrepresented as theirs.
         - You credit the author and republish the copyright notices on your works where the code is used.
-        - You relicense (and fully comply) your works using GPL 3.0 (or later)
+        - You relicense (and fully comply) your works using GPL 3.0
+        	- Please note that upgrading the license from GPLv3 to a hypothetical new GPL **IS NOT ALLOWED** for this work, as the author **DID NOT** added the "or (at your option) any later version" on the license.
         - You don't mix your work with GPL incompatible works.
 * Contains code from contributions licensed under the [MIT](https://opensource.org/licenses/MIT).
+			- Please note this [statement](https://www.gnu.org/licenses/license-list.en.html#Expat) from FSF. 
 	* See [LICENSE](./LICENSE) for details
 
 
@@ -105,9 +107,9 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 
 Besides the [authorisation](https://forum.kerbalspaceprogram.com/index.php?/topic/78226-14-stagerecovery-recover-funds-from-dropped-stages-v180-march-11-2018/&do=findComment&comment=3452853) ([local copy](https://github.com/net-lisias-kspu/StageRecovery/blob/master/Docs/LMJ/PermissionToChangeOriginalLicense.png)) from the original [Author](https://forum.kerbalspaceprogram.com/index.php?/profile/73338-magico13/), granting permission to current [Maintainer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) to switch the license to MIT, I found prudent to keep the license on the GPLv3 as stated on this [commit](https://github.com/net-lisias-kspu/StageRecovery/commit/e24cf465bf69e795eaea017aa3452a6ae3484ea1) ([link](https://github.com/magico13/StageRecovery/commit/e24cf465bf69e795eaea017aa3452a6ae3484ea1) to the commit on the original repository).
 
-The rationale is that the original Author accepted contributions from third parties, that were not consulted about the permission for switching licenses. Besides the original Author being still the owner of his commits, the contributors are still the owners of **their** commits - and without their permission, their code **must** be removed from the codebase in order to allow license switching.
+The rationale is that the original Author accepted contributions from third parties, which were not consulted about the permission for switching licenses. Besides the original Author being still the owner of his commits, the contributors are still the owners of **their** commits - and without their permission, their code **must** be removed from the codebase in order to allow license switching.
 
-I chose the safer and easier way out of the mess: I switched back to GPLv3. With the new commits licensed under the MIT, I can legally relicense such contributions under GPLv3 avoiding any potential problems in the future - not to mention being able to merge fixes done by forks of the original work.
+I chose the safer and easier way out of the mess: I switched back to GPLv3. With the new commits licensed under the MIT, I can legally relicense such contributions under GPLv3 avoiding any potential problems in the future - not to mention being able to merge fixes done by forks of the original work. 
 
 * List of contributors affected and their commits
 	+ [fommil](https://github.com/net-lisias-kspu/StageRecovery/commits?author=fommil)
@@ -127,15 +129,15 @@ I chose the safer and easier way out of the mess: I switched back to GPLv3. With
 
 ## UPSTREAM
 
-* [LinuxGuruGamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/)
-	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/158970-*)
-	+ [Spacedock](https://spacedock.info/mod/219/StageRecovery)
-	+ [Github](https://github.com/linuxgurugamer/StageRecovery)
 * [magico13](https://forum.kerbalspaceprogram.com/index.php?/profile/73338-magico13/) ROOT
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/78226-*/)
 	+ [CurseForge](https://kerbal.curseforge.com/projects/stagerecovery?gameCategorySlug=ksp-mods&projectID=223119) M.I.A.
 	+ [SpaceDock](http://spacedock.info/mod/219/StageRecovery)
 	+ [Github](https://github.com/magico13/StageRecovery)
+* [LinuxGuruGamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/)
+	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/158970-*)
+	+ [Spacedock](https://spacedock.info/mod/219/StageRecovery)
+	+ [Github](https://github.com/linuxgurugamer/StageRecovery)
 * Some interesting parallel forks:
 	+ [PaletzTheWise](https://github.com/PaletzTheWise/StageRecoveryRGU)
 	+ [mwerle](https://github.com/mwerle/StageRecovery)

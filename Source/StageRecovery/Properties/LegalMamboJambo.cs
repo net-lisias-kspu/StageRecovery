@@ -14,27 +14,13 @@
 	along with Stage Recovery /L Unleashed.
 	If not, see <https://www.gnu.org/licenses/>.
 */
-using UnityEngine;
-
-
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.Instantly, true)]
-    internal class Startup : MonoBehaviour
+	public static class LegalMamboJambo
 	{
-        private void Start()
-        {
-            Log.force("Version {0}", Version.Text);
-
-            try
-            {
-                KSPe.Util.Installation.Check<Startup>(typeof(Version));
-            }
-            catch (KSPe.Util.InstallmentException e)
-            {
-                Log.error(e.ToShortMessage());
-                KSPe.Common.Dialogs.ShowStopperAlertBox.Show(e);
-            }
-        }
+		public const string Company = "/L Aerospace/KSP Division";
+		public const string Copyright = "© 2020-2021 LisiasT";
+		public const string Product = "StageRecovery";
+		public const string Trademark = "StageRecovery™ by magico13, /L Unleashed™ by LisiasT";
 	}
 }

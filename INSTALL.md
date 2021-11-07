@@ -1,4 +1,4 @@
-# Stage Recovery /L Unofficial
+# Stage Recovery /L Unleashed
 
 This mod allows funds to be recovered, at a reduced rate, from dropped stages so long as they have parachutes attached (not necessarily deployed).
 

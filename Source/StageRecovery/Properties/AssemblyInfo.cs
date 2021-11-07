@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StageRecovery")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Stage Recovery /L Unleashed")]
+[assembly: AssemblyDescription("This mod allows funds to be recovered, at a reduced rate, from dropped stages so long as they have parachutes attached (not necessarily deployed).")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("StageRecovery")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany(StageRecovery.LegalMamboJambo.Company)]
+[assembly: AssemblyProduct(StageRecovery.LegalMamboJambo.Product)]
+[assembly: AssemblyCopyright(StageRecovery.LegalMamboJambo.Copyright)]
+[assembly: AssemblyTrademark(StageRecovery.LegalMamboJambo.Trademark)]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -33,7 +33,8 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 //[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
+[assembly: AssemblyVersion (StageRecovery.Version.Number)]
+[assembly: KSPAssembly ("StageRecovery", StageRecovery.Version.major, StageRecovery.Version.minor)]
 [assembly: KSPAssemblyDependency("KSPe", 2, 2)]
 [assembly: KSPAssemblyDependency("KSPe.UI", 2, 2)]
 [assembly: KSPAssemblyDependency("ToolbarController", 1, 0)]

@@ -1,4 +1,4 @@
-# Stage Recovery :: Changes
+# Stage Recovery /L Unleashed :: Changes
 
 * 2020-1008: 1.9.2.3 (LisiasT) for KSP >= 1.3
 	+ Added KSPe facilities for:
