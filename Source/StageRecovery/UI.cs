@@ -14,25 +14,21 @@
 	along with Stage Recovery /L Unleashed.
 	If not, see <https://www.gnu.org/licenses/>.
 */
-/*
- * Contains code licensed under the MIT
- * © 2018-2020 LinuxGuruGamer
-*/
 using UnityEngine;
 
-using ToolbarControl_NS;
-
+using Asset = KSPe.IO.Asset<StageRecovery.Startup>;
 
 namespace StageRecovery
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        internal const string MODID = "StageRecovery_NS";
-        internal const string MODNAME = "Stage Recovery";
-        void Start()
-        {
-            ToolbarControl.RegisterMod(MODID, MODNAME);
-        }
-    }
+	internal static class UI
+	{
+		internal static class Icon
+		{
+			private static Texture2D icon38 = null;
+			internal static Texture2D Icon38 => icon38 ?? (icon38 = Asset.Texture2D.LoadFromFile("Icons", "icon-38"));
+
+			private static Texture2D icon24 = null;
+			internal static Texture2D Icon24 => icon24 ?? (icon24 = Asset.Texture2D.LoadFromFile("Icons", "icon-24"));
+		}
+	}
 }

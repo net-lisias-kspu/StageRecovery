@@ -23,9 +23,8 @@ using UnityEngine;
 using KSP.UI.Screens;
 
 using GUILayout = KSPe.UI.GUILayout;
-using File = KSPe.IO.File<StageRecovery.Startup>;
 
-using ToolbarControl_NS;
+using Toolbar = KSPe.UI.Toolbar;
 
 
 namespace StageRecovery
@@ -51,45 +50,33 @@ namespace StageRecovery
 
         private Vector2 scrollPos;
 
-        static internal ToolbarControl toolbarControl;
+        static internal Toolbar.Button button;
 
         internal void InitializeToolbar(GameObject go)
-        {
-            ApplicationLauncher.AppScenes spaceCenter = 0;
+		{
+			Log.trace("InitializeToolbar");
+			if (button == null)
+			{
+				ApplicationLauncher.AppScenes spaceCenter = Settings1.Instance.hideSpaceCenterButton ? 0 : ApplicationLauncher.AppScenes.SPACECENTER;
 
-            Log.info("InitializeToolbar");
-            if (toolbarControl == null)
-            {
-                if (!Settings1.Instance.hideSpaceCenterButton)
-                    spaceCenter = ApplicationLauncher.AppScenes.SPACECENTER;
-                    toolbarControl = go.AddComponent<ToolbarControl>();
-                    toolbarControl.AddToAllToolbars(
-                    ShowWindow,
-                    hideAll,
-                    OnHoverOn,
-                    OnHoverOff,
-                    null,
-                    null,
-                    (
-                    spaceCenter |
-                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW),
-                    RegisterToolbar.MODID,
-                    "stageControlButton",
-                    File.Asset.Solve("Icons", "icon-38"),
-                    File.Asset.Solve("Icons", "icon-24"),
-                    RegisterToolbar.MODNAME
-                );
+				button = Toolbar.Button.Create(this
+						, spaceCenter | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.MAPVIEW
+						, UI.Icon.Icon38
+						, UI.Icon.Icon24
+						, Version.FriendlyName
+					);
 
-            }
-        }
-        internal void DoOnDestroy()
+				button.Toolbar.Add(Toolbar.Button.ToolbarEvents.Kind.Active, new Toolbar.Button.Event(this.ShowWindow, this.hideAll));
+				button.Toolbar.Add(Toolbar.Button.ToolbarEvents.Kind.Hover, new Toolbar.Button.Event(this.OnHoverOn, this.OnHoverOff));
+			}
+		}
+		internal void DoOnDestroy()
         {
-            Log.info("StageRecovery.SettingsGUI.OnDestroy");
-            if (toolbarControl != null)
+            Log.trace("StageRecovery.SettingsGUI.OnDestroy");
+            if (button != null)
             {
-                toolbarControl.OnDestroy();
-                GameObject.Destroy(toolbarControl);
-                toolbarControl = null;
+                ToolbarController.Instance.Destroy();
+                button = null;
             }
         }
 

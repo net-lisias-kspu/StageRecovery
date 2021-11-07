@@ -35,6 +35,5 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyVersion("1.8.0.0")]
 [assembly: AssemblyVersion (StageRecovery.Version.Number)]
 [assembly: KSPAssembly ("StageRecovery", StageRecovery.Version.major, StageRecovery.Version.minor)]
-[assembly: KSPAssemblyDependency("KSPe", 2, 2)]
-[assembly: KSPAssemblyDependency("KSPe.UI", 2, 2)]
-[assembly: KSPAssemblyDependency("ToolbarController", 1, 0)]
+[assembly: KSPAssemblyDependency("KSPe", 2, 4)]
+[assembly: KSPAssemblyDependency("KSPe.UI", 2, 4)]
