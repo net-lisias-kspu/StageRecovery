@@ -169,7 +169,6 @@ namespace StageRecovery
             List<Part> RemainingDecouplers = null; // = new List<Part>() { parts[0] };
 
             for (int i = 0; i < parts.Count; i++)
-            //foreach (var p in parts)
             {
                 Part p = parts[i];
                 if (p.parent == null)
@@ -194,9 +193,9 @@ namespace StageRecovery
                     stageNumber = stageNum++,
                     parts = stage.parts
                 };
-                Log.info("Parent part: {0}", parent.partInfo.title);
-                foreach (var d in stage.decouplers)
-                    Log.info("Child decouplers: {0}", d.partInfo.title);
+                Log.detail("Parent part: {0}", parent.partInfo.title);
+                foreach (Part d in stage.decouplers)
+                    Log.detail("Child decouplers: {0}", d.partInfo.title);
                 RemainingDecouplers.AddRange(stage.decouplers);
 
                 //compute properties
@@ -212,7 +211,7 @@ namespace StageRecovery
             }
 
             ConsolidateStages();
-            Log.info("Found {0} stages!", stages.Count);
+            Log.detail("Found {0} stages!", stages.Count);
         }
 
         PartModule pm = null;
@@ -298,7 +297,7 @@ namespace StageRecovery
 
         StageParts DetermineStage(Part parent)
         {
-            Log.info("DetermineStage 1 parent: {0}", parent.partInfo.title);
+            Log.detail("DetermineStage 1 parent: {0}", parent.partInfo.title);
             StageParts stage = new StageParts();
             List<Part> toCheck = new List<Part>() { parent };
             while (toCheck.Count > 0) //should instead search through the children, stopping when finding a decoupler, then switch to it's children
@@ -370,7 +369,7 @@ namespace StageRecovery
 
                 if (j > i + 1)
                 {
-                    Log.info("Found {0} identical stages", (j - i));
+                    Log.detail("Found {0} identical stages", (j - i));
                     //some stages are the same (up to j)
                     //merge the stages
                     for (int k = j - 1; k > i; k--)

@@ -299,7 +299,7 @@ namespace StageRecovery
             {
                 if (selectedStage.propRemaining.Count > 0)
                 {
-                    foreach (var r in selectedStage.propRemaining)
+                    foreach (KeyValuePair<string, double> r in selectedStage.propRemaining)
                     {
                         GUILayout.Label(r.Key + ": " + r.Value.ToString("N1"));
                     }

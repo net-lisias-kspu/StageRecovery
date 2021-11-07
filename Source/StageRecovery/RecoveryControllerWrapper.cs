@@ -73,7 +73,7 @@ namespace StageRecovery
         {
             get
             {
-                Log.info("RecoveryControllerAvailable");
+                Log.trace("RecoveryControllerAvailable");
                 if (recoveryControllerAvailable == null)
                 {
                     recoveryControllerAvailable = AssemblyLoader.loadedAssemblies.Any(a => a.assembly.GetName().Name == "RecoveryController");
@@ -82,7 +82,7 @@ namespace StageRecovery
                         calledType = Type.GetType("RecoveryController.RecoveryController,RecoveryController");
                     }
                     else
-                        Log.info("RecoveryController NOT available");
+                        Log.warn("RecoveryController NOT available");
                 }
                 return recoveryControllerAvailable.GetValueOrDefault();
             }
@@ -94,22 +94,22 @@ namespace StageRecovery
             {
                 return null;
             }
-            Log.info("CallRecoveryController, func: {0}", func);
+            Log.detail("CallRecoveryController, func: {0}", func);
             try
             {
                  
                 if (calledType != null)
                 {
-                    Log.info("calledtype not null: {0}", calledType);
+                    Log.trace("calledtype not null: {0}", calledType);
                     MonoBehaviour rcRef = (MonoBehaviour)UnityEngine.Object.FindObjectOfType(calledType); //assumes only one instance of class Historian exists as this command returns first instance found, also must inherit MonoBehavior for this command to work. Getting a reference to your Historian object another way would work also.
                     if (rcRef != null)
                     {
-                        Log.info("rcRef not null");
+                        Log.trace("rcRef not null");
                         MethodInfo myMethod = calledType.GetMethod(func, BindingFlags.Instance | BindingFlags.Public);
 
                         if (myMethod != null)
                         {
-                            Log.info("myMethod not null");
+                            Log.trace("myMethod not null");
                             object magicValue;
                             if (modName != null)
                             {
@@ -124,41 +124,41 @@ namespace StageRecovery
                         }
                         else
                         {
-                            Log.info("{0} not available in RecoveryController", func); 
+                            Log.detail("{0} not available in RecoveryController", func); 
                         }
                     }
                     else
                     {
-                        Log.info("{0} failed", func);
+                        Log.warn("{0} failed", func);
                         return null;
                     }
                 }
-                Log.info("calledtype failed");
+                Log.warn("calledtype failed");
                 return null;
             }
             catch (Exception e)
             {
-                Log.info("Error calling type: {0}", e);
+                Log.error("Error calling type: {0}", e);
                 return null;
             }
         }
 
         public static  bool RegisterModWithRecoveryController(string modName)
         {
-            Log.info("RegisterModWithRecoveryController");
-            var s = CallRecoveryController("RegisterMod", modName);
+            Log.trace("RegisterModWithRecoveryController");
+            object s = CallRecoveryController("RegisterMod", modName);
             if (s == null)
             {
-                Log.info("RegisterMod, CallRecoveryController returned null");
+                Log.detail("RegisterMod, CallRecoveryController returned null");
                 return false;
             }
-            Log.info("RegisterMod returning: {0}" + ((bool)s));
+            Log.detail("RegisterMod returning: {0}" + ((bool)s));
             return (bool)s;
         }
 
         public static  bool UnRegisterMod(string modName)
         {
-            var s = CallRecoveryController("UnRegisterMod", modName);
+            object s = CallRecoveryController("UnRegisterMod", modName);
             if (s == null)
             {
                 return false;
@@ -169,7 +169,7 @@ namespace StageRecovery
 
         public static string ControllingMod(Vessel v)
         {
-            var s = CallRecoveryController("ControllingMod", v);
+            object s = CallRecoveryController("ControllingMod", v);
             return s as string;
         }
     }

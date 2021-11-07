@@ -33,11 +33,6 @@ namespace StageRecovery
 			log.force (msg, @params);
 		}
 
-		internal static void info(string msg, params object[] @params)
-		{
-			log.info(msg, @params);
-		}
-
 		internal static void warn(string msg, params object[] @params)
 		{
 			log.warn(msg, @params);
@@ -46,6 +41,11 @@ namespace StageRecovery
 		internal static void detail(string msg, params object[] @params)
 		{
 			log.detail(msg, @params);
+		}
+
+		internal static void trace(string msg, params object[] @params)
+		{
+			log.trace(msg, @params);
 		}
 
 		internal static void error(Exception e, object offended)

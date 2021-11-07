@@ -1,7 +1,6 @@
 ﻿/*
 	This file is part of Stage Recovery /L Unleashed
 		© 2020-2021 LisiasT
-		© 2014-2018 magico13
 
 	Stage Recovery /L licensed as follows:
 		* GPL 3.0 : https://www.gnu.org/licenses/gpl-3.0.txt
